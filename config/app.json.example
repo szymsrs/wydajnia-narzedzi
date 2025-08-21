@@ -1,0 +1,18 @@
+{
+  "app_name": "Wydajnia Narzędzi",
+  "station": "STAN-01",
+  "theme": "dark",
+  "min_levels": {
+    "default": 0
+  },
+  "db": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "user": "wydajnia",
+    "password": "changeme",
+    "database": "wydajnia_db"
+  },
+  "alerts": {
+    "exceptions": true
+  }
+}

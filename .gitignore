@@ -1,4 +1,4 @@
-config/
+config/app.json
 *.env
 *.log
 __pycache__/
