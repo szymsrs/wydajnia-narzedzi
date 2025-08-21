@@ -1,6 +1,6 @@
 # app/ui/issue_dialog.py
 from __future__ import annotations
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets
 from decimal import Decimal
 from typing import Any
 
