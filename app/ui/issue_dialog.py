@@ -2,10 +2,10 @@
 from __future__ import annotations
 from PySide6 import QtWidgets, QtCore
 from decimal import Decimal
-from app.dal.repo_mysql import RepoMySQL
+from typing import Any
 
 class IssueDialog(QtWidgets.QDialog):
-    def __init__(self, repo: RepoMySQL, parent=None):
+    def __init__(self, repo: Any, parent=None):
         super().__init__(parent)
         self.repo = repo
         self.setWindowTitle("Wydanie do pracownika")
