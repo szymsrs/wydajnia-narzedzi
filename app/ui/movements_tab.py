@@ -1,13 +1,13 @@
 # app/ui/movements_tab.py
 from __future__ import annotations
 from PySide6 import QtWidgets
-from app.dal.repo_mysql import RepoMySQL
+from app.services.movements import MovementsService
 
 
 class MovementsTab(QtWidgets.QWidget):
-    def __init__(self, repo: RepoMySQL, parent=None):
+    def __init__(self, service: MovementsService, parent=None):
         super().__init__(parent)
-        self.repo = repo
+        self.service = service
 
         self.limit = QtWidgets.QSpinBox()
         self.limit.setRange(1, 1000)
@@ -34,7 +34,7 @@ class MovementsTab(QtWidgets.QWidget):
 
     def on_load(self):
         self.table.setRowCount(0)
-        data = self.repo.list_recent_movements(int(self.limit.value()))
+        data = self.service.list_recent(int(self.limit.value()))
         for row in data:
             r = self.table.rowCount()
             self.table.insertRow(r)
