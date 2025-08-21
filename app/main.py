@@ -113,55 +113,28 @@ def main():
     app = QApplication(sys.argv)
 
     # --- Wczytanie configu
-    config_path = base_dir / "config" / "app.json"
-    if not config_path.exists():
+    try:
+        settings = load_app_config(base_dir)
+    except FileNotFoundError as e:
         QMessageBox.critical(
             None,
             "Błąd konfiguracji",
-            f"Brak pliku: {config_path}\nUtwórz config/app.json na bazie app.json.example."
+            f"{e}\nUtwórz config/app.json na bazie app.json.example."
         )
         sys.exit(2)
 
-    settings = load_settings(config_path)
     log.info(f"Start: {settings.app_name} na stanowisku {settings.workstation_id}")
 
-    # --- Próba połączenia z DB
-    engine = SessionLocal = None
-    db_ok = False
-    db_error = None
-    try:
-        conn_str = make_conn_str(
-            settings.db.host, settings.db.port,
-            settings.db.user, settings.db.password, settings.db.database
-        )
-        engine, SessionLocal = create_engine_and_session(conn_str)
-        ping(engine)
-        db_ok = True
+    # --- Inicjalizacja repo / połączenie z DB
+    repo, db_ok, db_exc = init_auth_repo(settings)
+    db_error = str(db_exc) if db_exc else None
+    if db_ok:
         log.info("Połączenie z DB: OK")
-    except Exception as e:
-        db_error = str(e)
-        log.exception("Błąd połączenia z DB – start w trybie offline")
+    else:
+        log.error("Błąd połączenia z DB – start w trybie offline", exc_info=db_exc)
 
     # --- Motyw UI
     apply_theme(settings.theme)
-
-    # --- Inicjalizacja repo (przed logowaniem!)
-    repo = None
-    if db_ok:
-        cfg = {
-            "db": {
-                "host": settings.db.host,
-                "port": settings.db.port,
-                "user": settings.db.user,
-                "password": settings.db.password,
-                "name": settings.db.database,
-            }
-        }
-        try:
-            repo = AuthRepo(cfg)
-        except Exception as e:
-            log.exception(f"Błąd inicjalizacji AuthRepo: {e}")
-            repo = None
 
     # --- Logowanie (tylko gdy DB i repo gotowe)
     session_data = None

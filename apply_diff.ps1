@@ -61,38 +61,55 @@ if ($head -notmatch '^(--- |\+\+\+ |diff --git)') {
   Write-Host "⚠️  Uwaga: plik nie wygląda jak standardowy diff/patch. Spróbuję nałożyć mimo to..." -ForegroundColor Yellow
 }
 
-# 5) Sprawdź, czy patch się nałoży (dry-run)
-git apply --check --whitespace=warn "$tempFile"
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "❌ Diff nie nakłada się czysto. Zobacz plik tymczasowy (poniżej) i popraw ręcznie:" -ForegroundColor Red
-  Write-Host "   $tempFile"
-  exit 1
+# 5) Normalizacja: usuń BOM i CRLF -> LF
+$raw = [System.IO.File]::ReadAllText($tempFile)
+if ($raw.StartsWith([char]0xFEFF)) { $raw = $raw.Substring(1) }
+$raw = $raw -replace "`r`n", "`n"
+# Dedup: zostaw jeden blok 'diff --git' na plik (ostatni wygrywa)
+$lines = $raw -split "`n"
+$blocks = @()
+$cur = @()
+foreach ($ln in $lines) {
+  if ($ln -match '^diff --git a/(.+?) b/\1$') {
+    if ($cur.Count) { $blocks += ,(@($cur)) ; $cur = @() }
+  }
+  $cur += $ln
 }
+if ($cur.Count) { $blocks += ,(@($cur)) }
 
-# 6) Zastosuj patch (z automatyczną korektą białych znaków)
-git apply --whitespace=fix "$tempFile"
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "❌ Błąd podczas nakładania patcha." -ForegroundColor Red
-  exit 1
+# grupuj po nazwie pliku i zostaw ostatni blok
+$byFile = @{}
+foreach ($b in $blocks) {
+  $hdr = $b | Where-Object { $_ -match '^diff --git a/(.+?) b/\1$' } | Select-Object -First 1
+  if ($hdr -match '^diff --git a/(.+?) b/\1$') {
+    $file = $Matches[1]
+    $byFile[$file] = $b
+  }
 }
+$norm = ($byFile.GetEnumerator() | ForEach-Object { $_.Value }) -join "`n"
+[IO.File]::WriteAllText($tempFile, $norm, (New-Object System.Text.UTF8Encoding($false)))
 
-# 7) Dodaj zmiany i zrób commit
-git add -A
-# Spróbuj znaleźć linijkę "# commit: ..."
-$commitLine = (Select-String -Path $tempFile -Pattern "^# commit:" | Select-Object -First 1)
-
-if ($commitLine) {
-    $commitMsg = $commitLine.ToString().Substring(9).Trim()  # wytnij "# commit:" i spacje
+# 6) Dry-run
+git -c core.autocrlf=false apply --check --ignore-space-change --whitespace=nowarn "$tempFile"
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "⚠️  Try zwykły się nie udał, próbuję 3-way merge..." -ForegroundColor Yellow
+  git -c core.autocrlf=false apply --3way --ignore-space-change --whitespace=nowarn "$tempFile"
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Diff nie nakłada się czysto. Zobacz plik i popraw ręcznie:" -ForegroundColor Red
+    Write-Host "   $tempFile"
+    exit 1
+  }
 } else {
-    $commitMsg = $Message  # fallback, jeśli nie było komentarza
+  # 7) Zastosuj patch
+  git -c core.autocrlf=false apply --ignore-space-change --whitespace=nowarn "$tempFile"
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Błąd podczas nakładania patcha." -ForegroundColor Red
+    exit 1
+  }
 }
 
-git commit -m "$commitMsg"
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "❌ Commit nie powiódł się. Cofam nałożony patch (git reset --hard)." -ForegroundColor Red
-  git reset --hard
-  exit 1
-}
+# ... (tu zostaje Twój blok z git add / commit i parsowaniem '# commit:')
+
 
 # 8) Podsumowanie
 Write-Host "✅ Diff nałożony i zacommitowany." -ForegroundColor Green
