@@ -78,7 +78,16 @@ if ($LASTEXITCODE -ne 0) {
 
 # 7) Dodaj zmiany i zrób commit
 git add -A
-git commit -m "$Message"
+# Spróbuj znaleźć linijkę "# commit: ..."
+$commitLine = (Select-String -Path $tempFile -Pattern "^# commit:" | Select-Object -First 1)
+
+if ($commitLine) {
+    $commitMsg = $commitLine.ToString().Substring(9).Trim()  # wytnij "# commit:" i spacje
+} else {
+    $commitMsg = $Message  # fallback, jeśli nie było komentarza
+}
+
+git commit -m "$commitMsg"
 if ($LASTEXITCODE -ne 0) {
   Write-Host "❌ Commit nie powiódł się. Cofam nałożony patch (git reset --hard)." -ForegroundColor Red
   git reset --hard

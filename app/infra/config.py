@@ -22,3 +22,22 @@ class AppSettings(BaseSettings):
 def load_settings(config_path: Path) -> AppSettings:
     data = json.loads(config_path.read_text(encoding="utf-8"))
     return AppSettings(**data)
+
+
+def load_app_config(base_dir: Path) -> AppSettings:
+    """Load application configuration from ``config/app.json``.
+
+    Args:
+        base_dir: Root directory of the project.
+
+    Raises:
+        FileNotFoundError: If the configuration file does not exist.
+
+    Returns:
+        Parsed :class:`AppSettings` instance.
+    """
+
+    config_path = base_dir / "config" / "app.json"
+    if not config_path.exists():
+        raise FileNotFoundError(f"Brak pliku: {config_path}")
+    return load_settings(config_path)
