@@ -1,0 +1,1996 @@
+2025-08-14 10:37:21.875 | INFO     | __main__:main:22 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:37:31.972 | ERROR    | __main__:main:34 - Błąd połączenia z DB
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x000002929D2F5440>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+          └ []
+  File "C:\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    │    │       └ ('192.168.1.10', 3306)
+    │    └ <method 'connect' of '_socket.socket' objects>
+    └ <socket.socket [closed] fd=-1, family=2, type=1, proto=0>
+
+TimeoutError: timed out
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000002929E56A7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002929FB4BA10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000002929E121940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000002929E123A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000002929E1225C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000002929E131B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002929FEABFC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000002929E1216C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002929EB04CC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002929FBB0860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': '192.168.1.10', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'TwojeHaslo!', 'port': 3306, 'charset': 'utf...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002929E61AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002929FB4B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': '192.168.1.10', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'TwojeHaslo!', 'port': 3306, 'charset': 'utf...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002929FB4B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002929FE2E660>
+    └ <pymysql.connections.Connection object at 0x000002929FB4BB60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 46, in <module>
+    main()
+    └ <function main at 0x000002929E9AB4C0>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 31, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x000002929E96ACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x000002929E56A700>
+         └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x000002929E55FF60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)"...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'192.168.1.10\' (timed out)")')
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000002929E56A7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002929FB4BA10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000002929E121940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.1.10:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000002929E123A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000002929E1225C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000002929E131B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002929FEABFC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000002929E1216C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002929EB04CC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002929FBB0860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002929FB4B4D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002929FC05070>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': '192.168.1.10', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'TwojeHaslo!', 'port': 3306, 'charset': 'utf...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002929E61AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002929FB4B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': '192.168.1.10', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'TwojeHaslo!', 'port': 3306, 'charset': 'utf...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002929FB4B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002929FE2E660>
+    └ <pymysql.connections.Connection object at 0x000002929FB4BB60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on '192.168.1.10' (timed out)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:48:42.803 | INFO     | __main__:main:22 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:48:42.846 | ERROR    | __main__:main:34 - Błąd połączenia z DB
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x0000024A942953A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3306
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x0000024A94295580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3306
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000024A9545A7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x0000024A96A3BA10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000024A95011940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000024A95013A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000024A950125C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000024A95021B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000024A96D9BD00>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000024A950116C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000024A969B35C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000024A96A9C860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3306, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000024A9550AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000024A96A3B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3306, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000024A96A3B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000024A96D1E660>
+    └ <pymysql.connections.Connection object at 0x0000024A96A3BB60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 46, in <module>
+    main()
+    └ <function main at 0x0000024A9589B380>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 31, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x0000024A95856CA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x0000024A9545A700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x0000024A9544FF60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000024A9545A7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x0000024A96A3BA10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000024A95011940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3306/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000024A95013A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000024A950125C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000024A95021B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000024A96D9BD00>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000024A950116C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000024A969B35C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000024A96A9C860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x0000024A96A3B4D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000024A96AF5010>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3306, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000024A9550AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000024A96A3B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3306, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000024A96A3B0E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000024A96D1E660>
+    └ <pymysql.connections.Connection object at 0x0000024A96A3BB60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:54:45.790 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:54:45.823 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x00000215265E93A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3307
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x00000215265E9580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3307
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000021528C0E7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002152A1E7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x00000215287C1940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x00000215287C3A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x00000215287C25C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x00000215287D1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002152AB383C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x00000215287C16C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002152AAA15C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002152A250860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000021528CBAF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002152A1E70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002152A1E70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002152AA9E660>
+    └ <pymysql.connections.Connection object at 0x000002152A1E7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x000002152904B380>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x000002152900ACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x0000021528C0E700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x0000021528C03F60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000021528C0E7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002152A1E7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x00000215287C1940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x00000215287C3A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x00000215287C25C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x00000215287D1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002152AB383C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x00000215287C16C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002152AAA15C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002152A250860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002152A1E74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002152A2A51F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000021528CBAF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002152A1E70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002152A1E70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002152AA9E660>
+    └ <pymysql.connections.Connection object at 0x000002152A1E7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:55:23.034 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:55:23.068 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x0000021F376393A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3307
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x0000021F37639580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3307
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000021F388AE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x0000021F39E87A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000021F38461940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000021F38463A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000021F384625C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000021F38471B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000021F3A7EC7C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000021F384616C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000021F39E24C80>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000021F39EF0860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000021F3895AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000021F39E870E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000021F39E870E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000021F3A74E660>
+    └ <pymysql.connections.Connection object at 0x0000021F39E87B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x0000021F38CEB380>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x0000021F38CAACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x0000021F388AE700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x0000021F388A7F60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x0000021F388AE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x0000021F39E87A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000021F38461940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000021F38463A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000021F384625C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000021F38471B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000021F3A7EC7C0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000021F384616C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x0000021F39E24C80>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000021F39EF0860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x0000021F39E874D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x0000021F39F451F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x0000021F3895AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000021F39E870E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x0000021F39E870E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000021F3A74E660>
+    └ <pymysql.connections.Connection object at 0x0000021F39E87B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:56:52.179 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:56:52.216 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x000002572FEE93A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3307
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x000002572FEE9580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3307
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x00000257310CE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x00000257326A7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000025730C81940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000025730C83A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000025730C825C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000025730C91B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002573301C880>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000025730C816C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002573267FDC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000025732710860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002573117AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000257326A70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000257326A70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000025732F7E660>
+    └ <pymysql.connections.Connection object at 0x00000257326A7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x000002573150B4C0>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x00000257314CACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x00000257310CE700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x00000257310C7F60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x00000257310CE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x00000257326A7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x0000025730C81940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x0000025730C83A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x0000025730C825C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x0000025730C91B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002573301C880>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x0000025730C816C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002573267FDC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x0000025732710860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x00000257326A74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000257327651F0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002573117AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000257326A70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000257326A70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x0000025732F7E660>
+    └ <pymysql.connections.Connection object at 0x00000257326A7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:57:23.106 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:57:23.140 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x000001B74D7293A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3307
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x000001B74D729580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3307
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000001B74E8DE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000001B74FEB7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000001B74E491940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000001B74E493A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000001B74E4925C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000001B74E4A1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000001B75081C880>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000001B74E4916C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000001B74FE8FE00>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000001B74FF20860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000001B74E98AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000001B74FEB70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000001B74FEB70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000001B75077E660>
+    └ <pymysql.connections.Connection object at 0x000001B74FEB7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x000001B74ED1B380>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x000001B74ECDACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x000001B74E8DE700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x000001B74E8D7F60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000001B74E8DE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000001B74FEB7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000001B74E491940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000001B74E493A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000001B74E4925C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000001B74E4A1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000001B75081C880>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000001B74E4916C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000001B74FE8FE00>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000001B74FF20860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000001B74FEB74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000001B74FF75250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000001B74E98AF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000001B74FEB70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000001B74FEB70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000001B75077E660>
+    └ <pymysql.connections.Connection object at 0x000001B74FEB7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:57:59.862 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:57:59.893 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x000002A1BDEF93A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 840, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               │           │     │        └ <SocketKind.SOCK_STREAM: 1>
+               │           │     └ 3307
+               │           └ 'Poz@192.168.36.156'
+               └ <function getaddrinfo at 0x000002A1BDEF9580>
+  File "C:\Python313\Lib\socket.py", line 977, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               │       │           │     │     │       │     │      └ 0
+               │       │           │     │     │       │     └ 0
+               │       │           │     │     │       └ <SocketKind.SOCK_STREAM: 1>
+               │       │           │     │     └ 0
+               │       │           │     └ 3307
+               │       │           └ 'Poz@192.168.36.156'
+               │       └ <built-in function getaddrinfo>
+               └ <module '_socket' from 'C:\\Python313\\DLLs\\_socket.pyd'>
+
+socket.gaierror: [Errno 11003] getaddrinfo failed
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000002A1C04FE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002A1C1AD7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000002A1C00B1940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000002A1C00B3A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000002A1C00B25C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000002A1C00C1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002A1C240C340>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000002A1C00B16C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002A1C0AA7B80>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002A1C1B40860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002A1C05AAF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002A1C1AD70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002A1C1AD70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002A1C236E660>
+    └ <pymysql.connections.Connection object at 0x000002A1C1AD7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x000002A1C093B380>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x000002A1C08FACA0>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 22, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x000002A1C04FE700>
+         └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x000002A1C04F3F60>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errn...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'Poz@192.168.36.156\' ([Errno 110...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x000002A1C04FE7A0>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x000002A1C1AD7A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x000002A1C00B1940>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           └ Engine(mysql+pymysql://wydajnia:***@Poz@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x000002A1C00B3A60>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x000002A1C00B25C0>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x000002A1C00C1B20>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002A1C240C340>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x000002A1C00B16C0>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x000002A1C0AA7B80>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x000002A1C1B40860>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x000002A1C1AD74D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x000002A1C1B95250>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x000002A1C05AAF20>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002A1C1AD70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': 'Poz@192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x000002A1C1AD70E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x000002A1C236E660>
+    └ <pymysql.connections.Connection object at 0x000002A1C1AD7B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'Poz@192.168.36.156' ([Errno 11003] getaddrinfo failed)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 10:59:33.283 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 10:59:35.349 | ERROR    | __main__:main:42 - Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           │      └ <function create_connection at 0x00000247DF9393A0>
+           └ <module 'socket' from 'C:\\Python313\\Lib\\socket.py'>
+  File "C:\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+          └ []
+  File "C:\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    │    │       └ ('192.168.36.156', 3307)
+    │    └ <method 'connect' of '_socket.socket' objects>
+    └ <socket.socket [closed] fd=-1, family=2, type=1, proto=0>
+
+ConnectionRefusedError: [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x00000247E0B7A840>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x00000247E2157A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x00000247E07319E0>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x00000247E0733B00>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x00000247E0732660>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x00000247E0741BC0>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x00000247E2AC0A40>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x00000247E0731760>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x00000247E2A25200>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x00000247E21C0900>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': '192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201@Poz', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x00000247E0C2AFC0>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000247E21570E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': '192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201@Poz', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000247E21570E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x00000247E2A22700>
+    └ <pymysql.connections.Connection object at 0x00000247E2157B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia)")
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 59, in <module>
+    main()
+    └ <function main at 0x00000247E0FBF420>
+
+> File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 37, in main
+    ping(engine)
+    │    └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <function ping at 0x00000247E0F7AD40>
+
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\db.py", line 27, in ping
+    with engine.connect() as conn:
+         │      └ <function Engine.connect at 0x00000247E0B7A7A0>
+         └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3277, in connect
+    return self._connection_cls(self)
+           │    │               └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+           │    └ <class 'sqlalchemy.engine.base.Connection'>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 145, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    │          └ <classmethod(<function Connection._handle_dbapi_exception_noconnection at 0x00000247E0B78040>)>
+    └ <class 'sqlalchemy.engine.base.Connection'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+          │                    │              └ (<class 'pymysql.err.OperationalError'>, OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError...
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'192.168.36.156\' ([WinError 1006...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 143, in __init__
+    self._dbapi_connection = engine.raw_connection()
+    │                        │      └ <function Engine.raw_connection at 0x00000247E0B7A840>
+    │                        └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+    └ <sqlalchemy.engine.base.Connection object at 0x00000247E2157A10>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3301, in raw_connection
+    return self.pool.connect()
+           │    │    └ <function Pool.connect at 0x00000247E07319E0>
+           │    └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           └ Engine(mysql+pymysql://wydajnia:***@192.168.36.156:3307/wydajnia?charset=utf8mb4)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 447, in connect
+    return _ConnectionFairy._checkout(self)
+           │                │         └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           │                └ <classmethod(<function _ConnectionFairy._checkout at 0x00000247E0733B00>)>
+           └ <class 'sqlalchemy.pool.base._ConnectionFairy'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 1264, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            │                 │        └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+            │                 └ <classmethod(<function _ConnectionRecord.checkout at 0x00000247E0732660>)>
+            └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 711, in checkout
+    rec = pool._do_get()
+          │    └ <function QueuePool._do_get at 0x00000247E0741BC0>
+          └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x00000247E2AC0A40>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\impl.py", line 175, in _do_get
+    return self._create_connection()
+           │    └ <function Pool._create_connection at 0x00000247E0731760>
+           └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 388, in _create_connection
+    return _ConnectionRecord(self)
+           │                 └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+           └ <class 'sqlalchemy.pool.base._ConnectionRecord'>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 673, in __init__
+    self.__connect()
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 899, in __connect
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-package...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x00000247E2A25200>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+    │    │                               │    │               └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+    │    │                               │    └ <function create_engine.<locals>.connect at 0x00000247E21C0900>
+    │    │                               └ <sqlalchemy.pool.impl.QueuePool object at 0x00000247E21574D0>
+    │    └ <member 'dbapi_connection' of '_ConnectionRecord' objects>
+    └ <sqlalchemy.pool.base._ConnectionRecord object at 0x00000247E22113D0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\create.py", line 661, in connect
+    return dialect.connect(*cargs, **cparams)
+           │       │        │        └ {'host': '192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201@Poz', 'port': 3307, 'charset': 'u...
+           │       │        └ []
+           │       └ <function DefaultDialect.connect at 0x00000247E0C2AFC0>
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000247E21570E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 629, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           │    │            │        │        └ {'host': '192.168.36.156', 'database': 'wydajnia', 'user': 'wydajnia', 'password': 'Adm$201@Poz', 'port': 3307, 'charset': 'u...
+           │    │            │        └ ()
+           │    │            └ <class 'pymysql.connections.Connection'>
+           │    └ <module 'pymysql' from 'C:\\Users\\Szymon Sierszulski\\Documents\\Python\\Wydajnia narzedzi\\.venv\\Lib\\site-packages\\pymys...
+           └ <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x00000247E21570E0>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    │    └ <function Connection.connect at 0x00000247E2A22700>
+    └ <pymysql.connections.Connection object at 0x00000247E2157B60>
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+          └ OperationalError(2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, po...
+
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on '192.168.36.156' ([WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia)")
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-14 11:04:12.232 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:04:12.297 | INFO     | __main__:main:39 - Połączenie z DB: OK
+2025-08-14 11:12:20.176 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:12:20.229 | INFO     | __main__:main:39 - Połączenie z DB: OK
+2025-08-14 11:15:45.704 | INFO     | __main__:main:26 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:15:45.754 | INFO     | __main__:main:39 - Połączenie z DB: OK
+2025-08-14 11:51:04.748 | INFO     | __main__:main:30 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:51:04.796 | INFO     | __main__:main:44 - Połączenie z DB: OK
+2025-08-14 11:51:13.218 | INFO     | __main__:main:57 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 11:53:20.833 | INFO     | __main__:main:30 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:53:20.876 | INFO     | __main__:main:44 - Połączenie z DB: OK
+2025-08-14 11:53:25.507 | INFO     | __main__:main:57 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 11:57:03.130 | INFO     | __main__:main:30 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 11:57:03.166 | INFO     | __main__:main:44 - Połączenie z DB: OK
+2025-08-14 11:57:08.934 | INFO     | __main__:main:57 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 12:02:38.913 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:02:38.956 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:02:56.339 | INFO     | __main__:main:66 - Logowanie anulowane – zamykam aplikację.
+2025-08-14 12:04:26.612 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:04:26.659 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:04:46.313 | INFO     | __main__:main:61 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 12:30:36.742 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:30:36.791 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:37:48.006 | INFO     | __main__:main:66 - Logowanie anulowane – zamykam aplikację.
+2025-08-14 12:37:50.267 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:37:50.317 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:43:28.339 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:43:28.388 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:46:27.062 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:46:27.122 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:49:10.013 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:49:10.067 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:49:19.767 | INFO     | __main__:main:66 - Logowanie anulowane – zamykam aplikację.
+2025-08-14 12:51:38.964 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:51:38.999 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 12:51:44.738 | INFO     | __main__:main:66 - Logowanie anulowane – zamykam aplikację.
+2025-08-14 12:56:47.151 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 12:56:47.203 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 13:00:36.482 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:00:36.539 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 13:11:45.724 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:11:45.769 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 13:11:49.115 | INFO     | __main__:main:61 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 13:12:01.468 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:12:01.525 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 13:12:14.162 | INFO     | __main__:main:66 - Logowanie anulowane – zamykam aplikację.
+2025-08-14 13:12:54.758 | INFO     | __main__:main:34 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:12:54.806 | INFO     | __main__:main:48 - Połączenie z DB: OK
+2025-08-14 13:12:59.254 | INFO     | __main__:main:61 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 13:23:10.472 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:23:10.527 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:23:14.286 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-14 13:24:37.999 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:24:38.060 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:24:40.823 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 13:38:41.073 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:38:41.132 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:38:44.458 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 13:46:12.779 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:46:12.832 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:46:16.742 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 13:50:37.876 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:50:37.938 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:50:41.105 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 13:52:04.412 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:52:04.468 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:52:07.506 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 13:54:09.115 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 13:54:09.169 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 13:54:11.541 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 14:00:49.777 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 14:00:49.877 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 14:00:52.732 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-14 14:02:44.539 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-14 14:02:44.585 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-14 14:02:48.491 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 06:11:19.126 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 06:11:19.217 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-18 06:11:22.755 | INFO     | __main__:main:76 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 06:18:23.031 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 06:18:23.096 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-18 06:18:24.512 | INFO     | __main__:main:78 - Logowanie anulowane – zamykam aplikację.
+2025-08-18 06:22:31.837 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 06:22:31.937 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-18 07:35:47.941 | INFO     | __main__:main:46 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 07:35:48.021 | INFO     | __main__:main:60 - Połączenie z DB: OK
+2025-08-18 07:47:56.215 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 07:47:56.263 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 07:48:13.006 | INFO     | __main__:main:98 - Logowanie anulowane – zamykam aplikację.
+2025-08-18 07:48:20.395 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 07:48:20.435 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 07:48:28.733 | INFO     | __main__:main:98 - Logowanie anulowane – zamykam aplikację.
+2025-08-18 07:49:48.701 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 07:49:48.749 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 07:49:50.424 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:02:47.958 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:02:48.014 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:02:50.793 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:07:24.468 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:07:24.531 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:07:26.638 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:14:02.345 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:14:02.399 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:14:05.014 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:36:09.578 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:36:09.633 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:36:11.940 | INFO     | __main__:main:96 - Zalogowano: test testowy (operator) metodą pin
+2025-08-18 08:36:58.285 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:36:58.346 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:36:59.588 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:41:18.059 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:41:18.106 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:41:20.178 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:48:39.135 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:48:39.196 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:48:41.574 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:54:58.554 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:54:58.613 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:55:00.538 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 08:55:38.595 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 08:55:38.656 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 08:55:40.581 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 09:00:57.246 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 09:00:57.291 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 09:01:02.701 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-18 11:56:17.140 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-18 11:56:17.302 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-18 11:56:22.601 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-21 09:56:44.940 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-21 09:56:45.435 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-21 09:56:50.549 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-21 10:02:31.240 | INFO     | __main__:main:47 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-21 10:02:31.314 | INFO     | __main__:main:61 - Połączenie z DB: OK
+2025-08-21 10:02:33.909 | INFO     | __main__:main:96 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-21 10:04:26.960 | INFO     | __main__:main:126 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-21 10:04:27.001 | INFO     | __main__:main:140 - Połączenie z DB: OK
+2025-08-21 10:04:29.260 | INFO     | __main__:main:175 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-21 10:04:41.219 | INFO     | __main__:main:126 - Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-21 10:04:41.276 | INFO     | __main__:main:140 - Połączenie z DB: OK
+2025-08-21 10:04:45.127 | INFO     | __main__:main:175 - Zalogowano: Szymon Sierszulski (admin) metodą pin
