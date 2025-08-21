@@ -14,5 +14,10 @@
   },
   "alerts": {
     "exceptions": true
+  },
+  "features": {
+    "import_rw_pdf": false,
+    "rfid_required": false,
+    "exceptions_panel": false
   }
 }
