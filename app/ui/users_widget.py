@@ -34,7 +34,8 @@ class UsersWidget(QWidget):
     def _build(self):
         # pasek narzędzi nad tabelą
         self.search = QtWidgets.QLineEdit(placeholderText="Szukaj: imię / nazwisko / login…")
-        self.btn_refresh = QtWidgets.QToolButton(text="Odśwież"); self.btn_refresh.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+        self.btn_refresh = QtWidgets.QToolButton(text="Odśwież")
+        self.btn_refresh.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
         self.btn_add = QtWidgets.QToolButton(text="Dodaj")
         self.btn_save = QtWidgets.QToolButton(text="Zapisz")
         self.btn_reset_pw = QtWidgets.QToolButton(text="Reset hasła…")
