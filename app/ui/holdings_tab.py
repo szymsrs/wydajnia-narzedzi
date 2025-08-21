@@ -1,10 +1,10 @@
 # app/ui/holdings_tab.py
 from __future__ import annotations
 from PySide6 import QtWidgets
-from app.dal.repo_mysql import RepoMySQL
+from typing import Any
 
 class HoldingsTab(QtWidgets.QWidget):
-    def __init__(self, repo: RepoMySQL, parent=None):
+    def __init__(self, repo: Any, parent=None):
         super().__init__(parent)
         self.repo = repo
 
