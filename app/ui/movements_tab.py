@@ -24,7 +24,13 @@ class MovementsTab(QtWidgets.QWidget):
 
         self.table = QtWidgets.QTableWidget(0, 7)
         self.table.setHorizontalHeaderLabels([
-            "id", "ts", "movement_type", "item_id", "qty", "from_location", "to_location"
+            "id",
+            "ts",
+            "movement_type",
+            "item_id",
+            "qty",
+            "from_location_id",
+            "to_location_id",
         ])
         self.table.horizontalHeader().setStretchLastSection(True)
 
