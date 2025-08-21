@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import json
 from pathlib import Path
+from PySide6.QtWidgets import QMessageBox
 
 class DBSettings(BaseModel):
     host: str
@@ -11,6 +12,12 @@ class DBSettings(BaseModel):
     password: str
     database: str
 
+
+class FeaturesSettings(BaseModel):
+    import_rw_pdf: bool = False
+    rfid_required: bool = False
+    exceptions_panel: bool = False
+
 class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="WYD_", env_nested_delimiter="__")
     app_name: str = "Wydajnia Narzędzi"
@@ -18,6 +25,7 @@ class AppSettings(BaseSettings):
     theme: str = "dark"
     db: DBSettings
     alerts: dict = Field(default_factory=dict)
+    features: FeaturesSettings = Field(default_factory=FeaturesSettings)
 
 def load_settings(config_path: Path) -> AppSettings:
     data = json.loads(config_path.read_text(encoding="utf-8"))
@@ -39,5 +47,10 @@ def load_app_config(base_dir: Path) -> AppSettings:
 
     config_path = base_dir / "config" / "app.json"
     if not config_path.exists():
+        QMessageBox.critical(
+            None,
+            "Brak konfiguracji",
+            f"Nie znaleziono pliku konfiguracyjnego: {config_path}",
+        )
         raise FileNotFoundError(f"Brak pliku: {config_path}")
     return load_settings(config_path)
