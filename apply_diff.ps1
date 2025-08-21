@@ -1,8 +1,8 @@
-<# 
+<#
 Skrypt: apply_diff.ps1
-Cel: Nałożyć diff/patch skopiowany do schowka (clipboard) i od razu zrobić commit.
+Cel: Nalozyc diff/patch skopiowany do schowka (clipboard) i od razu zrobic commit.
 
-Użycie:
+Uzycie:
   ./apply_diff.ps1 "Opis commita"
   # lub z pliku diff:
   ./apply_diff.ps1 -FromFile .\zmiany.diff -Message "Opis"
@@ -20,82 +20,105 @@ param(
   [string]$FromFile
 )
 
-# 1) Sprawdź, czy jest Git
+# 1) Sprawdz czy jest Git
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-  Write-Host "❌ Nie znaleziono 'git' w PATH. Zainstaluj Git i spróbuj ponownie." -ForegroundColor Red
+  Write-Host "BLAD: Nie znaleziono 'git' w PATH." -ForegroundColor Red
   exit 1
 }
 
-# 2) Sprawdź, czy jesteśmy w repo (czy istnieje .git)
+# 2) Sprawdz czy jestesmy w repo
 $inRepo = (git rev-parse --is-inside-work-tree 2>$null)
 if ($LASTEXITCODE -ne 0 -or $inRepo -ne "true") {
-  Write-Host "❌ To nie wygląda na folder repozytorium Gita (brak .git)." -ForegroundColor Red
+  Write-Host "BLAD: To nie wyglada na folder repozytorium (brak .git)." -ForegroundColor Red
   exit 1
 }
 
-# 3) Pobierz diff: ze schowka albo z pliku (jeśli podano -FromFile)
+# 3) Pobierz diff: ze schowka albo z pliku
 $tempFile = New-TemporaryFile
 try {
   if ($FromFile) {
     if (-not (Test-Path $FromFile)) {
-      Write-Host "❌ Nie znaleziono pliku: $FromFile" -ForegroundColor Red
+      Write-Host "BLAD: Nie znaleziono pliku: $FromFile" -ForegroundColor Red
       exit 1
     }
     Get-Content -Raw -Path $FromFile | Set-Content -Path $tempFile -Encoding UTF8
   } else {
     $clip = Get-Clipboard -Raw
     if (-not $clip -or $clip.Trim().Length -eq 0) {
-      Write-Host "❌ Schowek jest pusty. Skopiuj diff (blok zaczynający się od '---' lub 'diff --git')." -ForegroundColor Red
+      Write-Host "BLAD: Schowek jest pusty. Skopiuj diff (blok zaczynajacy sie od '---' lub 'diff --git')." -ForegroundColor Red
       exit 1
     }
     $clip | Set-Content -Path $tempFile -Encoding UTF8
   }
 } catch {
-  Write-Host "❌ Problem z odczytem diffu: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "BLAD: Problem z odczytem diffu: $($_.Exception.Message)" -ForegroundColor Red
   exit 1
 }
 
-# 4) Szybka walidacja formatu (nie blokuje, tylko ostrzega)
+# 4) Walidacja formatu (ostrzezenie)
 $head = (Get-Content -Path $tempFile -TotalCount 5) -join "`n"
 if ($head -notmatch '^(--- |\+\+\+ |diff --git)') {
-  Write-Host "⚠️  Uwaga: plik nie wygląda jak standardowy diff/patch. Spróbuję nałożyć mimo to..." -ForegroundColor Yellow
+  Write-Host "UWAGA: Plik nie wyglada jak standardowy diff/patch. Sprobuje mimo to..." -ForegroundColor Yellow
 }
 
-# 5) Normalizacja: usuń BOM i CRLF -> LF
+# 5) Normalizacja: usun BOM i CRLF -> LF, dedup blokow; zachowaj naglowek (np. # commit:)
 $raw = [System.IO.File]::ReadAllText($tempFile)
 if ($raw.StartsWith([char]0xFEFF)) { $raw = $raw.Substring(1) }
 $raw = $raw -replace "`r`n", "`n"
-# Dedup: zostaw jeden blok 'diff --git' na plik (ostatni wygrywa)
+
 $lines = $raw -split "`n"
+
+# Zbierz linie poprzedzajace pierwszy "diff --git" (np. # commit:, # body:)
+$preface = @()
+$startIdx = ($lines | Select-String -Pattern '^[ ]*diff --git a/.+ b/.+' | Select-Object -First 1).LineNumber
+if ($startIdx) {
+  $preface = $lines[0..($startIdx-2)]
+} else {
+  $preface = $lines
+}
+
+# Podziel na bloki diff
 $blocks = @()
 $cur = @()
 foreach ($ln in $lines) {
-  if ($ln -match '^diff --git a/(.+?) b/\1$') {
+  if ($ln -match '^[ ]*diff --git a/(.+) b/(.+)$') {
     if ($cur.Count) { $blocks += ,(@($cur)) ; $cur = @() }
   }
   $cur += $ln
 }
 if ($cur.Count) { $blocks += ,(@($cur)) }
 
-# grupuj po nazwie pliku i zostaw ostatni blok
-$byFile = @{}
+# Zbuduj mapa blokow po kluczu pliku docelowego:
+# - jesli bPath != /dev/null -> klucz = bPath (nowy/zmieniony/rename)
+# - w przeciwnym razie klucz = aPath (usuwany plik)
+$byKey = [ordered]@{}
 foreach ($b in $blocks) {
-  $hdr = $b | Where-Object { $_ -match '^diff --git a/(.+?) b/\1$' } | Select-Object -First 1
-  if ($hdr -match '^diff --git a/(.+?) b/\1$') {
-    $file = $Matches[1]
-    $byFile[$file] = $b
+  $hdr = $b | Where-Object { $_ -match '^[ ]*diff --git a/(.+) b/(.+)$' } | Select-Object -First 1
+  if ($hdr) {
+    $null = $hdr -match '^[ ]*diff --git a/(.+) b/(.+)$'
+    $aPath = $Matches[1]
+    $bPath = $Matches[2]
+    $key = if ($bPath -ne "/dev/null") { $bPath } else { $aPath }
+    # ostatni blok o tym samym kluczu wygrywa
+    $byKey[$key] = $b
   }
 }
-$norm = ($byFile.GetEnumerator() | ForEach-Object { $_.Value }) -join "`n"
-[IO.File]::WriteAllText($tempFile, $norm, (New-Object System.Text.UTF8Encoding($false)))
+
+# Sklej z powrotem: preface (bez pustych koncow) + wszystkie unikalne bloki
+$prefaceText = ($preface -join "`n").Trim()
+$normBlocks = ($byKey.GetEnumerator() | ForEach-Object { $_.Value }) -join "`n"
+$final = if ($prefaceText) { "$prefaceText`n$normBlocks" } else { $normBlocks }
+
+[IO.File]::WriteAllText($tempFile, $final, (New-Object System.Text.UTF8Encoding($false)))
+
 
 # 6) Dry-run
 git -c core.autocrlf=false apply --check --ignore-space-change --whitespace=nowarn "$tempFile"
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "⚠️  Try zwykły się nie udał, próbuję 3-way merge..." -ForegroundColor Yellow
+  Write-Host "UWAGA: Zwykle nakladanie diffu nie powiodlo sie, sprobuje 3-way merge..." -ForegroundColor Yellow
   git -c core.autocrlf=false apply --3way --ignore-space-change --whitespace=nowarn "$tempFile"
   if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Diff nie nakłada się czysto. Zobacz plik i popraw ręcznie:" -ForegroundColor Red
+    Write-Host "BLAD: Diff nie naklada sie czysto. Sprawdz plik tymczasowy:" -ForegroundColor Red
     Write-Host "   $tempFile"
     exit 1
   }
@@ -103,14 +126,26 @@ if ($LASTEXITCODE -ne 0) {
   # 7) Zastosuj patch
   git -c core.autocrlf=false apply --ignore-space-change --whitespace=nowarn "$tempFile"
   if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Błąd podczas nakładania patcha." -ForegroundColor Red
+    Write-Host "BLAD: Problem podczas nakladania diffu." -ForegroundColor Red
     exit 1
   }
 }
 
-# ... (tu zostaje Twój blok z git add / commit i parsowaniem '# commit:')
-
+# 7b) Dodaj i zrob commit
+git add -A
+$commitLine = (Select-String -Path $tempFile -Pattern "^# commit:" | Select-Object -First 1)
+if ($commitLine) {
+    $commitMsg = $commitLine.ToString().Substring(9).Trim()
+} else {
+    $commitMsg = $Message
+}
+git commit -m "$commitMsg"
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "BLAD: Commit nie powiodl sie. Resetuje zmiany." -ForegroundColor Red
+  git reset --hard
+  exit 1
+}
 
 # 8) Podsumowanie
-Write-Host "✅ Diff nałożony i zacommitowany." -ForegroundColor Green
+Write-Host "OK: Diff zostal nalozony i zacommitowany." -ForegroundColor Green
 git log -1 --stat
