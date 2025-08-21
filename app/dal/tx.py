@@ -1,6 +1,8 @@
 from contextlib import contextmanager
+from sqlalchemy.orm import sessionmaker
 
-def transaction(SessionLocal):
+
+def transaction(SessionLocal: sessionmaker):
     @contextmanager
     def _tx():
         session = SessionLocal()
@@ -12,4 +14,11 @@ def transaction(SessionLocal):
             raise
         finally:
             session.close()
+
     return _tx
+
+
+def for_update(query):
+    """Apply SQL-level FOR UPDATE locking."""
+
+    return query.with_for_update()
