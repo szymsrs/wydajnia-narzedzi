@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "*.cps": "javascript"
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "never"
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "python.createEnvironment.trigger": "off",
+    "workbench.colorTheme": "Default Dark+",
+    "explorer.confirmDelete": false,
+    "python.pythonPath": "C:/Python39/python.exe",
+    "python.analysis.extraPaths": [
+        "C:/Users/Szymon Sierszulski/Documents/Python/Program excel lista/Wersja PIN i QR"
+    ],
+    "python.linting.enabled": true,
+    "python.defaultInterpreterPath": "C:\\Users\\Szymon Sierszulski\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "git.autofetch": true,
+    "git.enableSmartCommit": true
+}
