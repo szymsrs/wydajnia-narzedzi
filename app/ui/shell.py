@@ -237,8 +237,38 @@ class MainWindow(QMainWindow):
         # wczytaj widget (placeholder jeśli brak)
         w = self.widgets.get(name)
 
+        # >>> ZMIANY DLA ZAKŁADKI „Operacje” <<<
+        if name == "Operacje":
+            if not self.db_ok or not self.repo:
+                self._ensure_placeholder("Operacje", "Brak połączenia z DB")
+                w = self.widgets["Operacje"]
+            else:
+                try:
+                    # Tworzymy prosty panel z przyciskiem Import RW (PDF)
+                    from PySide6 import QtWidgets
+                    from app.ui.rw_import_dialog import RWImportDialog
+
+                    panel = QtWidgets.QWidget()
+                    lay = QtWidgets.QVBoxLayout(panel)
+                    lay.setContentsMargins(24, 24, 24, 24)
+
+                    btn_import = QtWidgets.QPushButton("Import RW (PDF)")
+                    btn_import.setMinimumHeight(42)
+                    btn_import.clicked.connect(lambda: RWImportDialog(self.repo.engine, self).exec())
+
+                    lay.addWidget(btn_import, 0, Qt.AlignLeft)
+                    lay.addStretch(1)
+
+                    self._replace_widget("Operacje", panel)
+                    w = self.widgets["Operacje"]
+                except Exception as e:
+                    import traceback
+                    tb = traceback.format_exc(limit=3)
+                    self._ensure_placeholder("Operacje", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    w = self.widgets["Operacje"]
+
         # >>> ZMIANY DLA ZAKŁADKI „Wyjątki” <<<
-        if name == "Wyjątki":
+        elif name == "Wyjątki":
             if not self.db_ok or not self.repo:
                 self._ensure_placeholder("Wyjątki", "Brak połączenia z DB")
                 w = self.widgets["Wyjątki"]
