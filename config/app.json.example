@@ -1,23 +1,22 @@
 {
   "app_name": "Wydajnia Narzędzi",
-  "station": "STAN-01",
+  "workstation_id": "STAN-01",
   "theme": "dark",
-  "min_levels": {
-    "default": 0
-  },
   "db": {
     "host": "127.0.0.1",
     "port": 3306,
     "user": "wydajnia",
-    "password": "changeme",
-    "database": "wydajnia_db"
+    "password": "wydajnia123",
+    "database": "wydajnia"
   },
   "alerts": {
-    "exceptions": true
+    "low_stock": "⚠️ Niski stan magazynowy",
+    "overdue": "⏰ Narzędzie przetrzymane ponad termin"
   },
   "features": {
-    "import_rw_pdf": false,
+    "import_rw_pdf": true,
     "rfid_required": false,
-    "exceptions_panel": false
+    "pin_fallback": true,
+    "exceptions_panel": true
   }
 }

@@ -16,6 +16,7 @@ from app.dal.db import make_conn_str, create_engine_and_session
 from app.infra.healthcheck import db_ping
 from app.ui.login_dialog import LoginDialog
 from app.core.auth import AuthRepo  # repo do pracy modułów (np. Użytkownicy)
+from app.core.rfid_stub import RFIDReader  # <-- NOWE: czytnik RFID/PIN (stub)
 
 # ⬇️ Import naszego importera RW
 from app.services.rw.importer import import_rw_pdf
@@ -174,6 +175,9 @@ def main():
             log.info("Logowanie anulowane – zamykam aplikację.")
             sys.exit(0)
 
+    # --- Utwórz czytnik RFID/PIN (stub) i przekaż do okna głównego
+    rfid_reader = RFIDReader()
+
     # --- Uruchomienie głównego okna
     win = MainWindow(
         settings.app_name,
@@ -181,6 +185,8 @@ def main():
         db_error=db_error,
         session=session_data,
         repo=repo,
+        settings=settings,         # <-- NOWE
+        rfid_reader=rfid_reader,   # <-- NOWE
     )
     win.request_logout.connect(win.handle_logout)
     win.show()

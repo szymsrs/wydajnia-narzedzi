@@ -1,5 +1,8 @@
 # app/core/auth.py
 import logging, traceback, time, re, hashlib
+from typing import Any, Optional
+from importlib import import_module
+
 import bcrypt
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
@@ -7,10 +10,28 @@ from sqlalchemy.engine import URL
 
 log = logging.getLogger("app.core.auth")
 
+# ===== domena (usługi) – importy cienkiej warstwy wywołań =====
+from app.domain.services.issue import issue_tool as svc_issue_tool
+from app.domain.services.scrap import scrap_tool as svc_scrap_tool
+from app.domain.services.rw import record_rw_receipt as svc_record_rw_receipt
+from app.domain.services.inventory import inventory_count as svc_inventory_count
+
+# UWAGA: moduł nazywa się 'return' (słowo kluczowe) – używamy import_module
+try:
+    svc_return_tool = getattr(import_module("app.domain.services.return"), "return_tool")
+except Exception as _e:  # pragma: no cover
+    def svc_return_tool(*args, **kwargs):
+        raise ImportError(f"Cannot import app.domain.services.return:return_tool: {_e}")
+
+# alias typu – już normalny import (żeby Pylance był zadowolony)
+from app.core.rfid_stub import RFIDReader
+
+
 # ========= pomocnicze debugi =========
 def _dbg(msg: str):
     print(msg)
     log.debug(msg)
+
 
 def _mask(s: str, keep_left: int = 4, keep_right: int = 2) -> str:
     if s is None:
@@ -20,6 +41,7 @@ def _mask(s: str, keep_left: int = 4, keep_right: int = 2) -> str:
     if len(s) <= keep_left + keep_right:
         return "*" * len(s)
     return f"{s[:keep_left]}***{s[-keep_right:]}"
+
 
 def _dbg_hash(label: str, h) -> None:
     if h is None:
@@ -32,8 +54,29 @@ def _dbg_hash(label: str, h) -> None:
     pref = s[:15].replace("\n", "\\n")
     _dbg(f"{label}: len={len(s)} pref={pref!r} repr={s!r}")
 
+
 def _is_bcrypt(s: str) -> bool:
     return s.startswith("$2a$") or s.startswith("$2b$") or s.startswith("$2y$")
+
+
+def _feat_bool(features: Any, name: str, default: bool = False) -> bool:
+    """
+    Bezpieczne pobranie boola z features – obsługuje zarówno obiekt (pydantic) jak i dict.
+    """
+    if features is None:
+        return default
+    if hasattr(features, name):
+        try:
+            return bool(getattr(features, name))
+        except Exception:
+            pass
+    if isinstance(features, dict) and name in features:
+        try:
+            return bool(features[name])
+        except Exception:
+            pass
+    return default
+
 
 # ========= weryfikacja sekretów =========
 def verify_secret(stored: str | None, provided: str):
@@ -85,6 +128,7 @@ def verify_secret(stored: str | None, provided: str):
         _dbg(f"[AUTH][ERROR] verify_secret: {e}\n{traceback.format_exc()}")
         return False, "error"
 
+
 # ========= AuthRepo =========
 class AuthRepo:
     def __init__(self, cfg: dict):
@@ -118,60 +162,235 @@ class AuthRepo:
             _dbg(f"[AuthRepo][ERROR] DB init fail: {e}\n{traceback.format_exc()}")
             raise
 
+    # ====== Warstwa repo dla operacji domenowych (ETAP 2A) ======
+    # Każda metoda:
+    # - przekazuje rfid_confirmed=None (decyzja i modal po stronie services)
+    # - propaguje reader/features
+    # - loguje kontekst (required/pin_fallback) oraz status wyniku
 
+    def issue_tool(
+        self,
+        employee_id: int,
+        item_id: int,
+        qty,
+        *,
+        operation_uuid: str,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.issue] emp={employee_id} item={item_id} qty={qty} "
+            f"uuid={_mask(operation_uuid)} required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_issue_tool(
+                    conn,
+                    employee_id,
+                    item_id,
+                    qty,
+                    operation_uuid=operation_uuid,
+                    rfid_confirmed=None,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.issue] status={res.get('status')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.issue][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    def return_tool(
+        self,
+        employee_id: int,
+        item_id: int,
+        qty,
+        *,
+        operation_uuid: str,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.return] emp={employee_id} item={item_id} qty={qty} "
+            f"uuid={_mask(operation_uuid)} required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_return_tool(
+                    conn,
+                    employee_id,
+                    item_id,
+                    qty,
+                    operation_uuid=operation_uuid,
+                    rfid_confirmed=None,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.return] status={res.get('status')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.return][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    def scrap_tool(
+        self,
+        employee_id: int,
+        item_id: int,
+        qty,
+        *,
+        operation_uuid: str,
+        reason: str | None = None,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.scrap] emp={employee_id} item={item_id} qty={qty} "
+            f"uuid={_mask(operation_uuid)} reason={reason!r} required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_scrap_tool(
+                    conn,
+                    employee_id,
+                    item_id,
+                    qty,
+                    operation_uuid=operation_uuid,
+                    rfid_confirmed=None,
+                    reason=reason,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.scrap] status={res.get('status')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.scrap][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    def record_rw_receipt(
+        self,
+        document_id: int,
+        item_id: int,
+        qty,
+        *,
+        operation_uuid: str,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.rw_receipt] doc={document_id} item={item_id} qty={qty} "
+            f"uuid={_mask(operation_uuid)} required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_record_rw_receipt(
+                    conn,
+                    document_id,
+                    item_id,
+                    qty,
+                    operation_uuid=operation_uuid,
+                    rfid_confirmed=None,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.rw_receipt] status={res.get('status')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.rw_receipt][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    def inventory_count(
+        self,
+        item_id: int,
+        counted_qty,
+        *,
+        operation_uuid: str,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.inventory] item={item_id} counted={counted_qty} "
+            f"uuid={_mask(operation_uuid)} required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_inventory_count(
+                    conn,
+                    item_id,
+                    counted_qty,
+                    operation_uuid=operation_uuid,
+                    rfid_confirmed=None,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.inventory] status={res.get('status')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.inventory][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    # ===== API pomocnicze
     def login_auto(self, token: str, station_id: str):
-            """
-            Jedno pole: automatycznie rozpoznaje:
-            - RFID UID (alfanumeryczne 6–32, bez spacji) -> login_card
-            - PIN (same cyfry 4–8) -> login_pin
-            - login + hasło (musi zawierać spację) -> login_password
+        """
+        Jedno pole: automatycznie rozpoznaje:
+        - RFID UID (alfanumeryczne 6–32, bez spacji) -> login_card
+        - PIN (same cyfry 4–8) -> login_pin
+        - login + hasło (musi zawierać spację) -> login_password
 
-            Kolejność prób: CARD -> PIN -> PASSWORD (jeśli jest spacja).
-            """
-            token = (token or "").strip()
-            if not token:
-                return None, "Podaj dane logowania."
+        Kolejność prób: CARD -> PIN -> PASSWORD (jeśli jest spacja).
+        """
+        token = (token or "").strip()
+        if not token:
+            return None, "Podaj dane logowania."
 
-            # Heurystyki
-            def looks_like_card(s: str) -> bool:
-                # Dostosuj do formatu Twojego czytnika. Na start: 6–32 znaków, alfanumerycznie, bez spacji.
-                return " " not in s and s.isalnum() and 6 <= len(s) <= 32
+        # Heurystyki
+        def looks_like_card(s: str) -> bool:
+            # Dostosuj do formatu Twojego czytnika. Na start: 6–32 znaków, alfanumerycznie, bez spacji.
+            return " " not in s and s.isalnum() and 6 <= len(s) <= 32
 
-            def looks_like_pin(s: str) -> bool:
-                return s.isdigit() and 4 <= len(s) <= 8
+        def looks_like_pin(s: str) -> bool:
+            return s.isdigit() and 4 <= len(s) <= 8
 
-            # 1) KARTA (UID)
-            if looks_like_card(token):
-                sess, err = self.login_card(token, station_id)
-                if sess:
-                    return sess, None
-                # jeżeli to np. 8 cyfr i nie jest kartą — spróbuj PIN
-                if looks_like_pin(token):
-                    sess, err = self.login_pin(token, station_id)
-                    if sess:
-                        return sess, None
-                # jeśli nie weszło — próbuj dalej według spacji
-
-            # 2) PIN
+        # 1) KARTA (UID)
+        if looks_like_card(token):
+            sess, err = self.login_card(token, station_id)
+            if sess:
+                return sess, None
+            # jeżeli to np. 8 cyfr i nie jest kartą — spróbuj PIN
             if looks_like_pin(token):
                 sess, err = self.login_pin(token, station_id)
                 if sess:
                     return sess, None
+            # jeśli nie weszło — próbuj dalej według spacji
 
-            # 3) LOGIN + HASŁO ("login haslo")
-            if " " in token:
-                login, pwd = token.split(" ", 1)
-                login = login.strip()
-                pwd = pwd.strip()
-                if login and pwd:
-                    sess, err = self.login_password(login, pwd, station_id)
-                    if sess:
-                        return sess, None
+        # 2) PIN
+        if looks_like_pin(token):
+            sess, err = self.login_pin(token, station_id)
+            if sess:
+                return sess, None
 
-            return None, "Nieprawidłowe dane logowania."
-        
+        # 3) LOGIN + HASŁO ("login haslo")
+        if " " in token:
+            login, pwd = token.split(" ", 1)
+            login = login.strip()
+            pwd = pwd.strip()
+            if login and pwd:
+                sess, err = self.login_password(login, pwd, station_id)
+                if sess:
+                    return sess, None
+
+        return None, "Nieprawidłowe dane logowania."
+
     # ==== USER MANAGEMENT (employees) ====
-
     def list_employees(self, q: str | None = None):
         """
         Zwraca listę pracowników z flagą czy hasło istnieje i z jawnym PIN-em (jeśli zapisany).
@@ -196,24 +415,38 @@ class AuthRepo:
         """
         Pojedynczy pracownik – z flagą hasła, pin_plain oraz hashami (dla funkcji 'pokaż hashe').
         """
-        return self._fetchone("""
+        return self._fetchone(
+            """
             SELECT id, username AS login, first_name, last_name, role, is_admin, active, rfid_uid,
                    CASE WHEN password_hash IS NULL OR password_hash='' THEN 0 ELSE 1 END AS has_password,
                    pin_plain, password_hash, pin_hash
             FROM employees WHERE id = :id
-        """, id=emp_id)
+        """,
+            id=emp_id,
+        )
 
     def get_hashes(self, emp_id: int):
         """Surowe wartości hashy (do podglądu adminowi w UI)."""
-        return self._fetchone("""
+        return self._fetchone(
+            """
             SELECT password_hash, pin_hash
             FROM employees WHERE id = :id
-        """, id=emp_id)
+        """,
+            id=emp_id,
+        )
 
-    def create_employee(self, login: str, first_name: str, last_name: str,
-                        role: str = "operator", is_admin: bool = False,
-                        password: str | None = None, pin: str | None = None,
-                        rfid_uid: str | None = None, active: bool = True):
+    def create_employee(
+        self,
+        login: str,
+        first_name: str,
+        last_name: str,
+        role: str = "operator",
+        is_admin: bool = False,
+        password: str | None = None,
+        pin: str | None = None,
+        rfid_uid: str | None = None,
+        active: bool = True,
+    ):
         """
         Tworzy nowego pracownika.
         - rfid_uid jest opcjonalne (musi być UNIQUE, ale może być NULL)
@@ -245,11 +478,14 @@ class AuthRepo:
 
         # --- unikalność karty (jeśli podana)
         if rfid_uid is not None:
-            conflict = self._fetchone("""
+            conflict = self._fetchone(
+                """
                 SELECT id, username FROM employees
                 WHERE rfid_uid = :uid
                 LIMIT 1
-            """, uid=rfid_uid)
+            """,
+                uid=rfid_uid,
+            )
             if conflict:
                 return None, f"Karta przypisana do {conflict['username']} (id={conflict['id']})."
 
@@ -260,15 +496,27 @@ class AuthRepo:
         # --- INSERT
         try:
             with self.engine.begin() as c:
-                res = c.execute(text("""
+                res = c.execute(
+                    text(
+                        """
                     INSERT INTO employees (username, first_name, last_name, role, is_admin, active, rfid_uid,
                                         password_hash, pin_hash, pin_plain)
                     VALUES (:u, :fn, :ln, :role, :adm, :act, :rfid, :ph, :pinh, :pinp)
-                """), dict(
-                    u=login, fn=first_name, ln=last_name, role=role,
-                    adm=int(bool(is_admin)), act=int(bool(active)),
-                    rfid=rfid_uid, ph=pw_hash, pinh=pin_hash, pinp=pin
-                ))
+                """
+                    ),
+                    dict(
+                        u=login,
+                        fn=first_name,
+                        ln=last_name,
+                        role=role,
+                        adm=int(bool(is_admin)),
+                        act=int(bool(active)),
+                        rfid=rfid_uid,
+                        ph=pw_hash,
+                        pinh=pin_hash,
+                        pinp=pin,
+                    ),
+                )
                 new_id = res.lastrowid  # MySQL last insert id (per-connection)
         except SQLAlchemyError as e:
             # przy zbyt restrykcyjnym schemacie (rfid_uid NOT NULL) zwróci błąd spójny dla UI
@@ -276,31 +524,45 @@ class AuthRepo:
 
         return self.get_employee(new_id), None
 
-
-    def update_employee_basic(self, emp_id: int, *,
-                              login: str, first_name: str, last_name: str,
-                              role: str, is_admin: bool, active: bool):
+    def update_employee_basic(
+        self,
+        emp_id: int,
+        *,
+        login: str,
+        first_name: str,
+        last_name: str,
+        role: str,
+        is_admin: bool,
+        active: bool,
+    ):
         # sprawdź konflikt loginu
-        conflict = self._fetchone("""
+        conflict = self._fetchone(
+            """
             SELECT 1 FROM employees WHERE username=:u AND id<>:id LIMIT 1
-        """, u=login, id=emp_id)
+        """,
+            u=login,
+            id=emp_id,
+        )
         if conflict:
             return "Login jest już zajęty."
         with self.engine.begin() as c:
-            c.execute(text("""
+            c.execute(
+                text(
+                    """
                 UPDATE employees
                 SET username=:u, first_name=:fn, last_name=:ln, role=:role,
                     is_admin=:adm, active=:act
                 WHERE id=:id
-            """), dict(u=login, fn=first_name, ln=last_name, role=role,
-                       adm=int(is_admin), act=int(active), id=emp_id))
+            """
+                ),
+                dict(u=login, fn=first_name, ln=last_name, role=role, adm=int(is_admin), act=int(active), id=emp_id),
+            )
         return None
 
     def reset_password(self, emp_id: int, new_password: str):
         h = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
         with self.engine.begin() as c:
-            c.execute(text("UPDATE employees SET password_hash=:h WHERE id=:id"),
-                      dict(h=h, id=emp_id))
+            c.execute(text("UPDATE employees SET password_hash=:h WHERE id=:id"), dict(h=h, id=emp_id))
         return None
 
     def reset_pin(self, emp_id: int, new_pin: str):
@@ -308,31 +570,38 @@ class AuthRepo:
             return "PIN musi mieć 4–8 cyfr."
         h = bcrypt.hashpw(new_pin.encode(), bcrypt.gensalt()).decode()
         with self.engine.begin() as c:
-            c.execute(text("""
+            c.execute(
+                text(
+                    """
                 UPDATE employees
                    SET pin_hash=:h,
                        pin_plain=:p
                  WHERE id=:id
-            """), dict(h=h, p=new_pin, id=emp_id))
+            """
+                ),
+                dict(h=h, p=new_pin, id=emp_id),
+            )
         return None
 
     def clear_pin(self, emp_id: int):
         with self.engine.begin() as c:
-            c.execute(text("UPDATE employees SET pin_hash=NULL, pin_plain=NULL WHERE id=:id"),
-                      dict(id=emp_id))
+            c.execute(text("UPDATE employees SET pin_hash=NULL, pin_plain=NULL WHERE id=:id"), dict(id=emp_id))
         return None
 
     def assign_card(self, emp_id: int, rfid_uid: str | None):
         uid = rfid_uid or None  # '' -> None
         if uid:
-            conflict = self._fetchone("""
+            conflict = self._fetchone(
+                """
                 SELECT id, username FROM employees WHERE rfid_uid=:uid AND id<>:id LIMIT 1
-            """, uid=uid, id=emp_id)
+            """,
+                uid=uid,
+                id=emp_id,
+            )
             if conflict:
                 return f"Karta przypisana do {conflict['username']} (id={conflict['id']})."
         with self.engine.begin() as c:
-            c.execute(text("UPDATE employees SET rfid_uid=:uid WHERE id=:id"),
-                    dict(uid=uid, id=emp_id))
+            c.execute(text("UPDATE employees SET rfid_uid=:uid WHERE id=:id"), dict(uid=uid, id=emp_id))
         return None
 
     # ===== API dla UI (logowania) =====
@@ -426,7 +695,8 @@ class AuthRepo:
     # ===== Prywatne selecty dla logowania =====
     def _get_user_by_login(self, login: str):
         # employees + username
-        return self._fetchone("""
+        return self._fetchone(
+            """
             SELECT 
                 id, 
                 username       AS login,        -- alias, żeby reszta logiki działała
@@ -441,11 +711,14 @@ class AuthRepo:
             FROM employees
             WHERE username = :login
             LIMIT 1
-        """, login=login)
+        """,
+            login=login,
+        )
 
     def _get_user_by_card(self, uid: str):
         # employees + rfid_uid
-        return self._fetchone("""
+        return self._fetchone(
+            """
             SELECT 
                 id, 
                 username       AS login,
@@ -460,13 +733,16 @@ class AuthRepo:
             FROM employees
             WHERE rfid_uid = :uid
             LIMIT 1
-        """, uid=uid)
+        """,
+            uid=uid,
+        )
 
     def _get_user_by_pin_scan_all(self, pin: str):
         """
         Skanujemy wszystkich z ustawionym pin_hash i w Pythonie porównujemy (bcrypt/sha256).
         """
-        candidates = self._fetchall("""
+        candidates = self._fetchall(
+            """
             SELECT 
                 id, 
                 username       AS login,
@@ -481,7 +757,8 @@ class AuthRepo:
             FROM employees
             WHERE pin_hash IS NOT NULL AND pin_hash <> ''
               AND active = 1
-        """)
+        """
+        )
         _dbg(f"[PIN] candidates={len(candidates)}")
         for u in candidates:
             ok, kind = verify_secret(u.get("pin_hash", ""), pin)

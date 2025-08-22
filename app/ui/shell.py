@@ -2,7 +2,7 @@
 from __future__ import annotations
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QToolBar, QLabel,
-    QWidgetAction, QPushButton, QStackedWidget, QStatusBar, QSizePolicy
+    QWidgetAction, QPushButton, QStackedWidget, QStatusBar, QSizePolicy, QMessageBox
 )
 from PySide6.QtCore import Qt, Signal, QTimer, Slot
 from PySide6 import QtGui
@@ -40,14 +40,24 @@ ORDERED_MODULES = ["Operacje", "Inwentaryzacja", "Raporty", "Wyjątki", "Ustawie
 class MainWindow(QMainWindow):
     request_logout = Signal()
 
-    def __init__(self, app_name: str, *, db_ok: bool = True,
-                 db_error: str | None = None, session: dict | None = None,
-                 repo=None):
+    def __init__(
+        self,
+        app_name: str,
+        *,
+        db_ok: bool = True,
+        db_error: str | None = None,
+        session: dict | None = None,
+        repo=None,
+        settings=None,          # <-- NOWE
+        rfid_reader=None,       # <-- NOWE
+    ):
         super().__init__()
         self.db_ok = db_ok
         self.db_error = db_error
         self.session = session or {}
         self.repo = repo
+        self.settings = settings          # <-- NOWE
+        self.rfid_reader = rfid_reader    # <-- NOWE
         self.widgets: dict[str, QWidget] = {}
 
         user_info = (
@@ -253,6 +263,25 @@ class MainWindow(QMainWindow):
         self._update_statusbar()
         # Po zmianie sesji/roli – przebuduj moduły
         self._rebuild_modules()
+
+    # ---------- Obsługa wyników usług (ETAP 2) ----------
+    def _handle_service_result(self, result: dict | None):
+        """
+        Uniwersalny handler: pokazuje komunikat dla 'rfid_unconfirmed' i ewentualnie inne statusy.
+        Użyj go po każdym wywołaniu repo.*(...), np. w akcjach modułów.
+        """
+        if not result:
+            return
+        status = result.get("status")
+        if status == "rfid_unconfirmed":
+            if self.statusBar():
+                self.statusBar().showMessage("Operacja anulowana – brak potwierdzenia kartą/PIN.", 5000)
+            QMessageBox.information(self, "Potwierdzenie wymagane",
+                                    "Operacja anulowana – brak potwierdzenia kartą/PIN.")
+        elif status == "error":
+            msg = result.get("error") or "Nieznany błąd."
+            QMessageBox.warning(self, "Błąd operacji", f"Wystąpił błąd: {msg}")
+        # inne statusy („success”, „duplicate”, etc.) zostawiamy do obsługi w module
 
     # ---------- Privacy cover ----------
     def _resize_cover(self):

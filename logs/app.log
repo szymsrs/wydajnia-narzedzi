@@ -1997,3 +1997,6 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't co
 2025-08-21 12:13:33.043 | INFO     | __main__:main:126 - Start: Wydajnia Narzędzi na stanowisku STAN-01
 2025-08-21 12:13:33.111 | INFO     | __main__:main:140 - Połączenie z DB: OK
 2025-08-21 12:13:36.998 | INFO     | __main__:main:175 - Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 07:41:07|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 07:41:07|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 07:41:10|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
