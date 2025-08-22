@@ -4,13 +4,14 @@ from __future__ import annotations
 import uuid
 from typing import List, Dict, Any
 from PySide6 import QtWidgets, QtCore
+from pathlib import Path
 
-from app.services.rw_parser import parse_rw_pdf
+from app.services.rw.parser import parse_rw_pdf    
 from app.dal.rw_import_repo import RWImportRepo
 
 
 class RWImportDialog(QtWidgets.QDialog):
-    """Import dokumentów RW z pliku PDF."""
+    """Import dokumentów RW z pliku PDF (przyjęcie na stan wydajni)."""
 
     def __init__(self, engine, parent=None):
         super().__init__(parent)
@@ -29,13 +30,15 @@ class RWImportDialog(QtWidgets.QDialog):
         top.addWidget(btn_browse)
         top.addWidget(btn_parse)
 
-        self.table = QtWidgets.QTableWidget(0, 5)
+        # --- Tabela: 6 kolumn, w tym nowa "Cena netto"
+        self.table = QtWidgets.QTableWidget(0, 6)  # było 5
         self.table.setHorizontalHeaderLabels(
-            ["RW", "Data", "Pracownik", "SKU", "Ilość"]
+            ["RW", "Data", "Nazwa", "SKU", "Ilość", "Cena netto"]
         )
         self.table.horizontalHeader().setSectionResizeMode(
             QtWidgets.QHeaderView.ResizeToContents
         )
+        # rozciągamy kolumnę "Pracownik"
         self.table.horizontalHeader().setSectionResizeMode(
             2, QtWidgets.QHeaderView.Stretch
         )
@@ -63,34 +66,59 @@ class RWImportDialog(QtWidgets.QDialog):
         path = self.file_edit.text().strip()
         if not path:
             return
-        self.records = parse_rw_pdf(path)
+        dbg_path = str(Path(path).with_suffix(Path(path).suffix + ".dbg.txt"))
+        pr = parse_rw_pdf(path, debug_path=dbg_path)
+        # spłaszczamy na rekordy do UI/DB, zachowując unit_price
+        self.records = []
+        for p in pr.lines:
+            self.records.append({
+                "doc_no": pr.rw_no or "",
+                "doc_date": pr.rw_date or "",
+                "item_name": p.name_src,                      
+                "item_sku": p.sku_src,
+                "qty": float(p.qty),
+                "unit_price": float(p.unit_price or 0.0),   # <-- potrzebne do DB i UI
+                "parse_confidence": 1.0,
+                "source_file": path,
+            })
+
+        # UI
         self.table.setRowCount(len(self.records))
         for r, rec in enumerate(self.records):
+            price = float(rec.get("unit_price") or 0.0)
             self.table.setItem(r, 0, QtWidgets.QTableWidgetItem(rec["doc_no"]))
             self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(rec["doc_date"]))
-            self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(rec["employee_name"] or ""))
+            self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(rec["item_name"]))
             self.table.setItem(r, 3, QtWidgets.QTableWidgetItem(rec["item_sku"]))
             self.table.setItem(r, 4, QtWidgets.QTableWidgetItem(str(rec["qty"])))
+            self.table.setItem(r, 5, QtWidgets.QTableWidgetItem(f"{price:.2f}"))  # NOWE
 
     def _save(self):
         if not self.records:
             return
         headers: Dict[str, int] = {}
         for rec in self.records:
-            emp_id = self.repo.upsert_employee(rec.get("employee_name") or "")
-            item_id = self.repo.upsert_item(rec["item_sku"])
-            key = rec["doc_no"]
+            # pozycja (utworzy jeśli trzeba)
+            item_id = self.repo.upsert_item(
+                rec["item_sku"],
+                rec.get("item_name")                 
+            )
+            key = rec["doc_no"] or "RW/NO-NUM"
             if key not in headers:
                 headers[key] = self.repo.insert_rw_header(
                     rec["doc_no"],
                     rec["doc_date"],
-                    emp_id,
                     self.chk_iwr.isChecked(),
-                    self.file_edit.text(),
+                    rec.get("source_file", self.file_edit.text()),
                     rec["parse_confidence"],
                 )
+            # linia: qty + unit_price (NOT NULL w DB → fallback 0.0 już zapewniony)
             self.repo.insert_rw_line(
-                headers[key], item_id, rec["qty"], rec["parse_confidence"]
+                headers[key],
+                item_id,
+                rec["qty"],
+                rec.get("unit_price", 0.0),
+                rec["parse_confidence"],
             )
         self.repo.commit_transaction(str(uuid.uuid4()))
         QtWidgets.QMessageBox.information(

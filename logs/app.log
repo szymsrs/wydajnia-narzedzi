@@ -2003,3 +2003,45 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't co
 2025-08-22 08:47:10|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
 2025-08-22 08:47:10|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
 2025-08-22 08:47:13|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą card
+2025-08-22 09:04:58|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:04:58|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:05:00|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:08:35|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:08:35|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:08:38|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:12:04|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:12:04|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:12:07|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:15:55|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:15:55|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:15:57|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:19:17|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:19:17|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:19:19|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:34:20|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:34:20|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:34:22|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 09:59:23|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 09:59:23|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 09:59:31|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:20:07|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:20:07|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:20:11|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:28:38|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:28:38|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:28:40|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:37:02|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:37:02|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:37:11|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:40:54|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:40:54|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:40:58|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:46:40|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:46:40|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:46:59|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:49:49|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:49:49|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:49:51|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-22 10:55:21|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-22 10:55:22|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-22 10:55:24|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
