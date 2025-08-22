@@ -236,9 +236,30 @@ class MainWindow(QMainWindow):
                 a.setChecked(True)
         # wczytaj widget (placeholder jeśli brak)
         w = self.widgets.get(name)
-        if w is None:
-            self._ensure_placeholder(name)
-            w = self.widgets[name]
+
+        # >>> ZMIANY DLA ZAKŁADKI „Wyjątki” <<<
+        if name == "Wyjątki":
+            if not self.db_ok or not self.repo:
+                self._ensure_placeholder("Wyjątki", "Brak połączenia z DB")
+                w = self.widgets["Wyjątki"]
+            else:
+                try:
+                    from app.dal.exceptions_repo import ExceptionsRepo
+                    from app.ui.exceptions_widget import ExceptionsWidget
+
+                    exc_repo = ExceptionsRepo(self.repo.engine)
+                    self._replace_widget("Wyjątki", ExceptionsWidget(exc_repo, self))
+                    w = self.widgets["Wyjątki"]
+                except Exception as e:
+                    import traceback
+                    tb = traceback.format_exc(limit=3)
+                    self._ensure_placeholder("Wyjątki", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    w = self.widgets["Wyjątki"]
+        else:
+            if w is None:
+                self._ensure_placeholder(name)
+                w = self.widgets[name]
+
         if self.stack.indexOf(w) == -1:
             self.stack.addWidget(w)
         self.stack.setCurrentWidget(w)

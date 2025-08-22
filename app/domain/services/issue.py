@@ -1,6 +1,6 @@
 # app/domain/services/issue.py
 """Domain service for issuing items using MySQL stored procedures,
-z obsługą potwierdzenia RFID/PIN oraz feature‑flag.
+z obsługą potwierdzenia RFID/PIN oraz feature-flag.
 """
 
 from __future__ import annotations
@@ -56,11 +56,11 @@ def issue_tool(
         Unique identifier of the operation. If None, a new UUID is generated.
         Reused UUIDs are ignored (idempotency).
     rfid_confirmed:
-        None – przeprowadź potwierdzenie wg feature‑flag; True/False – użyj dostarczonej decyzji.
+        None – przeprowadź potwierdzenie wg feature-flag; True/False – użyj dostarczonej decyzji.
     reader:
         Implementacja czytnika RFID/PIN (stub/real).
     features:
-        Ustawienia funkcji (feature‑flagi).
+        Ustawienia funkcji (feature-flagi).
 
     Returns
     -------
@@ -86,6 +86,11 @@ def issue_tool(
         cur = db_conn.cursor()
         # sp_issue_tool is expected to handle the business logic in the DB
         cur.callproc("sp_issue_tool", (employee_id, item_id, str(qty), operation_uuid))
+        # zawsze ustaw flagę issued_without_return
+        cur.execute(
+            "UPDATE transactions SET issued_without_return=1 WHERE operation_uuid=%s",
+            (operation_uuid,),
+        )
         db_conn.commit()
 
     _processed_ops.add(operation_uuid)
