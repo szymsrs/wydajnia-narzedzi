@@ -2,7 +2,6 @@
 from __future__ import annotations
 from pathlib import Path
 import sys
-from typing import Optional
 from PySide6.QtWidgets import QApplication, QMessageBox, QFileDialog
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -13,11 +12,12 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from app.infra.logging import setup_logging
 from app.ui.shell import MainWindow, apply_theme
 from app.infra.config import load_settings
-from app.dal.db import make_conn_str, create_engine_and_session, ping
+from app.dal.db import make_conn_str, create_engine_and_session
+from app.infra.healthcheck import db_ping
 from app.ui.login_dialog import LoginDialog
 from app.core.auth import AuthRepo  # repo do pracy modułów (np. Użytkownicy)
 
-# ⬇️ Import naszego importera RW (nic więcej nie zmieniamy)
+# ⬇️ Import naszego importera RW
 from app.services.rw.importer import import_rw_pdf
 
 
@@ -59,7 +59,7 @@ def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, l
             operator_user_id=operator_user_id,
             station=station_id,
             commit=True,                      # od razu wykonujemy (jak RW ma być „wydaniem”)
-            item_mapping=None,                # opcjonalnie można tu przekazać mapowanie {sku: item_id}
+            item_mapping=None,                # opcjonalnie: mapowanie {sku: item_id}
             allow_create_missing=False,       # ustaw True, jeśli chcesz auto-dodawać brakujące SKU
             debug_path=debug_path,
         )
@@ -86,8 +86,10 @@ def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, l
         if "items" in need:
             items = need["items"] or []
             msg_lines.append("• Pozycje bez mapowania SKU → item_id:")
-            for it in items[:20]:  # nie zalewamy okna
-                msg_lines.append(f"   - {it.get('sku_src')} | {it.get('name_src')} | {it.get('uom')} | qty={it.get('qty')}")
+            for it in items[:20]:
+                msg_lines.append(
+                    f"   - {it.get('sku_src')} | {it.get('name_src')} | {it.get('uom')} | qty={it.get('qty')}"
+                )
             if len(items) > 20:
                 msg_lines.append(f"   ... i jeszcze {len(items)-20} pozycji")
         msg_lines.append(f"\nLog parsowania: {result.get('debug_path') or debug_path}")
@@ -113,25 +115,47 @@ def main():
     app = QApplication(sys.argv)
 
     # --- Wczytanie configu
-    try:
-        settings = load_app_config(base_dir)
-    except FileNotFoundError as e:
+    config_path = base_dir / "config" / "app.json"
+    if not config_path.exists():
         QMessageBox.critical(
             None,
             "Błąd konfiguracji",
-            f"{e}\nUtwórz config/app.json na bazie app.json.example."
+            f"Brak pliku: {config_path}\nUtwórz config/app.json na bazie app.json.example."
         )
         sys.exit(2)
 
+    settings = load_settings(config_path)
     log.info(f"Start: {settings.app_name} na stanowisku {settings.workstation_id}")
 
-    # --- Inicjalizacja repo / połączenie z DB
-    repo, db_ok, db_exc = init_auth_repo(settings)
-    db_error = str(db_exc) if db_exc else None
-    if db_ok:
+    # --- Inicjalizacja repo / połączenie z DB (healthcheck przez SELECT 1)
+    repo = None
+    db_ok = False
+    db_error = None
+    try:
+        conn_str = make_conn_str(
+            settings.db.host,
+            settings.db.port,
+            settings.db.user,
+            settings.db.password,
+            settings.db.database,
+        )
+        engine, _ = create_engine_and_session(conn_str)
+        db_ping(engine)  # SELECT 1
+        cfg = {
+            "db": {
+                "host": settings.db.host,
+                "port": settings.db.port,
+                "user": settings.db.user,
+                "password": settings.db.password,
+                "name": settings.db.database,
+            }
+        }
+        repo = AuthRepo(cfg)
+        db_ok = True
         log.info("Połączenie z DB: OK")
-    else:
-        log.error("Błąd połączenia z DB – start w trybie offline", exc_info=db_exc)
+    except Exception as e:
+        db_error = str(e)
+        log.error("Błąd połączenia z DB – start w trybie offline", exc_info=e)
 
     # --- Motyw UI
     apply_theme(settings.theme)
@@ -150,7 +174,7 @@ def main():
             log.info("Logowanie anulowane – zamykam aplikację.")
             sys.exit(0)
 
-    # --- Uruchomienie głównego okna (jedno okno na całą sesję)
+    # --- Uruchomienie głównego okna
     win = MainWindow(
         settings.app_name,
         db_ok=db_ok,
@@ -158,23 +182,23 @@ def main():
         session=session_data,
         repo=repo,
     )
-
-    # obsługa wylogowania → logowanie w TYM SAMYM oknie (bez tworzenia nowych okien)
     win.request_logout.connect(win.handle_logout)
-
     win.show()
 
     # komunikat o trybie offline
     if not db_ok and db_error:
-        QTimer.singleShot(250, lambda: QMessageBox.warning(
-            win,
-            "Baza danych niedostępna",
-            "Nie udało się połączyć z bazą danych.\n"
-            "Aplikacja działa w trybie offline (tylko UI).\n\n"
-            f"Szczegóły:\n{db_error}"
-        ))
+        QTimer.singleShot(
+            250,
+            lambda: QMessageBox.warning(
+                win,
+                "Baza danych niedostępna",
+                "Nie udało się połączyć z bazą danych.\n"
+                "Aplikacja działa w trybie offline (tylko UI).\n\n"
+                f"Szczegóły:\n{db_error}"
+            ),
+        )
 
-    # --- ⬇️ SKRÓT KLAWIATUROWY: Import RW (Ctrl+I) — tylko gdy DB i repo są dostępne
+    # --- ⬇️ Skrót: Import RW (Ctrl+I) — tylko gdy DB i repo są dostępne
     if db_ok and repo and session_data:
         logs_dir = (base_dir / "logs")
         logs_dir.mkdir(parents=True, exist_ok=True)
@@ -188,7 +212,7 @@ def main():
                 repo=repo,
                 operator_user_id=operator_id,
                 station_id=settings.workstation_id,
-                logs_dir=logs_dir
+                logs_dir=logs_dir,
             )
         )
 

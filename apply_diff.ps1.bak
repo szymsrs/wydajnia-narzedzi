@@ -1,7 +1,7 @@
-﻿<#
+<#
 Skrypt: apply_diff.ps1
-Cel: NaĹ‚oĹĽyÄ‡ diff/patch skopiowany do schowka albo z pliku i od razu zrobiÄ‡ commit.
-UĹĽycie:
+Cel: Nałożyć diff/patch skopiowany do schowka albo z pliku i od razu zrobić commit.
+Użycie:
   ./apply_diff.ps1 "Opis commita"
   ./apply_diff.ps1 -FromFile .\zmiany.diff -Message "Opis"
 Wymagania:
@@ -25,73 +25,89 @@ function Get-NormalizedText {
   param([Parameter(Mandatory = $true)][string]$Path)
 
   $raw = [System.IO.File]::ReadAllText($Path, [System.Text.Encoding]::UTF8)
-  if ($raw.Length -gt 0 -and $raw[0] -eq [char]0xFEFF) { $raw = $raw.Substring(1) } # usuĹ„ BOM
+  if ($raw.Length -gt 0 -and $raw[0] -eq [char]0xFEFF) { $raw = $raw.Substring(1) } # usuń BOM
   $raw = $raw -replace "`r`n", "`n"                                              # CRLF -> LF
   return $raw
+}
 
 function Get-DiffBody {
   [CmdletBinding()]
   param([Parameter(Mandatory = $true)][string]$Text)
 
-  # 1) SprĂłbuj wyciÄ…Ä‡ z blokĂłw ```â€¦```
+  # 1) Spróbuj wyciąć z bloków ```…```
   $patternFence = '(?s)```.*?```'
   $fences = [System.Text.RegularExpressions.Regex]::Matches($Text, $patternFence)
   if ($fences.Count -gt 0) {
     $candidates = foreach ($m in $fences) { $m.Value.Trim("`n", "`r", "`t", "` ") }
     $likeDiff = $candidates | Where-Object {
       $_ -match "(?m)^diff --git " -or $_ -match "(?m)^--- " -or $_ -match "(?m)^Index: " -or $_ -match "(?m)^\*\*\* "
+    }
     if ($likeDiff) {
       $best = $likeDiff | Sort-Object Length -Descending | Select-Object -First 1
       $best = $best -replace "(?m)^```.*?$", "" -replace "(?m)```$", ""
       return $best.Trim()
+    }
+  }
 
-  # 2) Albo znajdĹş pierwszy nagĹ‚Ăłwek diffu w caĹ‚ym tekĹ›cie
+  # 2) Albo znajdź pierwszy nagłówek diffu w całym tekście
   if ($Text -match '^(diff --git |--- |\*\*\* |Index: )') { return $Text.Trim() }
 
-  $nlText = "`n$Text" # uĹ‚atwia wyszukiwanie od kolejnego wiersza
+  $nlText = "`n$Text" # ułatwia wyszukiwanie od kolejnego wiersza
   $positions = @()
   foreach ($needle in @("`ndiff --git ", "`n--- ", "`nIndex: ", "`n*** ")) {
     $pos = $nlText.IndexOf($needle)
     if ($pos -ne -1) { $positions += $pos }
+  }
   if ($positions.Count -gt 0) {
     $start = ($positions | Measure-Object -Minimum).Minimum
     return $nlText.Substring($start + 1).Trim()
+  }
   return $null
+}
 
-# --- 1) Kontrole wstÄ™pne ---
+# --- 1) Kontrole wstępne ---
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Write-Host "BLAD: Nie znaleziono 'git' w PATH." -ForegroundColor Red
   exit 1
+}
 $inRepo = (git rev-parse --is-inside-work-tree 2>$null)
 if ($LASTEXITCODE -ne 0 -or $inRepo -ne "true") {
   Write-Host "BLAD: To nie jest folder repozytorium (brak .git)." -ForegroundColor Red
   exit 1
+}
 
-# --- 2) Pobierz wejĹ›cie: schowek lub plik ---
+# --- 2) Pobierz wejście: schowek lub plik ---
 $tempFile = New-TemporaryFile
 try {
   if ($FromFile) {
     if (-not (Test-Path $FromFile)) {
       Write-Host "BLAD: Nie znaleziono pliku: $FromFile" -ForegroundColor Red
       exit 1
+    }
     Get-Content -Raw -Path $FromFile -Encoding UTF8 | Set-Content -Path $tempFile -Encoding UTF8
+  }
   else {
     $clip = Get-Clipboard -Raw
     if (-not $clip -or $clip.Trim().Length -eq 0) {
-      Write-Host "BLAD: Schowek jest pusty. Skopiuj diff (zaczynajÄ…cy siÄ™ od 'diff --git' lub '---')." -ForegroundColor Red
+      Write-Host "BLAD: Schowek jest pusty. Skopiuj diff (zaczynający się od 'diff --git' lub '---')." -ForegroundColor Red
       exit 1
+    }
     $clip | Set-Content -Path $tempFile -Encoding UTF8
+  }
+}
 catch {
-  Write-Host "BLAD: Problem z odczytem wejĹ›cia: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "BLAD: Problem z odczytem wejścia: $($_.Exception.Message)" -ForegroundColor Red
   exit 1
+}
 
 # --- 3) Normalizacja i ekstrakcja diffu ---
 $raw = Get-NormalizedText -Path $tempFile
 $diffBody = Get-DiffBody -Text $raw
 if (-not $diffBody) {
-  Write-Host "BLAD: WejĹ›cie nie wyglÄ…da na diff/patch (brak 'diff --git' / '---')." -ForegroundColor Red
-  Write-Host "WskazĂłwka: skopiuj sam diff albo uĹĽyj -FromFile." -ForegroundColor Yellow
+  Write-Host "BLAD: Wejście nie wygląda na diff/patch (brak 'diff --git' / '---')." -ForegroundColor Red
+  Write-Host "Wskazówka: skopiuj sam diff albo użyj -FromFile." -ForegroundColor Yellow
   exit 1
+}
 [IO.File]::WriteAllText($tempFile, $diffBody, (New-Object System.Text.UTF8Encoding($false)))
 
 # --- 4) Preface (np. # commit:, # body:) ---
@@ -100,23 +116,26 @@ $lines = $diffBody -split "`n"
 for ($i = 0; $i -lt $lines.Count; $i++) {
   if ($lines[$i] -match '^[ ]*diff --git ') { break }
   $prefaceLines += $lines[$i]
+}
 $commitLine = ($prefaceLines | Where-Object { $_ -match '^# commit:' } | Select-Object -First 1)
 if ($commitLine) {
   $commitMsg = ($commitLine -replace '^# commit:\s*', '').Trim()
+}
 else {
   $commitMsg = $Message
+}
 
-# --- 5) PrĂłby naĹ‚oĹĽenia: check -> 3way -> reject (opcjonalnie) ---
+# --- 5) Próby nałożenia: check -> 3way -> reject (opcjonalnie) ---
 git -c core.autocrlf=false apply --check --ignore-space-change --whitespace=nowarn "$tempFile"
 $appliedMode = $null
 
 if ($LASTEXITCODE -ne 0) {
-  Write-Host 'UWAGA: standardowy apply nie wszedĹ‚, prĂłba 3-way...' -ForegroundColor Yellow
+  Write-Host 'UWAGA: standardowy apply nie wszedł, próba 3-way...' -ForegroundColor Yellow
   git -c core.autocrlf=false apply --3way --ignore-space-change --whitespace=nowarn "$tempFile"
 
   if ($LASTEXITCODE -ne 0) {
     if ($AllowReject) {
-      Write-Host 'UWAGA: 3-way teĹĽ nie wszedĹ‚ â€“ prĂłbujÄ™ --reject (mogÄ… powstaÄ‡ *.rej)...' -ForegroundColor Yellow
+      Write-Host 'UWAGA: 3-way też nie wszedł – próbuję --reject (mogą powstać *.rej)...' -ForegroundColor Yellow
       $before = (git diff --name-only) 2>$null
       git -c core.autocrlf=false apply --reject --ignore-space-change --whitespace=nowarn "$tempFile"
       $rejExit = $LASTEXITCODE
@@ -127,24 +146,33 @@ if ($LASTEXITCODE -ne 0) {
         ForEach-Object { $_.InputObject }
 
       if ($rejExit -ne 0 -and -not $changed) {
-        Write-Host "BLAD: Ĺ»aden fragment nie zostaĹ‚ zastosowany. Plik: $tempFile" -ForegroundColor Red
+        Write-Host "BLAD: Żaden fragment nie został zastosowany. Plik: $tempFile" -ForegroundColor Red
         exit 1
+      }
       else {
         $appliedMode = '--reject'
+      }
+    }
     else {
-      Write-Host 'BLAD: Diff nie nakĹ‚ada siÄ™ czysto (rĂłwnieĹĽ 3-way). AnulujÄ™.' -ForegroundColor Red
+      Write-Host 'BLAD: Diff nie nakłada się czysto (również 3-way). Anuluję.' -ForegroundColor Red
       Write-Host "Plik tymczasowy: $tempFile"
       exit 1
+    }
+  }
   else {
     $appliedMode = '--3way'
+  }
+}
 else {
   git -c core.autocrlf=false apply --ignore-space-change --whitespace=nowarn "$tempFile"
   if ($LASTEXITCODE -ne 0) {
-    Write-Host 'BLAD: Problem podczas nakĹ‚adania diffu.' -ForegroundColor Red
+    Write-Host 'BLAD: Problem podczas nakładania diffu.' -ForegroundColor Red
     exit 1
+  }
   $appliedMode = 'plain'
+}
 
-# --- 6) Commit + doĹ‚Ä…cz listÄ™ .rej (jeĹ›li sÄ…) ---
+# --- 6) Commit + dołącz listę .rej (jeśli są) ---
 $rejFiles = Get-ChildItem -Recurse -Filter "*.rej" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
 git add -A
 
@@ -152,15 +180,18 @@ if ($rejFiles) {
   $body = @()
   $body += ""
   $body += "----"
-  $body += "UWAGA: odrzucone hunki (*.rej) do rÄ™cznego scalenia:"
+  $body += "UWAGA: odrzucone hunki (*.rej) do ręcznego scalenia:"
   $body += ($rejFiles | ForEach-Object { " - $_" })
   git commit -m "$commitMsg" -m ($body -join "`n")
+}
 else {
   git commit -m "$commitMsg"
+}
 
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "BLAD: Commit nie powiĂłdĹ‚ siÄ™. Zmiany zostaĹ‚y w drzewie roboczym (sprawdĹş 'git status')." -ForegroundColor Red
+  Write-Host "BLAD: Commit nie powiódł się. Zmiany zostały w drzewie roboczym (sprawdź 'git status')." -ForegroundColor Red
   exit 1
+}
 
-Write-Host "OK: Diff zostaĹ‚ naĹ‚oĹĽony ($appliedMode) i zacommitowany." -ForegroundColor Green
+Write-Host "OK: Diff został nałożony ($appliedMode) i zacommitowany." -ForegroundColor Green
 git log -1 --stat

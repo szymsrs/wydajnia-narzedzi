@@ -109,32 +109,55 @@ class RWRepoMySQL:
         self.conn.commit()
 
     # -------------------- ISSUE (koszyk → karta) --------------------
-    def create_operation(self, *, kind: str, station: str, operator_user_id: int,
-                         employee_user_id: int, lines: list[tuple[int, int]],
-                         issued_without_return: bool, note: str) -> str:
+    def create_operation(
+        self,
+        *,
+        kind: str,
+        station: str,
+        operator_user_id: int,
+        employee_user_id: int,
+        lines: list[tuple[int, int]],
+        issued_without_return: bool,
+        note: str,
+        operation_uuid: Optional[str] = None,
+    ) -> str:
         """
         Minimalna implementacja: dla kind='ISSUE' po prostu wykonujemy wydania FIFO dla każdej pozycji.
-        Zwraca operation_uuid (do logów).
+        Zwraca operation_uuid (do logów). Idempotencja: jeśli istnieje w transactions.operation_uuid – nic nie robimy.
         """
         if kind != "ISSUE":
             raise ValueError("Obsługujemy tutaj tylko ISSUE")
-        op_uuid = str(uuid.uuid4())
+
+        op_uuid = operation_uuid or str(uuid.uuid4())
         with self.conn:
             cur = self.conn.cursor()
+
+            # Idempotencja: jeśli już istnieje taka operacja – zwróć UUID
+            cur.execute("SELECT 1 FROM transactions WHERE operation_uuid=%s", (op_uuid,))
+            if cur.fetchone():
+                return op_uuid
+
             # log nagłówka operacji (opcjonalnie)
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO ops_log(uuid, kind, station, operator_user_id, employee_user_id, note, without_return)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)
-            """, (op_uuid, kind, station, operator_user_id, employee_user_id, note, 1 if issued_without_return else 0))
+                """,
+                (op_uuid, kind, station, operator_user_id, employee_user_id, note, 1 if issued_without_return else 0),
+            )
+
             for item_id, qty in lines:
                 if qty <= 0:
                     continue
-                cur.callproc('sp_issue_to_employee', (
-                    int(employee_user_id),
-                    self._employee_display_name(employee_user_id, cur) or "Pracownik",
-                    int(item_id),
-                    str(Decimal(qty).quantize(Decimal('0.001')))
-                ))
+                cur.callproc(
+                    'sp_issue_to_employee',
+                    (
+                        int(employee_user_id),
+                        self._employee_display_name(employee_user_id, cur) or "Pracownik",
+                        int(item_id),
+                        str(Decimal(qty).quantize(Decimal('0.001'))),
+                    ),
+                )
             self.conn.commit()
         return op_uuid
 

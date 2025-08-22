@@ -3,8 +3,12 @@ from datetime import date, datetime
 from decimal import Decimal
 from sqlalchemy import select, update, and_, func
 from sqlalchemy.orm import Session
+import uuid
 
 from app.dal.models import Document, DocumentLine, Lot, Movement, MovementAllocation, Location
+from app.dal.tx import for_update
+from app.dal.retry import retry_deadlock
+from app.dal.errors import NegativeStockError
 
 DEC2 = Decimal('0.01'); DEC3 = Decimal('0.001'); DEC4 = Decimal('0.0001')
 
@@ -80,15 +84,27 @@ def receipt_from_document_line(session: Session, *, document_id: int, item_id: i
 
 # --- ISSUE: FIFO z magazynu do pracownika, z alokacjami
 
-def issue_to_employee(session: Session, *, employee_id: int, employee_name: str,
-                      item_id: int, qty: Decimal) -> Movement:
+@retry_deadlock()
+def issue_to_employee(
+    session: Session,
+    *,
+    employee_id: int,
+    employee_name: str,
+    item_id: int,
+    qty: Decimal,
+    operation_uuid: str | None = None,
+) -> Movement:
     qty = q(qty)
     if qty <= 0:
         raise ValueError("qty must be > 0")
 
-    # zbierz partie FIFO
+    # blokujemy partie FIFO do odczytu/aktualizacji
     lots = session.execute(
-        select(Lot).where(and_(Lot.item_id==item_id, Lot.qty_available>0)).order_by(Lot.ts.asc(), Lot.id.asc())
+        for_update(
+            select(Lot)
+            .where(and_(Lot.item_id == item_id, Lot.qty_available > 0))
+            .order_by(Lot.ts.asc(), Lot.id.asc())
+        )
     ).scalars().all()
 
     need = qty
@@ -106,22 +122,51 @@ def issue_to_employee(session: Session, *, employee_id: int, employee_name: str,
     emp_loc = ensure_employee_location(session, employee_id, employee_name)
     wid = get_warehouse_location_id(session)
 
-    mv = Movement(item_id=item_id, qty=qty,
-                  from_location_id=wid, to_location_id=emp_loc,
-                  movement_type='ISSUE', ts=datetime.now())
+    # Idempotencja
+    op_uuid = operation_uuid or str(uuid.uuid4())
+    existing = session.execute(
+        select(Movement).where(Movement.operation_uuid == op_uuid)
+    ).scalar_one_or_none()
+    if existing:
+        return existing
+
+    mv = Movement(
+        item_id=item_id,
+        qty=qty,
+        from_location_id=wid,
+        to_location_id=emp_loc,
+        movement_type='ISSUE',
+        ts=datetime.now(),
+        operation_uuid=op_uuid,
+    )
     session.add(mv); session.flush()
 
     # aktualizuj partie + alokacje
     for lot, take in used:
         lot.qty_available = q(Decimal(lot.qty_available) - take)
-        session.add(MovementAllocation(movement_id=mv.id, lot_id=lot.id,
-                                       qty=take, unit_cost_netto=lot.unit_cost_netto))
+        if Decimal(lot.qty_available) < 0:
+            # dodatkowa bariera w warstwie aplikacyjnej (oprócz CHECK/triggerów w DB)
+            raise NegativeStockError(f"lot {lot.id} would be negative")
+        session.add(MovementAllocation(
+            movement_id=mv.id,
+            lot_id=lot.id,
+            qty=take,
+            unit_cost_netto=lot.unit_cost_netto
+        ))
     return mv
 
 # --- RETURN: odwzorowanie KONKRETNYCH alokacji z wcześniejszych ISSUE danego pracownika
 
-def return_from_employee(session: Session, *, employee_id: int, employee_name: str,
-                         allocations_to_return: list[dict], doc_number: str | None = None) -> Movement:
+@retry_deadlock()
+def return_from_employee(
+    session: Session,
+    *,
+    employee_id: int,
+    employee_name: str,
+    allocations_to_return: list[dict],
+    doc_number: str | None = None,
+    operation_uuid: str | None = None,
+) -> Movement:
     """
     allocations_to_return: lista słowników:
       { "movement_id": <ISSUE movement id>, "lot_id": <lot>, "qty": <Decimal> }
@@ -137,7 +182,9 @@ def return_from_employee(session: Session, *, employee_id: int, employee_name: s
     # Pobierz meta dla każdej alokacji
     to_process = []
     for a in allocations_to_return:
-        lot = session.get(Lot, a["lot_id"])
+        lot = session.execute(
+            for_update(select(Lot).where(Lot.id == a["lot_id"]))
+        ).scalar_one_or_none()
         if not lot:
             raise ValueError(f"Nie ma partii lot_id={a['lot_id']}")
         mv_issue = session.get(Movement, a["movement_id"])
@@ -190,7 +237,6 @@ def return_from_employee(session: Session, *, employee_id: int, employee_name: s
     total_net = Decimal('0.00')
 
     # Utwórz jedną linię dokumentu per (item_id, unit_cost)
-    # (agregacja; jeśli chcesz 1:1 do każdej alokacji – pominąć agregację)
     grouped = {}
     for x in to_process:
         key = (x["item_id"], x["unit_cost"])
@@ -198,9 +244,12 @@ def return_from_employee(session: Session, *, employee_id: int, employee_name: s
         g["qty"] = q(g["qty"] + x["qty"])
         grouped[key] = g
 
-    return_mov = Movement(item_id=0, qty=0,  # uzupełnimy niżej
-                          from_location_id=emp_loc, to_location_id=wid,
-                          movement_type='RETURN', ts=datetime.now())
+    return_mov = Movement(
+        item_id=0, qty=0,  # uzupełnimy niżej
+        from_location_id=emp_loc, to_location_id=wid,
+        movement_type='RETURN', ts=datetime.now(),
+        operation_uuid=operation_uuid or str(uuid.uuid4()),
+    )
     session.add(return_mov); session.flush()
 
     # Dla każdej grupy twórz linię, NOWĄ partię i alokację RETURN -> nowa partia
@@ -224,7 +273,7 @@ def return_from_employee(session: Session, *, employee_id: int, employee_name: s
         session.add(MovementAllocation(movement_id=return_mov.id, lot_id=lot_new.id,
                                        qty=qty, unit_cost_netto=unit_cost))
 
-    # uzupełnij movement item_id/qty (0 → wielopozycyjny; zostaw 0 = „zbiorczy”)
+    # uzupełnij movement item_id/qty (0 → wielopozycyjny; zostaw 0/None jako „zbiorczy”)
     return_mov.item_id = None
     return_mov.qty = None
 
@@ -249,7 +298,8 @@ def scrap_from_employee(session: Session, *, employee_id: int, employee_name: st
     for a in allocations_to_scrap:
         lot = session.get(Lot, a["lot_id"])
         qty = q(Decimal(str(a["qty"])))
-        if qty <= 0: continue
+        if qty <= 0: 
+            continue
         # nic nie przywracamy do magazynu; tylko alokacja zużycia
         session.add(MovementAllocation(movement_id=mv.id, lot_id=lot.id,
                                        qty=qty, unit_cost_netto=lot.unit_cost_netto))
