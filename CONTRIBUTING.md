@@ -20,10 +20,4 @@ Kod jest podzielony na warstwy:
 
 Zmiany trzymaj w odpowiednich folderach i utrzymuj zależności tylko w jedną stronę (ui → services → dal).
 
-## Pre-commit
 
-Przed wysłaniem commitów uruchom:
-
-```
-pre-commit run --files <zmienione pliki>
-```
