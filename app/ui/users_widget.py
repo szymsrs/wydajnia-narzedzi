@@ -6,6 +6,9 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 import re
+import logging
+
+log = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from app.ui.shell import MainWindow
@@ -162,7 +165,12 @@ class UsersWidget(QWidget):
     # ---------- Dane ----------
     def refresh(self):
         q = self.search.text().strip() or None
-        rows = self.repo.list_employees(q)
+        try:
+            rows = self.repo.list_employees(q)
+        except Exception as e:
+            log.exception("Błąd ładowania użytkowników q=%r lim=%s", q, None)
+            QtWidgets.QMessageBox.warning(self, "Błąd ładowania użytkowników", str(e))
+            return    
         self.table.setRowCount(len(rows))
         for r, u in enumerate(rows):
             # PIN w tabeli: jawny tylko jeśli zaznaczono checkbox; w przeciwnym razie status
@@ -195,7 +203,13 @@ class UsersWidget(QWidget):
         row = items[0].row()
         it_id = self.table.item(row, 0)
         emp_id = it_id.data(Qt.ItemDataRole.UserRole) or int(it_id.text())
-        u = self.repo.get_employee(emp_id)
+        try:
+            u = self.repo.get_employee(emp_id)
+        except Exception as e:
+            log.exception("Błąd ładowania użytkownika id=%s", emp_id)
+            QtWidgets.QMessageBox.warning(self, "Błąd ładowania użytkownika", str(e))
+            self._clear_form()
+            return
         if not u:
             self._clear_form(); return
 

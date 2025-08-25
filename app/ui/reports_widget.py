@@ -6,6 +6,9 @@ from PySide6.QtWidgets import (
     QPushButton, QComboBox, QLineEdit, QTableView, QMessageBox
 )
 from PySide6.QtCore import QDate
+import logging
+
+log = logging.getLogger(__name__)
 
 from .table_model import SimpleTableModel
 
@@ -62,13 +65,13 @@ class ReportsWidget(QWidget):
         self._load_rw()
 
     def _load_rw(self):
+        d_from = self.df.date().toPython()
+        d_to = self.dt.date().toPython()
         try:
-            # QDate -> datetime.date
-            d_from = self.df.date().toPython()
-            d_to = self.dt.date().toPython()
             rows = self.repo.rw_summary(date_from=d_from, date_to=d_to, limit=500) or []
             self.m_rw.set_rows(rows)
         except Exception as e:
+            log.exception("Błąd ładowania raportu RW df=%s dt=%s lim=%s", d_from, d_to, 500)
             QMessageBox.warning(self, "Błąd ładowania raportu RW", str(e))
 
     # ---------- Wyjątki ----------
@@ -109,11 +112,11 @@ class ReportsWidget(QWidget):
         self._load_exc()
 
     def _load_exc(self):
+        d_from = self.df_exc.date().toPython()
+        d_to = self.dt_exc.date().toPython()
+        eid = int(self.e_emp.text()) if self.e_emp.text().strip().isdigit() else None
+        iid = int(self.e_item.text()) if self.e_item.text().strip().isdigit() else None
         try:
-            d_from = self.df_exc.date().toPython()
-            d_to = self.dt_exc.date().toPython()
-            eid = int(self.e_emp.text()) if self.e_emp.text().strip().isdigit() else None
-            iid = int(self.e_item.text()) if self.e_item.text().strip().isdigit() else None
             rows = self.repo.exceptions(
                 date_from=d_from,
                 date_to=d_to,
@@ -123,6 +126,10 @@ class ReportsWidget(QWidget):
             ) or []
             self.m_exc.set_rows(rows)
         except Exception as e:
+            log.exception(
+                "Błąd ładowania wyjątków df=%s dt=%s emp=%s itm=%s lim=%s",
+                d_from, d_to, eid, iid, 500,
+            )
             QMessageBox.warning(self, "Błąd ładowania wyjątków", str(e))
 
     # ---------- Karta pracownika ----------
@@ -133,9 +140,12 @@ class ReportsWidget(QWidget):
         top = QHBoxLayout()
         self.cb_emp = QComboBox()
 
+        q = ""
+        limit = 200
         try:
-            emps = self.repo.employees() or []
+            emps = self.repo.employees(q=q, limit=limit) or []
         except Exception as e:
+            log.exception("Błąd ładowania pracowników q=%r lim=%s", q, limit)
             emps = []
             QMessageBox.warning(self, "Błąd ładowania pracowników", str(e))
 
@@ -180,10 +190,12 @@ class ReportsWidget(QWidget):
         idx = self.cb_emp.currentIndex()
         if idx < 0 or idx >= len(self._emp_ids):
             return
+        emp_id = self._emp_ids[idx]
+        d_from = self.df_card.date().toPython()
+        d_to = self.dt_card.date().toPython()
         try:
-            d_from = self.df_card.date().toPython()
-            d_to = self.dt_card.date().toPython()
-            rows = self.repo.employee_card(self._emp_ids[idx], d_from, d_to) or []
+            rows = self.repo.employee_card(emp_id, d_from, d_to) or []
             self.m_card.set_rows(rows)
         except Exception as e:
+            log.exception("Błąd ładowania karty emp=%s df=%s dt=%s", emp_id, d_from, d_to)
             QMessageBox.warning(self, "Błąd ładowania karty", str(e))

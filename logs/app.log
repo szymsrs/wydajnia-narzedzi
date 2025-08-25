@@ -2103,3 +2103,1061 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't co
 2025-08-25 08:50:19|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
 2025-08-25 08:50:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
 2025-08-25 08:50:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:06:51|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:06:51|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:06:52|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:06:54|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:06:57|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:06:59|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:06:59|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:07:02|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:07:02|ERROR|Szymon Sierszulski|STAN-01|app.ui.shell|Błąd ładowania modułu Wyjątki
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\shell.py", line 285, in _open_module
+    from app.ui.exceptions_widget import ExceptionsWidget
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 12, in <module>
+    class ExceptionsWidget(QWidget):
+    ...<67 lines>...
+                    writer.writerow(row)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 15, in ExceptionsWidget
+    def __init__(self, repo: ExceptionsRepo | None, parent: MainWindow):
+                             ^^^^^^^^^^^^^^
+NameError: name 'ExceptionsRepo' is not defined. Did you mean: 'ExceptionGroup'?
+2025-08-25 09:07:03|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:07:03|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 09:07:04|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:07:04|ERROR|Szymon Sierszulski|STAN-01|app.ui.shell|Błąd ładowania modułu Wyjątki
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\shell.py", line 285, in _open_module
+    from app.ui.exceptions_widget import ExceptionsWidget
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 12, in <module>
+    class ExceptionsWidget(QWidget):
+    ...<67 lines>...
+                    writer.writerow(row)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 15, in ExceptionsWidget
+    def __init__(self, repo: ExceptionsRepo | None, parent: MainWindow):
+                             ^^^^^^^^^^^^^^
+NameError: name 'ExceptionsRepo' is not defined. Did you mean: 'ExceptionGroup'?
+2025-08-25 09:07:04|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:08:15|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:08:15|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:08:15|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:08:18|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:08:18|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:08:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:27:10|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:27:10|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:27:10|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:27:12|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:27:12|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:27:14|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:27:15|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:27:15|ERROR|Szymon Sierszulski|STAN-01|app.ui.reports_widget|Błąd ładowania wyjątków df=2025-07-25 dt=2025-08-26 emp=None itm=None lim=500
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'event_ts' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\reports_widget.py", line 120, in _load_exc
+    rows = self.repo.exceptions(
+           ~~~~~~~~~~~~~~~~~~~~^
+        date_from=d_from,
+        ^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        limit=500,
+        ^^^^^^^^^^
+    ) or []
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 74, in exceptions
+    rows = conn.execute(sql, params).mappings().all()
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'event_ts' in 'where clause'")
+[SQL: 
+            SELECT *
+            FROM vw_exceptions
+            WHERE event_ts >= %(df)s
+              AND event_ts <  %(dt)s
+              AND (%(emp)s IS NULL OR employee_id = %(emp)s)
+              AND (%(itm)s IS NULL OR item_id = %(itm)s)
+            ORDER BY event_ts DESC
+            LIMIT %(lim)s
+        ]
+[parameters: {'df': datetime.date(2025, 7, 25), 'dt': datetime.date(2025, 8, 26), 'emp': None, 'itm': None, 'lim': 500}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:27:16|ERROR|Szymon Sierszulski|STAN-01|app.ui.reports_widget|Błąd ładowania pracowników q=None lim=None
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'login' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\reports_widget.py", line 148, in _init_card_tab
+    emps = self.repo.employees() or []
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 93, in employees
+    conn.execute(
+    ~~~~~~~~~~~~^
+        sql,
+        ^^^^
+        {"q": q or "", "lim": int(limit)},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'login' in 'field list'")
+[SQL: 
+            SELECT id, first_name, last_name, login, rfid_uid
+            FROM employees
+            WHERE (
+                %(q)s = ''
+                OR CONCAT_WS(' ', first_name, last_name, login)
+                LIKE CONCAT('%%', %(q)s, '%%')
+            )
+            ORDER BY last_name, first_name
+            LIMIT %(lim)s
+        ]
+[parameters: {'q': '', 'lim': 200}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:27:17|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:27:17|ERROR|Szymon Sierszulski|STAN-01|app.ui.shell|Błąd ładowania modułu Wyjątki
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\shell.py", line 285, in _open_module
+    from app.ui.exceptions_widget import ExceptionsWidget
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 15, in <module>
+    class ExceptionsWidget(QWidget):
+    ...<72 lines>...
+                    writer.writerow(row)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 18, in ExceptionsWidget
+    def __init__(self, repo: ExceptionsRepo | None, parent: MainWindow):
+                             ^^^^^^^^^^^^^^
+NameError: name 'ExceptionsRepo' is not defined. Did you mean: 'ExceptionGroup'?
+2025-08-25 09:27:18|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:27:18|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 09:42:32|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:42:32|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:42:32|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:42:34|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:42:34|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:42:36|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:42:36|ERROR|Szymon Sierszulski|STAN-01|app.ui.reports_widget|Błąd ładowania wyjątków df=2025-07-25 dt=2025-08-26 emp=None itm=None lim=500
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'ts' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\reports_widget.py", line 120, in _load_exc
+    rows = self.repo.exceptions(
+           ~~~~~~~~~~~~~~~~~~~~^
+        date_from=d_from,
+        ^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        limit=500,
+        ^^^^^^^^^^
+    ) or []
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 74, in exceptions
+    rows = conn.execute(sql, params).mappings().all()
+           ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'ts' in 'where clause'")
+[SQL: 
+            SELECT *
+            FROM vw_exceptions
+            WHERE ts >= %(df)s
+              AND ts <  %(dt)s
+              AND (%(emp)s IS NULL OR employee_id = %(emp)s)
+              AND (%(itm)s IS NULL OR item_id = %(itm)s)
+            ORDER BY ts DESC
+            LIMIT %(lim)s
+        ]
+[parameters: {'df': datetime.date(2025, 7, 25), 'dt': datetime.date(2025, 8, 26), 'emp': None, 'itm': None, 'lim': 500}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:42:37|ERROR|Szymon Sierszulski|STAN-01|app.ui.reports_widget|Błąd ładowania karty emp=1 df=2025-07-25 dt=2025-08-26
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'ts' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\reports_widget.py", line 197, in _load_card
+    rows = self.repo.employee_card(emp_id, d_from, d_to) or []
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 120, in employee_card
+    conn.execute(
+    ~~~~~~~~~~~~^
+        sql,
+        ^^^^
+        {"emp": int(employee_id), "df": date_from, "dt": date_to},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'ts' in 'where clause'")
+[SQL: 
+            SELECT *
+            FROM vw_employee_card
+            WHERE employee_id = %(emp)s
+              AND ts >= %(df)s
+              AND ts <  %(dt)s
+            ORDER BY ts DESC, id DESC
+        ]
+[parameters: {'emp': 1, 'df': datetime.date(2025, 7, 25), 'dt': datetime.date(2025, 8, 26)}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:47:00|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:47:00|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:47:00|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:47:03|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:47:03|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:47:04|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:47:05|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:47:05|ERROR|Szymon Sierszulski|STAN-01|app.ui.reports_widget|Błąd ładowania karty emp=1 df=2025-07-25 dt=2025-08-26
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'created_at' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\reports_widget.py", line 197, in _load_card
+    rows = self.repo.employee_card(emp_id, d_from, d_to) or []
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 120, in employee_card
+    conn.execute(
+    ~~~~~~~~~~~~^
+        sql,
+        ^^^^
+        {"emp": int(employee_id), "df": date_from, "dt": date_to},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'created_at' in 'where clause'")
+[SQL: 
+            SELECT *
+            FROM vw_employee_card
+            WHERE employee_id = %(emp)s
+              AND created_at >= %(df)s
+              AND created_at <  %(dt)s
+            ORDER BY created_at DESC, id DESC
+        ]
+[parameters: {'emp': 1, 'df': datetime.date(2025, 7, 25), 'dt': datetime.date(2025, 8, 26)}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:49:57|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:49:57|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:49:57|ERROR|-|STAN-01|__main__|Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 191, in main
+    reports_repo = ReportsRepo(engine)  # <-- tworzymy repo raportów
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 21, in __init__
+    self._card_ts = self._detect_ts_col(
+                    ~~~~~~~~~~~~~~~~~~~^
+        "vw_employee_card", candidates=("created_at", "ts", "event_ts", "event_time", "eventtime")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 51, in _detect_ts_col
+    raise RuntimeError(
+        f"{view_name}: brak kolumny czasowej wśród {tuple(candidates)}; dostępne: {sorted(cols)}"
+    )
+RuntimeError: vw_employee_card: brak kolumny czasowej wśród ('created_at', 'ts', 'event_ts', 'event_time', 'eventtime'); dostępne: ['balance_qty', 'employee_id', 'first_name', 'first_op', 'item_id', 'last_name', 'last_op']
+2025-08-25 09:49:57|INFO|-|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:50:06|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:50:06|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:50:06|ERROR|-|STAN-01|__main__|Błąd połączenia z DB – start w trybie offline
+Traceback (most recent call last):
+  File "c:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\main.py", line 191, in main
+    reports_repo = ReportsRepo(engine)  # <-- tworzymy repo raportów
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 21, in __init__
+    self._card_ts = self._detect_ts_col(
+                    ~~~~~~~~~~~~~~~~~~~^
+        "vw_employee_card", candidates=("created_at", "ts", "event_ts", "event_time", "eventtime")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\reports_repo.py", line 51, in _detect_ts_col
+    raise RuntimeError(
+        f"{view_name}: brak kolumny czasowej wśród {tuple(candidates)}; dostępne: {sorted(cols)}"
+    )
+RuntimeError: vw_employee_card: brak kolumny czasowej wśród ('created_at', 'ts', 'event_ts', 'event_time', 'eventtime'); dostępne: ['balance_qty', 'employee_id', 'first_name', 'first_op', 'item_id', 'last_name', 'last_op']
+2025-08-25 09:50:07|INFO|-|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:50:16|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Zalogowano użytkownika
+2025-08-25 09:50:16|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:50:20|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:50:20|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:50:21|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:50:22|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:50:22|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:50:22|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:50:22|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:50:23|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:50:23|INFO|Szymon Sierszulski|UNKNOWN|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 09:55:47|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:55:47|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:55:47|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:55:49|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:55:50|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:55:51|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:55:51|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:55:52|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:55:52|ERROR|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Błąd ładowania wyjątków
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'employee' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 56, in refresh
+    rows = self.repo.list_exceptions() or []
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\exceptions_repo.py", line 51, in list_exceptions
+    return conn.execute(text(" ".join(sql_parts)), params).fetchall()
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'employee' in 'field list'")
+[SQL: SELECT operation_uuid, employee, login, item, quantity, ts AS created_at, movement_type FROM vw_exceptions WHERE 1=1 ORDER BY ts DESC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:55:59|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:55:59|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:55:59|ERROR|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Błąd ładowania wyjątków
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'employee' in 'field list'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\exceptions_widget.py", line 56, in refresh
+    rows = self.repo.list_exceptions() or []
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\dal\exceptions_repo.py", line 51, in list_exceptions
+    return conn.execute(text(" ".join(sql_parts)), params).fetchall()
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'employee' in 'field list'")
+[SQL: SELECT operation_uuid, employee, login, item, quantity, ts AS created_at, movement_type FROM vw_exceptions WHERE 1=1 ORDER BY ts DESC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-25 09:56:02|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:56:02|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:58:15|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 09:58:15|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 09:58:15|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 09:58:16|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 09:58:17|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 09:58:18|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:58:19|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:58:19|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:58:19|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 09:58:19|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 09:58:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:58:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 09:58:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 09:58:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 09:58:21|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 09:58:21|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 09:58:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 09:58:22|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 09:58:22|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:00:43|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 10:00:43|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 10:00:43|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 10:00:45|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 10:00:45|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:00:46|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 10:00:47|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 10:00:50|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 10:00:50|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:00:50|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:00:51|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 10:00:52|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 10:00:52|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:00:52|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:01:58|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:01:58|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:01:59|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:01:59|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:02:00|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 10:02:01|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:02:04|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 10:02:08|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 10:02:08|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 10:02:08|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 10:02:11|INFO|test testowy|STAN-01|__main__|Zalogowano: test testowy (operator) metodą pin
+2025-08-25 10:02:11|INFO|test testowy|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:02:13|INFO|test testowy|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 10:02:14|INFO|test testowy|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 10:02:14|WARNING|test testowy|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:02:14|INFO|test testowy|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:02:15|INFO|test testowy|STAN-01|app.ui.shell|Otwieram moduł: Operacje
