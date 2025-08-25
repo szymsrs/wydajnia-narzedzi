@@ -254,8 +254,8 @@ class MainWindow(QMainWindow):
             else:
                 try:
                     from PySide6 import QtWidgets
-                    from app.ui.issue_dialog import IssueDialog as OpsIssueDialog
-                    from app.ui.return_dialog import ReturnDialog as OpsReturnDialog
+                    from app.ui.ops_issue_dialog import OpsIssueDialog
+                    from app.ui.ops_return_dialog import OpsReturnDialog
                     from app.ui.rw_import_dialog import RWImportDialog
 
                     panel = QtWidgets.QWidget()

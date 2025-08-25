@@ -88,10 +88,98 @@ class OpsReturnDialog(QtWidgets.QDialog):
         layout.addWidget(self.table)
         layout.addLayout(hl_actions)
 
+    # ---------- Helpery RFID i rozwiązywania ID ----------
+
+    def _ask_rfid_uid(self) -> str | None:
+        """
+        Pokazuje modal 'Przyłóż kartę' i zwraca UID.
+        Jeśli modal nie jest dostępny, stosuje prosty fallback (input UID).
+        """
+        try:
+            # Jeśli masz w projekcie app.ui.rfid_modal.RFIDModal z metodą ask(self)->str|None
+            from app.ui.rfid_modal import RFIDModal  # type: ignore
+
+            return RFIDModal.ask(self)
+        except Exception:
+            # Fallback – ręczne wpisanie UID (np. w trybie deweloperskim / bez czytnika)
+            uid, ok = QtWidgets.QInputDialog.getText(
+                self,
+                "Przyłóż kartę",
+                "UID karty (tryb awaryjny):",
+            )
+            uid = (uid or "").strip()
+            return uid if ok and uid else None
+
+    def _employee_id_from_uid(self, uid: str) -> int | None:
+        """
+        Próbujemy zmapować UID karty -> employee_id, korzystając z dostępnych metod repo.
+        Obsługujemy różne możliwe nazwy metod, aby nie wiązać się sztywno z jedną implementacją.
+        """
+        candidates = (
+            "get_employee_id_by_card",
+            "get_employee_by_card",
+            "resolve_employee_by_uid",
+        )
+        for name in candidates:
+            fn = getattr(self.repo, name, None)
+            if callable(fn):
+                try:
+                    res = fn(uid)
+                    # możliwe zwroty: int, None, dict z 'id' / 'employee_id'
+                    if isinstance(res, dict):
+                        val = res.get("id") or res.get("employee_id")
+                        return int(val) if val is not None else None
+                    if res is None:
+                        return None
+                    return int(res)
+                except Exception:
+                    self.log.exception("Błąd mapowania UID->employee_id (%s)", name)
+                    # próbujemy następnej metody
+        return None
+
+    def _verify_employee_card(self, employee_id: int) -> bool:
+        """
+        Wymusza przyłożenie karty i weryfikuje, że karta należy do wskazanego pracownika.
+        Zwraca True tylko gdy autoryzacja jest poprawna.
+        """
+        uid = self._ask_rfid_uid()
+        if not uid:
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Brak autoryzacji",
+                "Zwrot wymaga potwierdzenia kartą pracownika.",
+            )
+            return False
+
+        mapped_emp_id = self._employee_id_from_uid(uid)
+        if mapped_emp_id is None:
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Nie rozpoznano karty",
+                "System nie rozpoznał tej karty. Zwrot wstrzymany.",
+            )
+            return False
+
+        if int(mapped_emp_id) != int(employee_id):
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Błędna karta",
+                "Karta nie należy do wskazanego pracownika. Zwrot wstrzymany.",
+            )
+            return False
+
+        return True
+
+    # ---------- Logika dialogu ----------
+
     def _resolve_item_id(self, sku: str) -> int | None:
         item_id = None
         if hasattr(self.repo, "get_item_id_by_sku"):
-            item_id = self.repo.get_item_id_by_sku(sku)
+            try:
+                item_id = self.repo.get_item_id_by_sku(sku)
+            except Exception:
+                self.log.exception("Błąd get_item_id_by_sku(%s)", sku)
+                item_id = None
         if not item_id:
             try:
                 item_id = int(sku)
@@ -127,7 +215,7 @@ class OpsReturnDialog(QtWidgets.QDialog):
             self.sku.clear()
             self.qty.clear()
         except Exception:
-            self.log.exception("Błąd operacji RETURN")
+            self.log.exception("Błąd operacji RETURN (on_add)")
             QtWidgets.QMessageBox.critical(
                 self,
                 "Błąd",
@@ -142,8 +230,31 @@ class OpsReturnDialog(QtWidgets.QDialog):
     def on_ok(self) -> None:
         try:
             station = self.station.text().strip()
-            operator_id = int(self.operator.text().strip())
-            employee_id = int(self.employee.text().strip())
+            operator_id_txt = self.operator.text().strip()
+            employee_id_txt = self.employee.text().strip()
+
+            if not station:
+                QtWidgets.QMessageBox.warning(
+                    self, "Błąd", "Brak identyfikatora stanowiska."
+                )
+                return
+
+            try:
+                operator_id = int(operator_id_txt)
+            except Exception:
+                QtWidgets.QMessageBox.warning(
+                    self, "Błąd", "Nieprawidłowy ID operatora."
+                )
+                return
+
+            try:
+                employee_id = int(employee_id_txt)
+            except Exception:
+                QtWidgets.QMessageBox.warning(
+                    self, "Błąd", "Nieprawidłowy ID pracownika."
+                )
+                return
+
             note = self.note.text().strip()
 
             lines: list[tuple[int, int]] = []
@@ -163,6 +274,12 @@ class OpsReturnDialog(QtWidgets.QDialog):
                 )
                 return
 
+            # === KROK 1: KARTA RFID (wymagane) ===
+            # 'Założenia': koszyk → karta → zatwierdzenie; brak możliwości finalizacji bez karty.
+            if not self._verify_employee_card(employee_id):
+                return
+
+            # === KROK 2: POTWIERDZENIE UŻYTKOWNIKA ===
             if (
                 QtWidgets.QMessageBox.question(
                     self,
@@ -173,13 +290,14 @@ class OpsReturnDialog(QtWidgets.QDialog):
             ):
                 return
 
+            # === KROK 3: ZAPIS OPERACJI ===
             self.repo.create_operation(
                 kind="RETURN",
                 station=station,
                 operator_user_id=operator_id,
                 employee_user_id=employee_id,
                 lines=lines,
-                issued_without_return=False,
+                issued_without_return=False,  # dotyczy wydania; tu jawnie False
                 note=note,
             )
 
@@ -187,7 +305,7 @@ class OpsReturnDialog(QtWidgets.QDialog):
             self.log.info("Zwrot: employee=%s lines=%s", employee_id, len(lines))
             self.accept()
         except Exception:
-            self.log.exception("Błąd operacji RETURN")
+            self.log.exception("Błąd operacji RETURN (on_ok)")
             QtWidgets.QMessageBox.critical(
                 self,
                 "Błąd",
