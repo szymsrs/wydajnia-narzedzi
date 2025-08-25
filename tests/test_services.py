@@ -14,6 +14,11 @@ class FakeCursor:
 
     def callproc(self, name, args):
         self.log.append((name, args))
+        
+    def execute(self, *args, **kwargs):
+        """Ignore raw SQL queries issued by services."""
+        pass
+
 
 
 class FakeDB:

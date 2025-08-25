@@ -2,10 +2,13 @@
 from __future__ import annotations
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QToolBar, QLabel,
-    QWidgetAction, QPushButton, QStackedWidget, QStatusBar, QSizePolicy, QMessageBox
+    QWidgetAction, QPushButton, QStackedWidget, QStatusBar, QSizePolicy, QMessageBox,
 )
 from PySide6.QtCore import Qt, Signal, QTimer, Slot
 from PySide6 import QtGui
+
+import logging
+from app.infra.logging import set_station, set_user
 
 # qdarktheme opcjonalnie
 try:
@@ -13,6 +16,8 @@ try:
     HAS_QDARK = True
 except Exception:
     HAS_QDARK = False
+
+log = logging.getLogger(__name__)
 
 # ===== Uprawnienia (role -> moduły/akcje) =====
 PERMISSIONS = {
@@ -215,9 +220,8 @@ class MainWindow(QMainWindow):
                     # Podmień placeholder (lub brak) na realny widget
                     self._replace_widget("Użytkownicy", UsersWidget(self.repo, self))
                 except Exception as e:
-                    import traceback
-                    tb = traceback.format_exc(limit=3)
-                    self._ensure_placeholder("Użytkownicy", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    log.exception("Błąd ładowania modułu %s", "Użytkownicy")
+                    self._ensure_placeholder("Użytkownicy", details=f"Błąd ładowania:\n{e}")
             else:
                 # dla pozostałych modułów na razie placeholder (podmiana gdy będą gotowe)
                 self._ensure_placeholder(name)
@@ -229,6 +233,7 @@ class MainWindow(QMainWindow):
         self._open_module(default_module)
 
     def _open_module(self, name: str):
+        log.info("Otwieram moduł: %s", name)
         # guard: tylko dozwolone moduły wg roli
         if name not in self._allowed_modules():
             return
@@ -265,9 +270,8 @@ class MainWindow(QMainWindow):
                     self._replace_widget("Operacje", panel)
                     w = self.widgets["Operacje"]
                 except Exception as e:
-                    import traceback
-                    tb = traceback.format_exc(limit=3)
-                    self._ensure_placeholder("Operacje", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    log.exception("Błąd ładowania modułu %s", "Operacje")
+                    self._ensure_placeholder("Operacje", details=f"Błąd ładowania:\n{e}")
                     w = self.widgets["Operacje"]
 
         # --- Wyjątki ---
@@ -284,9 +288,8 @@ class MainWindow(QMainWindow):
                     self._replace_widget("Wyjątki", ExceptionsWidget(exc_repo, self))
                     w = self.widgets["Wyjątki"]
                 except Exception as e:
-                    import traceback
-                    tb = traceback.format_exc(limit=3)
-                    self._ensure_placeholder("Wyjątki", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    log.exception("Błąd ładowania modułu %s", "Wyjątki")
+                    self._ensure_placeholder("Wyjątki", details=f"Błąd ładowania:\n{e}")
                     w = self.widgets["Wyjątki"]
 
         # --- Raporty ---
@@ -304,9 +307,8 @@ class MainWindow(QMainWindow):
                     self.reports_repo = rep_repo
                     w = self.widgets["Raporty"]
                 except Exception as e:
-                    import traceback
-                    tb = traceback.format_exc(limit=3)
-                    self._ensure_placeholder("Raporty", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    log.exception("Błąd ładowania modułu %s", "Raporty")
+                    self._ensure_placeholder("Raporty", details=f"Błąd ładowania:\n{e}")
                     w = self.widgets["Raporty"]
 
         # --- Reszta (placeholdery na razie) ---
@@ -418,6 +420,8 @@ class MainWindow(QMainWindow):
         # 1) Natychmiast zasłoń i wyczyść sesję
         station = (self.session or {}).get("station", "UNKNOWN")
         self.session = {}
+        set_user("-")
+        log.info("Wylogowano użytkownika")
         if self.statusBar():
             self.statusBar().showMessage("Wylogowano – zaloguj się ponownie.")
         self.show_privacy_cover("🔒 Wylogowano — zaloguj się ponownie")
@@ -435,7 +439,10 @@ class MainWindow(QMainWindow):
             QApplication.instance().quit()
 
     def _on_login_ok(self, session: dict):
-        # Ustaw sesję i przebuduj UI pod nową rolę
+        # Ustaw sesję i przebuduj UI pod nową rolę        
+        set_user(f"{session.get('first_name','')} {session.get('last_name','')}" or session.get('login') or "-")
+        set_station(session.get("station") or "UNKNOWN")
+        log.info("Zalogowano użytkownika")
         self.set_session(session or {})
 
 

@@ -1,25 +1,32 @@
 # app/main.py
 from __future__ import annotations
-from pathlib import Path
+
+import logging
 import sys
-from PySide6.QtWidgets import QApplication, QMessageBox, QFileDialog
+from pathlib import Path
+
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
 
 # pozwala uruchamiać main.py bezpośrednio (Run Python File)
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from app.infra.logging import setup_logging
-from app.ui.shell import MainWindow, apply_theme
-from app.infra.config import load_settings
-from app.dal.db import create_engine_and_session, ping
-from app.ui.login_dialog import LoginDialog
-from app.core.auth import AuthRepo  # repo do pracy modułów (np. Użytkownicy)
-from app.core.rfid_stub import RFIDReader  # czytnik RFID/PIN (stub)
-from app.repo.reports_repo import ReportsRepo  # <-- repo raportów
+from app.core.auth import AuthRepo  # noqa: E402
+from app.core.rfid_stub import RFIDReader  # noqa: E402
+from app.dal.db import create_engine_and_session, ping  # noqa: E402
+from app.infra.config import load_settings  # noqa: E402
+from app.infra.logging import (  # noqa: E402
+    set_station,
+    set_user,
+    setup_logging,
+)
+from app.repo.reports_repo import ReportsRepo  # noqa: E402
+from app.services.rw.importer import import_rw_pdf  # noqa: E402
+from app.ui.login_dialog import LoginDialog  # noqa: E402
+from app.ui.shell import MainWindow, apply_theme  # noqa: E402
 
-# ⬇️ Import naszego importera RW
-from app.services.rw.importer import import_rw_pdf
+log = logging.getLogger(__name__)
 
 
 def _display_name(session: dict | None) -> str:
@@ -33,7 +40,9 @@ def _display_name(session: dict | None) -> str:
     return session.get("name") or session.get("login") or ""
 
 
-def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, logs_dir: Path) -> None:
+def _do_import_rw(
+    parent_window, repo, operator_user_id: int, station_id: str, logs_dir: Path
+) -> None:
     """
     Minimalny workflow:
      - wybór pliku PDF
@@ -51,21 +60,30 @@ def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, l
         return
 
     pdf_path = files[0]
-    debug_path = str((logs_dir / f"rw_import_{Path(pdf_path).stem}.log").resolve())
+    debug_path = str(
+        (logs_dir / f"rw_import_{Path(pdf_path).stem}.log").resolve()
+    )  # noqa: E501
 
     try:
+        log.info("Start importu RW: %s", pdf_path)
         result = import_rw_pdf(
             repo=repo,
             pdf_path=pdf_path,
             operator_user_id=operator_user_id,
             station=station_id,
-            commit=True,                      # od razu wykonujemy (jak RW ma być „wydaniem”)
-            item_mapping=None,                # opcjonalnie: mapowanie {sku: item_id}
-            allow_create_missing=False,       # ustaw True, jeśli chcesz auto-dodawać brakujące SKU
+            commit=True,  # od razu wykonujemy (jak RW ma być „wydaniem”)
+            item_mapping=None,  # opcjonalnie: mapowanie {sku: item_id}
+            # ustaw True, jeśli chcesz auto-dodawać brakujące SKU
+            allow_create_missing=False,
             debug_path=debug_path,
         )
     except Exception as e:
-        QMessageBox.critical(parent_window, "Import RW – błąd krytyczny", str(e))
+        log.exception("Import RW – błąd krytyczny")
+        QMessageBox.critical(
+            parent_window,
+            "Import RW – błąd krytyczny",
+            str(e),
+        )
         return
 
     # Obsługa braków (pracownik / pozycje)
@@ -89,12 +107,19 @@ def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, l
             msg_lines.append("• Pozycje bez mapowania SKU → item_id:")
             for it in items[:20]:
                 msg_lines.append(
-                    f"   - {it.get('sku_src')} | {it.get('name_src')} | {it.get('uom')} | qty={it.get('qty')}"
+                    f"   - {it.get('sku_src')} | {it.get('name_src')} | {it.get('uom')} | "  # noqa: E501
+                    f"qty={it.get('qty')}"
                 )
             if len(items) > 20:
                 msg_lines.append(f"   ... i jeszcze {len(items)-20} pozycji")
-        msg_lines.append(f"\nLog parsowania: {result.get('debug_path') or debug_path}")
-        QMessageBox.warning(parent_window, "Import RW – potrzebne uzupełnienia", "\n".join(msg_lines))
+        msg_lines.append(
+            f"\nLog parsowania: {result.get('debug_path') or debug_path}"
+        )  # noqa: E501
+        QMessageBox.warning(
+            parent_window,
+            "Import RW – potrzebne uzupełnienia",
+            "\n".join(msg_lines),
+        )
         return
 
     # Sukces
@@ -107,11 +132,11 @@ def _do_import_rw(parent_window, repo, operator_user_id: int, station_id: str, l
         f"Log parsowania: {result.get('debug_path') or debug_path}",
     ]
     QMessageBox.information(parent_window, "Import RW – OK", "\n".join(info))
+    log.info("Import RW zakończony powodzeniem")
 
 
 def main():
     base_dir = Path(__file__).resolve().parents[1]
-    log = setup_logging(base_dir / "logs")
 
     app = QApplication(sys.argv)
 
@@ -121,12 +146,24 @@ def main():
         QMessageBox.critical(
             None,
             "Błąd konfiguracji",
-            f"Brak pliku: {config_path}\nUtwórz config/app.json na bazie app.json.example."
+            (
+                f"Brak pliku: {config_path}\n"
+                "Utwórz config/app.json na bazie app.json.example."
+            ),
         )
         sys.exit(2)
 
     settings = load_settings(config_path)
-    log.info(f"Start: {settings.app_name} na stanowisku {settings.workstation_id}")
+    setup_logging(
+        app_name="Wydajnia Narzędzi",
+        station=settings.workstation_id or "UNKNOWN",
+    )
+    set_station(settings.workstation_id)
+    log.info(
+        "Start: %s na stanowisku %s",
+        settings.app_name,
+        settings.workstation_id,
+    )
 
     # --- Inicjalizacja repo / połączenie z DB (healthcheck przez SELECT 1)
     repo = None
@@ -134,7 +171,8 @@ def main():
     db_ok = False
     db_error = None
     try:
-        # Konfiguracja DB dla create_engine_and_session (bezpieczne URL.create pod spodem)
+        # Konfiguracja DB dla create_engine_and_session
+        # (bezpieczne URL.create pod spodem)
         cfg = {
             "db": {
                 "host": settings.db.host,
@@ -144,7 +182,7 @@ def main():
                 "database": settings.db.database,
             }
         }
-        engine, _ = create_engine_and_session(cfg)
+        engine, _ = create_engine_and_session(cfg, log_sql=settings.log_sql)
         ping(engine)  # SELECT 1
         repo = AuthRepo(cfg)
         reports_repo = ReportsRepo(engine)  # <-- tworzymy repo raportów
@@ -166,6 +204,7 @@ def main():
             name = _display_name(session_data)
             role = session_data.get("role", "")
             method = session_data.get("method", "unknown")
+            set_user(name)
             log.info(f"Zalogowano: {name} ({role}) metodą {method}")
         else:
             log.info("Logowanie anulowane – zamykam aplikację.")
@@ -180,10 +219,10 @@ def main():
         db_ok=db_ok,
         db_error=db_error,
         session=session_data,
-        repo=repo,                       # AuthRepo
-        reports_repo=reports_repo,       # <-- przekazujemy ReportsRepo do UI
-        settings=settings,               # konfiguracja do UI
-        rfid_reader=rfid_reader,         # stub czytnika
+        repo=repo,  # AuthRepo
+        reports_repo=reports_repo,  # <-- przekazujemy ReportsRepo do UI
+        settings=settings,  # konfiguracja do UI
+        rfid_reader=rfid_reader,  # stub czytnika
     )
     win.request_logout.connect(win.handle_logout)
     win.show()
@@ -197,15 +236,17 @@ def main():
                 "Baza danych niedostępna",
                 "Nie udało się połączyć z bazą danych.\n"
                 "Aplikacja działa w trybie offline (tylko UI).\n\n"
-                f"Szczegóły:\n{db_error}"
+                f"Szczegóły:\n{db_error}",
             ),
         )
 
     # --- ⬇️ Skrót: Import RW (Ctrl+I) — tylko gdy DB i repo są dostępne
     if db_ok and repo and session_data:
-        logs_dir = (base_dir / "logs")
+        logs_dir = base_dir / "logs"
         logs_dir.mkdir(parents=True, exist_ok=True)
-        operator_id = int(session_data.get("user_id") or session_data.get("id") or 0)
+        operator_id = int(
+            session_data.get("user_id") or session_data.get("id") or 0
+        )  # noqa: E501
 
         sc_import = QShortcut(QKeySequence("Ctrl+I"), win)
         sc_import.setWhatsThis("Import RW (PDF)")

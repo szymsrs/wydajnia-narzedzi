@@ -29,7 +29,7 @@ def init_auth_repo(settings: AppSettings) -> Tuple[AuthRepo | None, bool, Except
                 "name": settings.db.database,
             }
         }
-        engine, _ = create_engine_and_session(cfg)
+        engine, _ = create_engine_and_session(cfg, log_sql=settings.log_sql)
         ping(engine)
         repo = AuthRepo(cfg)
         return repo, True, None

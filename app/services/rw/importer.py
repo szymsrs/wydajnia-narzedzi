@@ -3,9 +3,12 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Tuple
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
+import logging
 
 from .parser import parse_rw_pdf
 from .mapping import resolve_employee, map_lines_to_items
+
+log = logging.getLogger(__name__)
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Pomocnicze
@@ -81,115 +84,126 @@ def import_rw_pdf(
         - rw: metadane RW (nr, data, obiekt)
         - debug_path: ścieżka logu parsowania (jeśli ustawiona)
     """
-    # 1) Parsowanie PDF
-    data = parse_rw_pdf(pdf_path, debug_path=debug_path)
+    log.info("Start importu RW: %s", pdf_path)
+    try:
+        # 1) Parsowanie PDF
+        data = parse_rw_pdf(pdf_path, debug_path=debug_path)
 
-    # 2) Rozpoznanie pracownika (po wskazówce z RW)
-    emp_id, candidates = resolve_employee(repo, data.employee_hint)
+        # 2) Rozpoznanie pracownika (po wskazówce z RW)
+        emp_id, candidates = resolve_employee(repo, data.employee_hint)
 
-    # 3) Automatyczne mapowanie linii RW → items (wg katalogu repo)
-    mapped_lines, unresolved_items = map_lines_to_items(repo, data.lines)
-    # mapped_lines: List[Tuple[item_id:int, qty:int]] (używamy int dla qty)
+        # 3) Automatyczne mapowanie linii RW → items (wg katalogu repo)
+        mapped_lines, unresolved_items = map_lines_to_items(repo, data.lines)
+        # mapped_lines: List[Tuple[item_id:int, qty:int]] (używamy int dla qty)
 
-    # 4) Ręczne dociągnięcie mapowania (z parametru item_mapping)
-    if item_mapping:
-        still_unresolved: list[dict] = []
-        for u in unresolved_items:
-            sku = (u.get("sku_src") or "").strip()
-            if sku and sku in item_mapping and item_mapping[sku]:
-                mapped_lines.append((int(item_mapping[sku]), _qty_to_int(u.get("qty") or 0)))
-            else:
-                still_unresolved.append(u)
-        unresolved_items = still_unresolved
+        # 4) Ręczne dociągnięcie mapowania (z parametru item_mapping)
+        if item_mapping:
+            still_unresolved: list[dict] = []
+            for u in unresolved_items:
+                sku = (u.get("sku_src") or "").strip()
+                if sku and sku in item_mapping and item_mapping[sku]:
+                    mapped_lines.append((int(item_mapping[sku]), _qty_to_int(u.get("qty") or 0)))
+                else:
+                    still_unresolved.append(u)
+            unresolved_items = still_unresolved
 
-    # 5) Opcjonalne auto-tworzenie brakujących pozycji
-    if allow_create_missing and unresolved_items and hasattr(repo, "ensure_item"):
-        created_now: list[str] = []
-        for u in unresolved_items:
-            sku = (u.get("sku_src") or "").strip()
-            name = (u.get("name_src") or "").strip()
-            uom = (u.get("uom") or "SZT").strip() or "SZT"
-            if not sku:
-                continue
-            new_id = repo.ensure_item(sku, name, uom)
-            mapped_lines.append((int(new_id), _qty_to_int(u.get("qty") or 0)))
-            created_now.append(sku)
-        # odfiltruj te, które właśnie utworzyliśmy
-        unresolved_items = [u for u in unresolved_items if (u.get("sku_src") or "").strip() not in created_now]
+        # 5) Opcjonalne auto-tworzenie brakujących pozycji
+        if allow_create_missing and unresolved_items and hasattr(repo, "ensure_item"):
+            created_now: list[str] = []
+            for u in unresolved_items:
+                sku = (u.get("sku_src") or "").strip()
+                name = (u.get("name_src") or "").strip()
+                uom = (u.get("uom") or "SZT").strip() or "SZT"
+                if not sku:
+                    continue
+                new_id = repo.ensure_item(sku, name, uom)
+                mapped_lines.append((int(new_id), _qty_to_int(u.get("qty") or 0)))
+                created_now.append(sku)
+            # odfiltruj te, które właśnie utworzyliśmy
+            unresolved_items = [u for u in unresolved_items if (u.get("sku_src") or "").strip() not in created_now]
 
-    # 6) Zbierz „need” jeśli czegoś brakuje
-    need: dict = {}
-    if emp_id is None:
-        need["employee"] = {"hint": data.employee_hint, "candidates": candidates}
-    if unresolved_items:
-        # uprość strukturę na czytelny output
-        simplified = []
-        for u in unresolved_items:
-            simplified.append({
-                "sku_src": u.get("sku_src"),
-                "name_src": u.get("name_src"),
-                "uom": u.get("uom"),
-                "qty": int(round(u.get("qty") or 0))
-            })
-        need["items"] = simplified
+        # 6) Zbierz „need” jeśli czegoś brakuje
+        need: dict = {}
+        if emp_id is None:
+            need["employee"] = {"hint": data.employee_hint, "candidates": candidates}
+        if unresolved_items:
+            # uprość strukturę na czytelny output
+            simplified = []
+            for u in unresolved_items:
+                simplified.append({
+                    "sku_src": u.get("sku_src"),
+                    "name_src": u.get("name_src"),
+                    "uom": u.get("uom"),
+                    "qty": int(round(u.get("qty") or 0))
+                })
+            need["items"] = simplified
 
-    if need:
-        return {
-            "ok": False,
-            "reason": "Potrzebne uzupełnienia (pracownik i/lub SKU).",
-            "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
-            "need": need,
-            "debug_path": debug_path,
-        }
+        if need:
+            reason = "Potrzebne uzupełnienia (pracownik i/lub SKU)."
+            log.warning("Import RW przerwany: %s", reason)
+            return {
+                "ok": False,
+                "reason": reason,
+                "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
+                "need": need,
+                "debug_path": debug_path,
+            }
 
-    # 7) Dry-run (bez tworzenia operacji)
-    if not commit:
-        # Połącz duplikaty itemów
+        # 7) Dry-run (bez tworzenia operacji)
+        if not commit:
+            # Połącz duplikaty itemów
+            lines_payload = _build_lines_payload(mapped_lines)
+            log.info("Import RW zakończony: %s", data.rw_no or "-")
+            return {
+                "ok": True,
+                "dry_run": True,
+                "preview": {
+                    "employee_id": emp_id,
+                    "lines": lines_payload,
+                    "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
+                },
+                "debug_path": debug_path,
+            }
+
+        # 8) Commit – faktyczna operacja ISSUE
+        #    Połącz duplikaty itemów (gdy kilka wierszy RW wskazało ten sam item_id)
         lines_payload = _build_lines_payload(mapped_lines)
+
+        # Bezpieczeństwo: brak linii → nic nie rób
+        if not lines_payload:
+            reason = "Brak pozycji do wydania po mapowaniu."
+            log.warning("Import RW przerwany: %s", reason)
+            return {
+                "ok": False,
+                "reason": reason,
+                "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
+                "debug_path": debug_path,
+            }
+
+        # Opis notatki – do logów/raportów
+        note = f"Źródło: RW {data.rw_no or ''} z {data.rw_date or ''}".strip()
+
+        # create_operation: repo powinno:
+        #  - zweryfikować kartę RFID na etapie UI (tutaj import RW zakładamy „wydania bez zwrotu”)
+        #  - zapisać operację ISSUE + pozycje (FIFO na magazynie wykona kod repo/db)
+        #  - ustawić issued_without_return=True (zgodnie z założeniami)
+        op_uuid = repo.create_operation(
+            kind="ISSUE",
+            station=station,
+            operator_user_id=operator_user_id,
+            employee_user_id=emp_id,
+            lines=lines_payload,                  # [(item_id:int, qty:int), ...]
+            issued_without_return=True,
+            note=note
+        )
+
+        log.info("Import RW zakończony: %s", data.rw_no or "-")
         return {
             "ok": True,
-            "dry_run": True,
-            "preview": {
-                "employee_id": emp_id,
-                "lines": lines_payload,
-                "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
-            },
-            "debug_path": debug_path,
-        }
-
-    # 8) Commit – faktyczna operacja ISSUE
-    #    Połącz duplikaty itemów (gdy kilka wierszy RW wskazało ten sam item_id)
-    lines_payload = _build_lines_payload(mapped_lines)
-
-    # Bezpieczeństwo: brak linii → nic nie rób
-    if not lines_payload:
-        return {
-            "ok": False,
-            "reason": "Brak pozycji do wydania po mapowaniu.",
+            "op_uuid": op_uuid,
             "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
             "debug_path": debug_path,
         }
-
-    # Opis notatki – do logów/raportów
-    note = f"Źródło: RW {data.rw_no or ''} z {data.rw_date or ''}".strip()
-
-    # create_operation: repo powinno:
-    #  - zweryfikować kartę RFID na etapie UI (tutaj import RW zakładamy „wydania bez zwrotu”)
-    #  - zapisać operację ISSUE + pozycje (FIFO na magazynie wykona kod repo/db)
-    #  - ustawić issued_without_return=True (zgodnie z założeniami)
-    op_uuid = repo.create_operation(
-        kind="ISSUE",
-        station=station,
-        operator_user_id=operator_user_id,
-        employee_user_id=emp_id,
-        lines=lines_payload,                  # [(item_id:int, qty:int), ...]
-        issued_without_return=True,
-        note=note
-    )
-
-    return {
-        "ok": True,
-        "op_uuid": op_uuid,
-        "rw": {"no": data.rw_no, "date": data.rw_date, "object": data.object},
-        "debug_path": debug_path,
-    }
+    except Exception:
+        log.exception("Import RW – błąd")
+        raise

@@ -1,12 +1,18 @@
 # app/dal/db.py
 from __future__ import annotations
+import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine, URL
 from sqlalchemy.orm import sessionmaker
 
 
-def make_engine(cfg: dict) -> Engine:
-    """Zbuduj Engine bezpiecznie, bez ręcznego sklejania DSN."""
+def make_engine(cfg: dict, *, log_sql: bool = False) -> Engine:
+    """Zbuduj :class:`Engine` bezpiecznie, bez ręcznego sklejania DSN.
+
+    Args:
+        cfg: Konfiguracja połączenia (słownik lub ``{"db": {...}}``).
+        log_sql: Jeśli ``True``, podnosi poziom logów SQLAlchemy do ``INFO``.
+    """
     db = cfg.get("db", cfg)  # pozwala podać cały cfg lub sam słownik db
     url = URL.create(
         "mysql+pymysql",
@@ -24,11 +30,19 @@ def make_engine(cfg: dict) -> Engine:
         isolation_level="READ COMMITTED",
         future=True,
     )
+    if log_sql:
+        logging.getLogger("sqlalchemy").setLevel(logging.INFO)
     return engine
 
 
-def create_engine_and_session(cfg: dict) -> tuple[Engine, sessionmaker]:
-    """Zwraca (Engine, SessionLocal) na podstawie konfiguracji."""
+def create_engine_and_session(cfg: dict, *, log_sql: bool = False) -> tuple[Engine, sessionmaker]:
+    """Zwraca ``(Engine, SessionLocal)`` na podstawie konfiguracji.
+
+    Args:
+        cfg: Konfiguracja połączenia.
+        log_sql: Jeśli ``True``, podnosi poziom logów SQLAlchemy do ``INFO``.
+    """
+    engine = make_engine(cfg, log_sql=log_sql)
     engine = make_engine(cfg)
     SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
     return engine, SessionLocal

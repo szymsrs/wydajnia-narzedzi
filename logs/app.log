@@ -2096,3 +2096,10 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't co
 2025-08-25 07:43:54|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
 2025-08-25 07:43:54|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
 2025-08-25 07:43:56|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 08:50:13|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 08:50:13|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 08:50:13|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 08:50:15|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 08:50:19|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 08:50:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 08:50:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty

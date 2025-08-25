@@ -28,6 +28,7 @@ class AppSettings(BaseSettings):
     workstation_id: str
     theme: str = "dark"
     db: DBSettings
+    log_sql: bool = False
     alerts: dict = Field(default_factory=dict)
     features: FeaturesSettings = Field(default_factory=FeaturesSettings)
 
