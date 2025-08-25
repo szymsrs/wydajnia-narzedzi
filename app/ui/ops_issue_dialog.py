@@ -24,18 +24,21 @@ class OpsIssueDialog(QtWidgets.QDialog):
 
     def __init__(
         self,
-        auth_repo: Any,
-        reports_repo: Any,
-        station_id: str,
-        operator_user_id: int,
+        repo: Any | None = None,
+        auth_repo: Any | None = None,
+        reports_repo: Any | None = None,
+        station_id: str = "",
+        operator_user_id: int = 0,
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
-        self.repo = auth_repo
+        self.repo = repo or auth_repo
         self.reports_repo = reports_repo
         self.station_id = station_id
         self.operator_user_id = operator_user_id
-        self.items_repo = ItemsRepo(reports_repo.engine)
+        self.items_repo = ItemsRepo(reports_repo.engine) if reports_repo else None
+        if self.repo is None:
+            raise ValueError("Brak repo (AuthRepo) w IssueDialog")
 
         self.setWindowTitle("Wydanie narzędzi")
         self.resize(700, 400)

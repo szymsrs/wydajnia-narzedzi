@@ -264,7 +264,7 @@ class MainWindow(QMainWindow):
                     lay.setContentsMargins(24, 24, 24, 24)
 
                     params = {
-                        "auth_repo": self.repo,
+                        "repo": self.repo,
                         "reports_repo": self.reports_repo,
                         "station_id": self.session.get("station", "UNKNOWN"),
                         "operator_user_id": int(
@@ -276,20 +276,33 @@ class MainWindow(QMainWindow):
 
                     btn_issue = QtWidgets.QPushButton("Wydanie ręczne")
                     btn_issue.setMinimumHeight(42)
-                    btn_issue.clicked.connect(lambda: OpsIssueDialog(parent=self, **params).exec())
+                    def _open_issue():
+                        log.info("Operacje – otwarto dialog: %s", "ISSUE")
+                        OpsIssueDialog(parent=self, **params).exec()
+
+                    btn_issue.clicked.connect(_open_issue)                    
 
                     btn_return = QtWidgets.QPushButton("Zwrot")
                     btn_return.setMinimumHeight(42)
-                    btn_return.clicked.connect(lambda: OpsReturnDialog(parent=self, **params).exec())
 
-                    if self.reports_repo is None:
-                        for b in (btn_issue, btn_return):
-                            b.setEnabled(False)
-                            b.setToolTip("Brak połączenia do DB")
+                    def _open_return():
+                        log.info("Operacje – otwarto dialog: %s", "RETURN")
+                        OpsReturnDialog(parent=self, **params).exec()
+
+                    btn_return.clicked.connect(_open_return)
+
 
                     btn_import = QtWidgets.QPushButton("Import RW (PDF)")
                     btn_import.setMinimumHeight(42)
                     btn_import.clicked.connect(lambda: RWImportDialog(self.repo.engine, self).exec())
+
+                    if self.repo is None or self.reports_repo is None:
+                        for b in (btn_issue, btn_return):
+                            b.setEnabled(False)
+                            b.setToolTip("Brak połączenia z DB")
+                    if self.repo is None:
+                        btn_import.setEnabled(False)
+                        btn_import.setToolTip("Brak połączenia z DB")
                     
                     lay.addWidget(btn_issue, 0, Qt.AlignLeft)
                     lay.addWidget(btn_return, 0, Qt.AlignLeft)
