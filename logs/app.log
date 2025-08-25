@@ -3222,3 +3222,23 @@ TypeError: ReturnDialog.__init__() got an unexpected keyword argument 'reports_r
 2025-08-25 11:48:23|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
 2025-08-25 11:48:24|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
 2025-08-25 11:48:24|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 12:10:09|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 12:10:09|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 12:10:09|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 12:10:13|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 12:10:16|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 12:10:16|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 12:10:18|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: ISSUE
+2025-08-25 12:10:18|CRITICAL|Szymon Sierszulski|STAN-01|app|UNCAUGHT EXCEPTION
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\shell.py", line 281, in _open_issue
+    OpsIssueDialog(parent=self, **params).exec()
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: IssueDialog.__init__() got an unexpected keyword argument 'reports_repo'
+2025-08-25 12:10:21|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: RETURN
+2025-08-25 12:10:21|CRITICAL|Szymon Sierszulski|STAN-01|app|UNCAUGHT EXCEPTION
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\shell.py", line 290, in _open_return
+    OpsReturnDialog(parent=self, **params).exec()
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ReturnDialog.__init__() got an unexpected keyword argument 'reports_repo'

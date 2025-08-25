@@ -1,3 +1,4 @@
+# app/ui/ops_return_dialog.py
 from __future__ import annotations
 
 import logging
@@ -7,17 +8,41 @@ from typing import Any
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
 
-log = logging.getLogger(__name__)
-
 
 class OpsReturnDialog(QtWidgets.QDialog):
-    def __init__(self, repo: Any, parent=None):
+    def __init__(
+        self,
+        repo: Any | None = None,
+        auth_repo: Any | None = None,
+        reports_repo: Any | None = None,
+        station_id: str = "",
+        operator_user_id: int = 0,
+        parent: QtWidgets.QWidget | None = None,
+    ):
         super().__init__(parent)
-        self.repo = repo
+
+        # lokalny logger dla dialogu
+        self.log = logging.getLogger(__name__)
+
+        self.repo = repo or auth_repo
+        self.reports_repo = reports_repo
+        self.station_id = station_id
+        self.operator_user_id = operator_user_id
+        if self.repo is None:
+            raise ValueError("Brak repo (AuthRepo) w ReturnDialog")
+
+        self.log.info(
+            "ReturnDialog init (station=%s, operator=%s)",
+            station_id,
+            operator_user_id,
+        )
+
         self.setWindowTitle("Zwrot")
 
-        self.station = QtWidgets.QLineEdit()
-        self.operator = QtWidgets.QLineEdit()
+        self.station = QtWidgets.QLineEdit(station_id)
+        self.operator = QtWidgets.QLineEdit(
+            str(operator_user_id) if operator_user_id else ""
+        )
         self.employee = QtWidgets.QLineEdit()
         self.note = QtWidgets.QLineEdit()
         self.sku = QtWidgets.QLineEdit()
@@ -102,7 +127,7 @@ class OpsReturnDialog(QtWidgets.QDialog):
             self.sku.clear()
             self.qty.clear()
         except Exception:
-            log.exception("Błąd dodawania SKU")
+            self.log.exception("Błąd operacji RETURN")
             QtWidgets.QMessageBox.critical(
                 self,
                 "Błąd",
@@ -159,10 +184,10 @@ class OpsReturnDialog(QtWidgets.QDialog):
             )
 
             QtWidgets.QMessageBox.information(self, "OK", "Zwrot zapisany.")
-            log.info("Zwrot: employee=%s lines=%s", employee_id, len(lines))
+            self.log.info("Zwrot: employee=%s lines=%s", employee_id, len(lines))
             self.accept()
         except Exception:
-            log.exception("Błąd zapisu zwrotu")
+            self.log.exception("Błąd operacji RETURN")
             QtWidgets.QMessageBox.critical(
                 self,
                 "Błąd",

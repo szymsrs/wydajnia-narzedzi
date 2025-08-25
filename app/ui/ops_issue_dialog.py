@@ -16,8 +16,6 @@ except Exception:  # pragma: no cover - simple stub for tests
         def get_item_id_by_sku(self, sku: str):  # type: ignore
             raise NotImplementedError
 
-log = logging.getLogger(__name__)
-
 
 class OpsIssueDialog(QtWidgets.QDialog):
     """Issue tools to employee without return (operation kind ISSUE)."""
@@ -32,6 +30,10 @@ class OpsIssueDialog(QtWidgets.QDialog):
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
+
+        # lokalny logger dla dialogu
+        self.log = logging.getLogger(__name__)
+
         self.repo = repo or auth_repo
         self.reports_repo = reports_repo
         self.station_id = station_id
@@ -40,17 +42,24 @@ class OpsIssueDialog(QtWidgets.QDialog):
         if self.repo is None:
             raise ValueError("Brak repo (AuthRepo) w IssueDialog")
 
+        self.log.info(
+            "IssueDialog init (station=%s, operator=%s)",
+            station_id,
+            operator_user_id,
+        )
+
         self.setWindowTitle("Wydanie narzędzi")
         self.resize(700, 400)
 
         # --- employee selection
         self.employee_cb = QtWidgets.QComboBox()
-        for emp in self.reports_repo.employees(q="", limit=200):
-            label = f"{emp.get('first_name','')} {emp.get('last_name','')}".strip()
-            login = emp.get("login")
-            if login:
-                label = f"{label} ({login})"
-            self.employee_cb.addItem(label, emp.get("id"))
+        if self.reports_repo:
+            for emp in self.reports_repo.employees(q="", limit=200):
+                label = f"{emp.get('first_name','')} {emp.get('last_name','')}".strip()
+                login = emp.get("login")
+                if login:
+                    label = f"{label} ({login})"
+                self.employee_cb.addItem(label, emp.get("id"))
 
         # --- SKU entry
         self.sku_edit = QtWidgets.QLineEdit()
@@ -90,11 +99,11 @@ class OpsIssueDialog(QtWidgets.QDialog):
         if not sku:
             return
         try:
-            item = self.items_repo.get_item_id_by_sku(sku)
+            item = self.items_repo.get_item_id_by_sku(sku) if self.items_repo else None
             if not item:
                 raise ValueError("not found")
         except Exception:
-            log.exception("Failed to resolve SKU %s", sku)
+            self.log.exception("Błąd operacji ISSUE")
             QtWidgets.QMessageBox.warning(self, "Błąd", f"Nie znaleziono SKU: {sku}")
             return
 
@@ -116,7 +125,7 @@ class OpsIssueDialog(QtWidgets.QDialog):
         else:
             item_id = int(item)
         if item_id is None:
-            log.exception("ItemsRepo.get_item_id_by_sku returned invalid result for %s", sku)
+            self.log.exception("Błąd operacji ISSUE")
             QtWidgets.QMessageBox.warning(self, "Błąd", f"Nie znaleziono SKU: {sku}")
             return
 
@@ -194,11 +203,13 @@ class OpsIssueDialog(QtWidgets.QDialog):
                 issued_without_return=True,
                 note="",
             )
-            log.info(
-                "Issued %d lines to employee %s without return", len(merged_lines), emp_id
+            self.log.info(
+                "Issued %d lines to employee %s without return",
+                len(merged_lines),
+                emp_id,
             )
             QtWidgets.QMessageBox.information(self, "OK", "Wydanie zapisane")
             self.accept()
         except Exception as e:  # pragma: no cover - UI error path
-            log.exception("OpsIssueDialog accept failed")
+            self.log.exception("Błąd operacji ISSUE")
             QtWidgets.QMessageBox.critical(self, "Błąd", str(e))
