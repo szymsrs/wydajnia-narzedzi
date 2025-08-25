@@ -254,15 +254,45 @@ class MainWindow(QMainWindow):
             else:
                 try:
                     from PySide6 import QtWidgets
+                    from app.ui.issue_dialog import IssueDialog as OpsIssueDialog
+                    from app.ui.return_dialog import ReturnDialog as OpsReturnDialog
                     from app.ui.rw_import_dialog import RWImportDialog
 
                     panel = QtWidgets.QWidget()
+                    log.info("Operacje – otwarto panel")
                     lay = QtWidgets.QVBoxLayout(panel)
                     lay.setContentsMargins(24, 24, 24, 24)
+
+                    params = {
+                        "auth_repo": self.repo,
+                        "reports_repo": self.reports_repo,
+                        "station_id": self.session.get("station", "UNKNOWN"),
+                        "operator_user_id": int(
+                            self.session.get("user_id")
+                            or self.session.get("id")
+                            or 0
+                        ),
+                    }
+
+                    btn_issue = QtWidgets.QPushButton("Wydanie ręczne")
+                    btn_issue.setMinimumHeight(42)
+                    btn_issue.clicked.connect(lambda: OpsIssueDialog(parent=self, **params).exec())
+
+                    btn_return = QtWidgets.QPushButton("Zwrot")
+                    btn_return.setMinimumHeight(42)
+                    btn_return.clicked.connect(lambda: OpsReturnDialog(parent=self, **params).exec())
+
+                    if self.reports_repo is None:
+                        for b in (btn_issue, btn_return):
+                            b.setEnabled(False)
+                            b.setToolTip("Brak połączenia do DB")
 
                     btn_import = QtWidgets.QPushButton("Import RW (PDF)")
                     btn_import.setMinimumHeight(42)
                     btn_import.clicked.connect(lambda: RWImportDialog(self.repo.engine, self).exec())
+                    
+                    lay.addWidget(btn_issue, 0, Qt.AlignLeft)
+                    lay.addWidget(btn_return, 0, Qt.AlignLeft)
 
                     lay.addWidget(btn_import, 0, Qt.AlignLeft)
                     lay.addStretch(1)

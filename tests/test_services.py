@@ -1,6 +1,30 @@
 import unittest
 import importlib
 
+import sys
+import types
+
+
+# Stub PySide6 to avoid Qt dependency during tests
+if "PySide6" not in sys.modules:
+    PySide6 = types.ModuleType("PySide6")
+    qtwidgets = types.ModuleType("PySide6.QtWidgets")
+    class _Dummy:
+        pass
+    qtwidgets.QMessageBox = _Dummy
+    PySide6.QtWidgets = qtwidgets
+    sys.modules["PySide6"] = PySide6
+    sys.modules["PySide6.QtWidgets"] = qtwidgets
+# Stub app.ui.rfid_modal to avoid GUI dependencies
+rfid_modal = types.ModuleType("app.ui.rfid_modal")
+class RFIDModal:
+    @classmethod
+    def ask(cls, reader, allow_pin=True, timeout=10, parent=None):
+        return None
+rfid_modal.RFIDModal = RFIDModal
+sys.modules["app.ui.rfid_modal"] = rfid_modal
+
+
 issue = importlib.import_module('app.domain.services.issue')
 return_service = importlib.import_module('app.domain.services.return')
 scrap = importlib.import_module('app.domain.services.scrap')
