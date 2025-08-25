@@ -15,6 +15,7 @@ from app.domain.services.issue import issue_tool as svc_issue_tool
 from app.domain.services.scrap import scrap_tool as svc_scrap_tool
 from app.domain.services.rw import record_rw_receipt as svc_record_rw_receipt
 from app.domain.services.inventory import inventory_count as svc_inventory_count
+from app.domain.services.bundle import issue_return_bundle as svc_issue_return_bundle  # NEW
 
 # UWAGA: moduł nazywa się 'return' (słowo kluczowe) – używamy import_module
 try:
@@ -235,6 +236,54 @@ class AuthRepo:
         except Exception as e:
             _dbg(f"[REPO.return][ERROR] {e}\n{traceback.format_exc()}")
             return {"status": "error", "error": str(e)}
+
+    # NEW: pakietowe RETURN+ISSUE w jednej transakcji
+    def issue_return_bundle(
+        self,
+        employee_id: int,
+        returns: list[tuple[int, int]],
+        issues: list[tuple[int, int]],
+        *,
+        reader: Optional[RFIDReader] = None,
+        features: Any = None,
+    ) -> dict:
+        req = _feat_bool(features, "rfid_required", False)
+        pin = _feat_bool(features, "pin_fallback", True)
+        _dbg(
+            f"[REPO.bundle] emp={employee_id} returns={len(returns)} issues={len(issues)} "
+            f"required={req} pin_fallback={pin}"
+        )
+        try:
+            with self.engine.begin() as conn:
+                res = svc_issue_return_bundle(
+                    conn,
+                    employee_id,
+                    returns,
+                    issues,
+                    rfid_confirmed=None,
+                    reader=reader,
+                    features=features,
+                )
+            _dbg(f"[REPO.bundle] status={res.get('status')} flagged={res.get('flagged')}")
+            return res
+        except Exception as e:
+            _dbg(f"[REPO.bundle][ERROR] {e}\n{traceback.format_exc()}")
+            return {"status": "error", "error": str(e)}
+
+    # NEW: pomocniczo – bieżące saldo otwartych sztuk u pracownika
+    def get_employee_open_qty(self, employee_id: int) -> int:
+        with self.engine.connect() as conn:
+            qty = conn.execute(
+                text(
+                    """
+                    SELECT COALESCE(SUM(CASE WHEN movement_type='ISSUE' THEN quantity ELSE -quantity END),0)
+                    FROM transactions
+                    WHERE employee_id=:emp
+                    """
+                ),
+                dict(emp=employee_id),
+            ).scalar()
+        return int(qty or 0)
 
     def scrap_tool(
         self,
@@ -623,7 +672,6 @@ class AuthRepo:
         if not row:
             return False, False
         return bool(row.get("is_admin")), bool(row.get("active"))
-
 
     # ===== API dla UI (logowania) =====
     def login_password(self, login: str, password: str, station_id: str):

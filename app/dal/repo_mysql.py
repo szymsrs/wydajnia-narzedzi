@@ -3,26 +3,51 @@ from __future__ import annotations
 import json
 from typing import Any, Iterable, List, Tuple, Dict, Optional
 from decimal import Decimal
+import uuid  # legacy / przyszłe użycie
 import pymysql
+from app.core.auth import AuthRepo
+
 
 class RepoMySQL:
+    """Legacy repository. @deprecated Use AuthRepo instead."""
+
     def __init__(self, cfg: dict):
         self.cfg = cfg
         self.conn = pymysql.connect(
-            host=cfg["db"]["host"], port=cfg["db"].get("port", 3306),
-            user=cfg["db"]["user"], password=cfg["db"]["password"],
-            database=cfg["db"]["database"], autocommit=False, cursorclass=pymysql.cursors.DictCursor
+            host=cfg["db"]["host"],
+            port=cfg["db"].get("port", 3306),
+            user=cfg["db"]["user"],
+            password=cfg["db"]["password"],
+            database=cfg["db"]["database"],
+            autocommit=False,
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+        # Adapter do nowej warstwy (AuthRepo) – do stopniowej migracji
+        self._auth_repo = AuthRepo(
+            {
+                "db": {
+                    "host": cfg["db"]["host"],
+                    "port": cfg["db"].get("port", 3306),
+                    "user": cfg["db"]["user"],
+                    "password": cfg["db"]["password"],
+                    "database": cfg["db"]["database"],
+                    "name": cfg["db"]["database"],
+                }
+            }
         )
 
     # ---------- helpers ----------
-    def commit(self): self.conn.commit()
-    def rollback(self): self.conn.rollback()
+    def commit(self):
+        self.conn.commit()
+
+    def rollback(self):
+        self.conn.rollback()
 
     # ---------- ISSUE ----------
     def issue_to_employee(self, *, employee_id: int, employee_name: str, item_id: int, qty: Decimal):
         with self.conn:
             cur = self.conn.cursor()
-            cur.callproc('sp_issue_to_employee', (employee_id, employee_name, item_id, str(qty)))
+            cur.callproc("sp_issue_to_employee", (employee_id, employee_name, item_id, str(qty)))
             self.conn.commit()
 
     # ---------- RETURN (alokacje) ----------
@@ -40,7 +65,7 @@ class RepoMySQL:
                 for a in allocations:
                     args.extend([int(a["lot_id"]), str(Decimal(a["qty"]))])
                 cur.execute(sql, args)
-            cur.callproc('sp_return_from_employee', (employee_id, employee_name))
+            cur.callproc("sp_return_from_employee", (employee_id, employee_name))
             self.conn.commit()
 
     # ---------- Zapytania pod GUI ----------
@@ -56,7 +81,8 @@ class RepoMySQL:
         Zwraca: lot_id, item_id, unit_cost_netto, qty_held
         """
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
         WITH emp AS (SELECT id AS loc_id FROM locations WHERE type='EMPLOYEE' AND employee_id=%s)
         SELECT ma.lot_id, l.item_id, l.unit_cost_netto,
                SUM(CASE WHEN m.movement_type='ISSUE'  AND m.to_location_id   = emp.loc_id THEN ma.qty ELSE 0 END)
@@ -69,7 +95,9 @@ class RepoMySQL:
         GROUP BY ma.lot_id, l.item_id, l.unit_cost_netto
         HAVING qty_held > 0
         ORDER BY l.item_id, l.unit_cost_netto;
-        """, (employee_id,))
+        """,
+            (employee_id,),
+        )
         return cur.fetchall() or []
 
     def list_v_employee_holdings(self, emp_loc_id: int | None = None) -> List[dict]:
@@ -82,10 +110,13 @@ class RepoMySQL:
 
     def list_recent_movements(self, limit: int = 200) -> List[dict]:
         cur = self.conn.cursor()
-        cur.execute("""
+        cur.execute(
+            """
             SELECT id, ts, movement_type, item_id, qty, from_location_id, to_location_id
             FROM movements
             ORDER BY ts DESC, id DESC
             LIMIT %s
-        """, (int(limit),))
+        """,
+            (int(limit),),
+        )
         return cur.fetchall() or []

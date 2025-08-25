@@ -60,4 +60,4 @@ def return_tool(
         db_conn.commit()
 
     _processed_ops.add(operation_uuid)
-    return {"status": "success"}
+    return {"status": "success", "ok": True}

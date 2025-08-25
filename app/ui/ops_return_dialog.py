@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from decimal import Decimal
 from typing import Any
+import uuid
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
@@ -291,15 +292,13 @@ class OpsReturnDialog(QtWidgets.QDialog):
                 return
 
             # === KROK 3: ZAPIS OPERACJI ===
-            self.repo.create_operation(
-                kind="RETURN",
-                station=station,
-                operator_user_id=operator_id,
-                employee_user_id=employee_id,
-                lines=lines,
-                issued_without_return=False,  # dotyczy wydania; tu jawnie False
-                note=note,
-            )
+            for item_id, qty in lines:
+                self.repo.return_tool(
+                    employee_id=employee_id,
+                    item_id=item_id,
+                    qty=qty,
+                    operation_uuid=str(uuid.uuid4()),
+                )
 
             QtWidgets.QMessageBox.information(self, "OK", "Zwrot zapisany.")
             self.log.info("Zwrot: employee=%s lines=%s", employee_id, len(lines))

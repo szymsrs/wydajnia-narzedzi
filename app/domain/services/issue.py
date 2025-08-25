@@ -65,7 +65,7 @@ def issue_tool(
     Returns
     -------
     dict
-        ``{"status": "success"}`` kiedy procedura wykona się poprawnie,
+        ``{"status": "success", "flagged": bool}`` kiedy procedura wykona się poprawnie,
         ``{"status": "rfid_unconfirmed"}`` gdy brak potwierdzenia,
         ``{"status": "duplicate"}`` gdy ``operation_uuid`` zostało już użyte.
     """
@@ -82,16 +82,26 @@ def issue_tool(
         return {"status": "duplicate"}
 
     # Wykonanie procedury w DB
+    open_qty = 0
     with db_conn:
         cur = db_conn.cursor()
-        # sp_issue_tool is expected to handle the business logic in the DB
+        # sp_issue_tool obsługuje logikę biznesową w DB
         cur.callproc("sp_issue_tool", (employee_id, item_id, str(qty), operation_uuid))
-        # zawsze ustaw flagę issued_without_return
+        # oblicz aktualne saldo (ISSUE - RETURN)
         cur.execute(
-            "UPDATE transactions SET issued_without_return=1 WHERE operation_uuid=%s",
-            (operation_uuid,),
+            "SELECT COALESCE(SUM(CASE WHEN movement_type='ISSUE' THEN quantity ELSE -quantity END),0) "
+            "FROM transactions WHERE employee_id=%s AND item_id=%s",
+            (employee_id, item_id),
+        )
+        row = cur.fetchone()
+        open_qty = row[0] if row else 0
+        # ustaw flagę issued_without_return zależnie od salda
+        cur.execute(
+            "UPDATE transactions SET issued_without_return=%s WHERE operation_uuid=%s",
+            (1 if open_qty > 0 else 0, operation_uuid),
         )
         db_conn.commit()
 
+    flagged = open_qty > 0
     _processed_ops.add(operation_uuid)
-    return {"status": "success"}
+    return {"status": "success", "flagged": flagged}

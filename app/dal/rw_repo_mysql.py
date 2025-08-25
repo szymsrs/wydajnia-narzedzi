@@ -1,20 +1,31 @@
+# app/dal/rw_repo_mysql.py
 from __future__ import annotations
 from typing import List, Tuple, Optional, Dict, Any
 from decimal import Decimal
 import uuid
 import pymysql
+from app.core.auth import AuthRepo
 
 
 class RWRepoMySQL:
-    """
-    Cienka warstwa nad MariaDB do obsługi RW/Wydania/Zwrotu.
-    Zakłada istnienie tabel i procedur z poprzednich kroków.
-    """
+    """Cienka warstwa nad MariaDB (legacy). @deprecated Use AuthRepo instead."""
 
     def __init__(self, *, host: str, port: int, user: str, password: str, database: str):
         self.conn = pymysql.connect(
             host=host, port=port, user=user, password=password,
             database=database, autocommit=False, cursorclass=pymysql.cursors.DictCursor
+        )
+        self._auth_repo = AuthRepo(
+            {
+                "db": {
+                    "host": host,
+                    "port": port,
+                    "user": user,
+                    "password": password,
+                    "database": database,
+                    "name": database,
+                }
+            }
         )
 
     # -------------------- EMPLOYEES --------------------
@@ -23,7 +34,7 @@ class RWRepoMySQL:
         Heurystyka:
         - jeśli hint w formie "J.Kowalski" → dopasuj po inicjale + nazwisku (case-insens).
         - w innym razie LIKE po imieniu+nazwisku.
-        Wymaga tabeli employees(id, first_name, last_name, card_uid?) – dostosuj nazwę/kolumny.
+        Wymaga tabeli employees(id, first_name, last_name, card_uid?).
         """
         if not hint:
             return None, []
@@ -108,7 +119,7 @@ class RWRepoMySQL:
         ))
         self.conn.commit()
 
-    # -------------------- ISSUE (koszyk → karta) --------------------
+    # -------------------- ISSUE/RETURN delegowane --------------------
     def create_operation(
         self,
         *,
@@ -121,46 +132,29 @@ class RWRepoMySQL:
         note: str,
         operation_uuid: Optional[str] = None,
     ) -> str:
-        """
-        Minimalna implementacja: dla kind='ISSUE' po prostu wykonujemy wydania FIFO dla każdej pozycji.
-        Zwraca operation_uuid (do logów). Idempotencja: jeśli istnieje w transactions.operation_uuid – nic nie robimy.
-        """
-        if kind != "ISSUE":
-            raise ValueError("Obsługujemy tutaj tylko ISSUE")
-
+        """@deprecated Deleguje do AuthRepo."""
         op_uuid = operation_uuid or str(uuid.uuid4())
-        with self.conn:
-            cur = self.conn.cursor()
-
-            # Idempotencja: jeśli już istnieje taka operacja – zwróć UUID
-            cur.execute("SELECT 1 FROM transactions WHERE operation_uuid=%s", (op_uuid,))
-            if cur.fetchone():
-                return op_uuid
-
-            # log nagłówka operacji (opcjonalnie)
-            cur.execute(
-                """
-                INSERT INTO ops_log(uuid, kind, station, operator_user_id, employee_user_id, note, without_return)
-                VALUES (%s,%s,%s,%s,%s,%s,%s)
-                """,
-                (op_uuid, kind, station, operator_user_id, employee_user_id, note, 1 if issued_without_return else 0),
-            )
-
+        if kind.upper() == "ISSUE":
             for item_id, qty in lines:
-                if qty <= 0:
-                    continue
-                cur.callproc(
-                    'sp_issue_to_employee',
-                    (
-                        int(employee_user_id),
-                        self._employee_display_name(employee_user_id, cur) or "Pracownik",
-                        int(item_id),
-                        str(Decimal(qty).quantize(Decimal('0.001'))),
-                    ),
+                self._auth_repo.issue_tool(
+                    employee_id=employee_user_id,
+                    item_id=int(item_id),
+                    qty=qty,
+                    operation_uuid=str(uuid.uuid4()),
                 )
-            self.conn.commit()
+        elif kind.upper() == "RETURN":
+            for item_id, qty in lines:
+                self._auth_repo.return_tool(
+                    employee_id=employee_user_id,
+                    item_id=item_id,
+                    qty=qty,
+                    operation_uuid=str(uuid.uuid4()),
+                )
+        else:
+            raise ValueError("Unsupported kind")
         return op_uuid
 
+    # legacy helper (raczej już nieużywany)
     def _employee_display_name(self, emp_id: int, cur) -> Optional[str]:
         cur.execute("SELECT CONCAT(first_name,' ',last_name) AS nm FROM employees WHERE id=%s", (emp_id,))
         row = cur.fetchone()
