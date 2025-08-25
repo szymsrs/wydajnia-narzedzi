@@ -39,9 +39,18 @@ class ExceptionsWidget(QWidget):
         tools.addWidget(self.btn_export)
         tools.addStretch(1)
 
-        self.table = QtWidgets.QTableWidget(0, 7)
+        self.table = QtWidgets.QTableWidget(0, 8)
         self.table.setHorizontalHeaderLabels(
-            ["UUID", "Pracownik", "Login", "Pozycja", "Ilość", "Data", "Ruch"]
+            [
+                "UUID",
+                "Pracownik",
+                "Login",
+                "Pozycja",
+                "Ilość",
+                "Data",
+                "Ruch",
+                "Powód",
+            ]
         )
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
@@ -60,7 +69,8 @@ class ExceptionsWidget(QWidget):
             return
         self.table.setRowCount(len(rows))
         for r, row in enumerate(rows):
-            for c, val in enumerate(row):
+            for c in range(self.table.columnCount()):
+                val = row[c] if c < len(row) else ""
                 self.table.setItem(r, c, QtWidgets.QTableWidgetItem(str(val)))
         self.table.resizeColumnsToContents()
         log.info("Załadowano wyjątki: %s wierszy", len(rows))
@@ -82,6 +92,7 @@ class ExceptionsWidget(QWidget):
                     "quantity",
                     "created_at",
                     "movement_type",
+                    "reason",
                 ]
                 writer.writerow(headers)
                 for r in range(self.table.rowCount()):

@@ -69,7 +69,15 @@ class ReportsWidget(QWidget):
         d_to = self.dt.date().toPython()
         try:
             rows = self.repo.rw_summary(date_from=d_from, date_to=d_to, limit=500) or []
-            self.m_rw.set_rows(rows)
+            normalized = []
+            for row in rows:
+                normalized.append({
+                    "rw_date": row.get("rw_date"),
+                    "rw_id": row.get("rw_id") or row.get("rw_number"),
+                    "item_id": row.get("item_id"),
+                    "qty_total": row.get("qty_total"),
+                })
+            self.m_rw.set_rows(normalized)
         except Exception as e:
             log.exception("Błąd ładowania raportu RW df=%s dt=%s lim=%s", d_from, d_to, 500)
             QMessageBox.warning(self, "Błąd ładowania raportu RW", str(e))

@@ -63,7 +63,8 @@ class ExceptionsRepo:
         qty_col = self._pick(cols, "quantity", "qty", "amount")
         ts_col = self._pick(cols, "created_at", "ts", "event_ts", "timestamp", "event_time", "created")
         mvt_col = self._pick(cols, "movement_type", "movement", "movement_kind", "kind", "op_type")
-
+        reason_col = self._pick(cols, "reason", "exception_reason", "cause", "note")
+        
         # zbuduj SELECT z aliasami oczekiwanymi przez UI/CSV
         select_parts: list[str] = []
         select_parts.append(f"{uuid_col} AS operation_uuid" if uuid_col else "'' AS operation_uuid")
@@ -76,6 +77,7 @@ class ExceptionsRepo:
         else:
             select_parts.append("CURRENT_TIMESTAMP AS created_at")
         select_parts.append(f"{mvt_col} AS movement_type" if mvt_col else "'' AS movement_type")
+        select_parts.append(f"{reason_col} AS reason" if reason_col else "'' AS reason")
 
         sql_parts = [f"SELECT {', '.join(select_parts)}", "FROM vw_exceptions", "WHERE 1=1"]
         params: dict[str, object] = {}
@@ -106,11 +108,16 @@ class ExceptionsRepo:
 
         # log diagnostyczny (raz, gdy wykryjemy brak jakiejś kolumny)
         missing = [name for name, col in {
-            "employee": emp_name_col, "login": login_col, "item": item_col,
-            "quantity": qty_col, "created_at": ts_col, "movement_type": mvt_col
+            "employee": emp_name_col,
+            "login": login_col,
+            "item": item_col,
+            "quantity": qty_col,
+            "created_at": ts_col,
+            "movement_type": mvt_col,
+            "reason": reason_col,
         }.items() if col is None]
-        if missing:
+        if missing and not getattr(self, "_warned_missing", False):
             log.warning("vw_exceptions: brak kolumn %s – używam pustych aliasów", ", ".join(missing))
-
+            self._warned_missing = True
         with self.engine.connect() as conn:
             return conn.execute(text(sql), params).fetchall()
