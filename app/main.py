@@ -157,6 +157,9 @@ def main():
     setup_logging(
         app_name="Wydajnia Narzędzi",
         station=settings.workstation_id or "UNKNOWN",
+        capture_qt=True,
+        capture_prints=False,
+        console=False,
     )
     set_station(settings.workstation_id)
     log.info(

@@ -2,6 +2,7 @@
 from __future__ import annotations
 import logging, logging.config, os, sys, threading, traceback
 from datetime import datetime
+from io import TextIOBase
 from pathlib import Path
 
 # ── Kontekst wątku (użytkownik/stanowisko) ─────────────────────────────────────
@@ -29,8 +30,51 @@ def _excepthook(exc_type, exc, tb):
     # zachowaj dotychczasowe zachowanie (stderr + exit code)
     sys.__excepthook__(exc_type, exc, tb)
 
+# ── Przechwytywanie komunikatów Qt ───────────────────────────────────────────
+def _install_qt_message_handler():
+    from PySide6.QtCore import QtMsgType, qInstallMessageHandler
+
+    level_map = {
+        QtMsgType.QtDebugMsg: logging.DEBUG,
+        QtMsgType.QtInfoMsg: logging.INFO,
+        QtMsgType.QtWarningMsg: logging.WARNING,
+        QtMsgType.QtCriticalMsg: logging.ERROR,
+        QtMsgType.QtFatalMsg: logging.CRITICAL,
+    }
+
+    def handler(msg_type, context, message):
+        level = level_map.get(msg_type, logging.INFO)
+        logging.getLogger("qt").log(level, message)
+
+    qInstallMessageHandler(handler)
+
+# ── Przekierowanie stdout/stderr do logów ────────────────────────────────────
+class _StreamToLogger(TextIOBase):
+    def __init__(self, logger, level):
+        self._logger = logger
+        self._level = level
+
+    def write(self, s):
+        s = s.rstrip()
+        if s:
+            self._logger.log(self._level, s)
+
+    def flush(self):
+        pass
+
+def _redirect_prints_to_logging():
+    sys.stdout = _StreamToLogger(logging.getLogger("app"), logging.INFO)
+    sys.stderr = _StreamToLogger(logging.getLogger("app"), logging.ERROR)
+
+
 # ── Konfiguracja logowania ────────────────────────────────────────────────────
-def setup_logging(app_name: str, station: str | None = None) -> dict:
+def setup_logging(
+    app_name: str,
+    station: str | None = None,
+    capture_qt: bool = True,
+    capture_prints: bool = False,
+    console: bool = False,
+) -> dict:
     """
     Inicjuje:
       - logs/app.log            (Rotating 5 MB x 10 plików)
@@ -76,14 +120,14 @@ def setup_logging(app_name: str, station: str | None = None) -> dict:
                 "formatter": "std",
                 "filters": ["ctx"],
             },
-            # w dev możesz odkomentować konsolę:
-            # "console": {
-            #     "class": "logging.StreamHandler",
-            #     "level": "DEBUG",
-            #     "stream": "ext://sys.stdout",
-            #     "formatter": "std",
-            #     "filters": ["ctx"],
-            # },
+            # handler konsolowy (dodawany tylko gdy console=True)
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG",
+                "stream": "ext://sys.stdout",
+                "formatter": "std",
+                "filters": ["ctx"],
+            },
         },
         "loggers": {
             "": {  # root
@@ -100,8 +144,23 @@ def setup_logging(app_name: str, station: str | None = None) -> dict:
                 "handlers": ["rotating", "session"],
                 "propagate": False,
             },
+                        "qt": {
+                "level": "DEBUG",
+                "handlers": ["rotating", "session"],
+                "propagate": False,
+            },
         },
     })
+
+    if console:
+        console_handler = logging.getHandlerByName("console")
+        for name in ("", "app", "qt", "sqlalchemy"):
+            logging.getLogger(name).addHandler(console_handler)
+
+    if capture_qt:
+        _install_qt_message_handler()
+    if capture_prints:
+        _redirect_prints_to_logging()
 
     # ustaw wstępny kontekst
     set_station(station)
