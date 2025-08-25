@@ -227,24 +227,25 @@ class MainWindow(QMainWindow):
         self._open_module(default_module)
 
     def _open_module(self, name: str):
-        # twardy guard na wypadek prób „na skróty”
+        # guard: tylko dozwolone moduły wg roli
         if name not in self._allowed_modules():
             return
-        # zaznacz akcję
+
+        # zaznacz w pasku modułów
         for a in self._mod_group.actions():
             if a.text() == name:
                 a.setChecked(True)
-        # wczytaj widget (placeholder jeśli brak)
+
+        # domyślnie – bierz istniejący widżet (placeholder jeśli już utworzony)
         w = self.widgets.get(name)
 
-        # >>> ZMIANY DLA ZAKŁADKI „Operacje” <<<
+        # --- Operacje ---
         if name == "Operacje":
             if not self.db_ok or not self.repo:
                 self._ensure_placeholder("Operacje", "Brak połączenia z DB")
                 w = self.widgets["Operacje"]
             else:
                 try:
-                    # Tworzymy prosty panel z przyciskiem Import RW (PDF)
                     from PySide6 import QtWidgets
                     from app.ui.rw_import_dialog import RWImportDialog
 
@@ -267,7 +268,7 @@ class MainWindow(QMainWindow):
                     self._ensure_placeholder("Operacje", details=f"Błąd ładowania:\n{e}\n\n{tb}")
                     w = self.widgets["Operacje"]
 
-        # >>> ZMIANY DLA ZAKŁADKI „Wyjątki” <<<
+        # --- Wyjątki ---
         elif name == "Wyjątki":
             if not self.db_ok or not self.repo:
                 self._ensure_placeholder("Wyjątki", "Brak połączenia z DB")
@@ -285,14 +286,37 @@ class MainWindow(QMainWindow):
                     tb = traceback.format_exc(limit=3)
                     self._ensure_placeholder("Wyjątki", details=f"Błąd ładowania:\n{e}\n\n{tb}")
                     w = self.widgets["Wyjątki"]
+
+        # --- Raporty ---
+        elif name == "Raporty":
+            if not self.db_ok or not self.repo:
+                self._ensure_placeholder("Raporty", "Brak połączenia z DB")
+                w = self.widgets["Raporty"]
+            else:
+                try:
+                    from app.dal.reports_repo import ReportsRepo
+                    from app.ui.reports_widget import ReportsWidget
+
+                    rep_repo = ReportsRepo(self.repo.engine)
+                    self._replace_widget("Raporty", ReportsWidget(rep_repo, self))
+                    w = self.widgets["Raporty"]
+                except Exception as e:
+                    import traceback
+                    tb = traceback.format_exc(limit=3)
+                    self._ensure_placeholder("Raporty", details=f"Błąd ładowania:\n{e}\n\n{tb}")
+                    w = self.widgets["Raporty"]
+
+        # --- Reszta (placeholdery na razie) ---
         else:
             if w is None:
                 self._ensure_placeholder(name)
                 w = self.widgets[name]
 
+        # wstaw/ustaw w stacku
         if self.stack.indexOf(w) == -1:
             self.stack.addWidget(w)
         self.stack.setCurrentWidget(w)
+
 
     # ---------- Status/tytuł ----------
     def _update_statusbar(self):

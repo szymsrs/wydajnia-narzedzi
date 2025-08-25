@@ -1,5 +1,5 @@
 FILE: C:/Users/Szymon Sierszulski/Documents/Python/Wydajnia narzedzi/app/scripts/RW_595_102_25.PDF
-TIME: 2025-08-22T10:56:21
+TIME: 2025-08-22T12:30:29
 EXTRACTOR: pdfplumber
 LINES (28):
 001: ORYGINAŁ

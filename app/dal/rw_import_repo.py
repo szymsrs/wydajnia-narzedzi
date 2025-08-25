@@ -10,27 +10,43 @@ from sqlalchemy.engine import Engine
 
 
 class RWImportRepo:
-    """Zapisywanie dokumentów RW na bazie danych (przyjęcie na stan wydajni)."""
+    """
+    Zapisywanie dokumentów RW na bazie danych (przyjęcie na stan wydajni).
 
-    def __init__(self, engine: Engine):
+    WYMAGANIA AUDYTOWE:
+    - Każda transakcja musi mieć operatora (employee_id) – bierzemy z session['user_id'] albo
+      można jawnie przekazać employee_id do commit_transaction(...).
+    """
+
+    def __init__(self, engine: Engine, *, session: dict | None = None, station: str | None = None):
         self.engine = engine
         self.conn = engine.connect()
-        self.tx = self.conn.begin()
+        self.tx = self.conn.begin()  # jedna transakcja na cykl importu w dialogu
+        self.session = session or {}
+        self.station = station or self.session.get("station") or ""
 
         # ---- rozpoznanie nazw kolumn na starcie (raz na dialog) ----
         self.items_code_col = self._detect_first_existing("items", ["sku", "code", "item_code"])
         self.items_name_col = self._detect_first_existing("items", ["name", "item_name", "title"])
         self.items_unit_col = self._detect_first_existing("items", ["unit", "uom"])
 
-        self.doc_lines_qty_col     = self._detect_first_existing("document_lines", ["qty", "quantity"])
-        self.doc_lines_price_col   = self._detect_first_existing("document_lines", ["unit_price_netto", "unit_price"])
-        self.doc_lines_value_col   = self._detect_first_existing("document_lines", ["line_netto", "line_value"])
-        self.doc_lines_currency_col= self._detect_first_existing("document_lines", ["currency"])
-        self.doc_lines_vat_col     = self._detect_first_existing("document_lines", ["vat_proc", "vat_rate"])
-        self.doc_lines_conf_col    = self._detect_first_existing("document_lines", ["parse_confidence"])
+        self.doc_lines_qty_col = self._detect_first_existing("document_lines", ["qty", "quantity"])
+        self.doc_lines_price_col = self._detect_first_existing("document_lines", ["unit_price_netto", "unit_price"])
+        self.doc_lines_value_col = self._detect_first_existing("document_lines", ["line_netto", "line_value"])
+        self.doc_lines_currency_col = self._detect_first_existing("document_lines", ["currency"])
+        self.doc_lines_vat_col = self._detect_first_existing("document_lines", ["vat_proc", "vat_rate"])
+        self.doc_lines_conf_col = self._detect_first_existing("document_lines", ["parse_confidence"])
 
         self.stock_item_col = self._detect_first_existing("stock", ["item_id"])
-        self.stock_qty_col  = self._detect_first_existing("stock", ["quantity", "qty", "amount"])
+        self.stock_qty_col = self._detect_first_existing("stock", ["quantity", "qty", "amount"])
+
+        # transactions – sprawdźmy z góry
+        self.tr_has_employee = self._has_column("transactions", "employee_id")
+        self.tr_has_station = self._has_column("transactions", "station")
+        self.tr_has_method = self._has_column("transactions", "method")
+        self.tr_has_operation_uuid = self._has_column("transactions", "operation_uuid")
+        self.tr_has_movement_type = self._has_column("transactions", "movement_type")
+        self.tr_has_created_at = self._has_column("transactions", "created_at")
 
     # ---------- helpers ----------
     def _has_column(self, table: str, col: str) -> bool:
@@ -131,7 +147,7 @@ class RWImportRepo:
     ) -> None:
         # Bezpieczne zaokrąglenia (DB często ma DECIMAL(12,4) / (12,2))
         price_dec = Decimal(str(unit_price)).quantize(Decimal("0.0000"), rounding=ROUND_HALF_UP)
-        qty_dec   = Decimal(str(qty)).quantize(Decimal("0.000"), rounding=ROUND_HALF_UP)
+        qty_dec = Decimal(str(qty)).quantize(Decimal("0.000"), rounding=ROUND_HALF_UP)
 
         # 1) stock: +qty (INSERT jeśli brak)
         if self.stock_item_col and self.stock_qty_col:
@@ -146,7 +162,10 @@ class RWImportRepo:
                 )
             else:
                 self.conn.execute(
-                    text(f"UPDATE stock SET {self.stock_qty_col}={self.stock_qty_col}+ :q WHERE {self.stock_item_col}=:i"),
+                    text(
+                        f"UPDATE stock SET {self.stock_qty_col}={self.stock_qty_col}+ :q "
+                        f"WHERE {self.stock_item_col}=:i"
+                    ),
                     {"q": float(qty_dec), "i": item_id},
                 )
 
@@ -156,48 +175,112 @@ class RWImportRepo:
         vals = [":d", ":i", ":q"]
         params = {"d": doc_id, "i": item_id, "q": float(qty_dec)}
 
-        # unit price (NOT NULL w wielu schematach → zawsze podajemy, jeśli kolumna istnieje)
         if self.doc_lines_price_col:
             cols.append(self.doc_lines_price_col)
             vals.append(":up")
             params["up"] = float(price_dec)
 
-        # line value (opcjonalnie – policz z qty*price, 2 miejsca)
         if self.doc_lines_value_col and self.doc_lines_price_col:
             cols.append(self.doc_lines_value_col)
             vals.append(":ln")
             line_val = (qty_dec * price_dec).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             params["ln"] = float(line_val)
 
-        # currency (stałe PLN)
         if self.doc_lines_currency_col:
             cols.append(self.doc_lines_currency_col)
             vals.append(":cur")
             params["cur"] = "PLN"
 
-        # vat (brak VAT na RW → NULL)
         if self.doc_lines_vat_col:
             cols.append(self.doc_lines_vat_col)
-            vals.append("NULL")  # jawnie NULL w INSERT
+            # brak wartości → wstawiamy literal NULL
+            vals.append("NULL")
 
-        # parse_confidence – jeśli jest kolumna (sprawdzone raz na starcie)
         if self.doc_lines_conf_col:
             cols.append(self.doc_lines_conf_col)
             vals.append(":c")
             params["c"] = parse_confidence
 
         sql = f"INSERT INTO document_lines({', '.join(cols)}) VALUES ({', '.join(vals)})"
-        self.conn.execute(text(sql), params)
+        res = self.conn.execute(text(sql), params)
+        dl_id = int(getattr(res, "lastrowid", 0))  # id nowo wstawionej linii
 
-    def commit_transaction(self, operation_uuid: Optional[str] = None) -> None:
-        # log transakcji
-        if self._has_column("transactions", "operation_uuid") and self._has_column("transactions", "movement_type"):
-            self.conn.execute(
-                text(
-                    "INSERT INTO transactions(operation_uuid, movement_type, created_at)"
-                    " VALUES (:u,'RECEIPT',NOW())"   # Import RW to przyjęcie na stan
-                ),
-                {"u": operation_uuid or str(uuid.uuid4())},
+        # 3) ledger ruchów: RECEIPT → to_location = magazyn
+        # spróbuj wykryć magazyn, fallback na id=1
+        warehouse_id = self.conn.execute(
+            text("SELECT id FROM locations WHERE type='WAREHOUSE' ORDER BY id LIMIT 1")
+        ).scalar_one_or_none() or 1
+
+        self.conn.execute(
+            text(
+                "INSERT INTO movements(item_id, qty, from_location_id, to_location_id, movement_type, document_line_id) "
+                "VALUES (:item, :qty, NULL, :to_loc, 'RECEIPT', :dl)"
+            ),
+            {"item": item_id, "qty": float(qty_dec), "to_loc": warehouse_id, "dl": dl_id},
+        )
+
+    def commit_transaction(
+        self,
+        operation_uuid: Optional[str] = None,
+        *,
+        employee_id: Optional[int] = None,
+        method: str = "rw_import",
+    ) -> str:
+        """
+        Zamyka/nagłówkuje transakcję importu RW. Wymaga employee_id (operatora).
+        Zwraca operation_uuid użyte do nagłówka transactions.
+        """
+        # -- operator (audyt): weź z parametru lub z sesji
+        emp_id = employee_id or self.session.get("user_id")
+        if not emp_id and self.tr_has_employee:
+            # Jeżeli w schema jest employee_id, to wymagamy go bezwzględnie
+            raise RuntimeError(
+                "Brak employee_id – użytkownik niezalogowany. Zaloguj się PIN/RFID i spróbuj ponownie."
             )
-        self.tx.commit()
-        self.conn.close()
+
+        op_uuid = operation_uuid or str(uuid.uuid4())
+
+        try:
+            # log transakcji (nagłówek) – tylko jeśli mamy niezbędne kolumny
+            if self.tr_has_operation_uuid and self.tr_has_movement_type:
+                cols = ["operation_uuid", "movement_type"]
+                vals = [":u", "'RECEIPT'"]  # import RW = przyjęcie na magazyn
+
+                params = {"u": op_uuid}
+
+                if self.tr_has_employee:
+                    cols.append("employee_id")
+                    vals.append(":emp")
+                    params["emp"] = int(emp_id) if emp_id is not None else None
+
+                if self.tr_has_station and self.station is not None:
+                    cols.append("station")
+                    vals.append(":st")
+                    params["st"] = str(self.station)
+
+                if self.tr_has_method:
+                    cols.append("method")
+                    vals.append(":m")
+                    params["m"] = method
+
+                if self.tr_has_created_at:
+                    cols.append("created_at")
+                    vals.append("NOW()")
+
+                sql = f"INSERT INTO transactions({', '.join(cols)}) VALUES ({', '.join(vals)})"
+                self.conn.execute(text(sql), params)
+
+            self.tx.commit()
+            return op_uuid
+        except Exception:
+            # Spróbuj domknąć ładnie transakcję
+            try:
+                self.tx.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                self.conn.close()
+            except Exception:
+                pass

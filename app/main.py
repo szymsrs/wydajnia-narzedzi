@@ -12,11 +12,11 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from app.infra.logging import setup_logging
 from app.ui.shell import MainWindow, apply_theme
 from app.infra.config import load_settings
-from app.dal.db import make_conn_str, create_engine_and_session
-from app.infra.healthcheck import db_ping
+from app.dal.db import create_engine_and_session, ping
 from app.ui.login_dialog import LoginDialog
 from app.core.auth import AuthRepo  # repo do pracy modułów (np. Użytkownicy)
-from app.core.rfid_stub import RFIDReader  # <-- NOWE: czytnik RFID/PIN (stub)
+from app.core.rfid_stub import RFIDReader  # czytnik RFID/PIN (stub)
+from app.repo.reports_repo import ReportsRepo  # <-- repo raportów
 
 # ⬇️ Import naszego importera RW
 from app.services.rw.importer import import_rw_pdf
@@ -130,28 +130,24 @@ def main():
 
     # --- Inicjalizacja repo / połączenie z DB (healthcheck przez SELECT 1)
     repo = None
+    reports_repo = None
     db_ok = False
     db_error = None
     try:
-        conn_str = make_conn_str(
-            settings.db.host,
-            settings.db.port,
-            settings.db.user,
-            settings.db.password,
-            settings.db.database,
-        )
-        engine, _ = create_engine_and_session(conn_str)
-        db_ping(engine)  # SELECT 1
+        # Konfiguracja DB dla create_engine_and_session (bezpieczne URL.create pod spodem)
         cfg = {
             "db": {
                 "host": settings.db.host,
                 "port": settings.db.port,
                 "user": settings.db.user,
                 "password": settings.db.password,
-                "name": settings.db.database,
+                "database": settings.db.database,
             }
         }
+        engine, _ = create_engine_and_session(cfg)
+        ping(engine)  # SELECT 1
         repo = AuthRepo(cfg)
+        reports_repo = ReportsRepo(engine)  # <-- tworzymy repo raportów
         db_ok = True
         log.info("Połączenie z DB: OK")
     except Exception as e:
@@ -184,9 +180,10 @@ def main():
         db_ok=db_ok,
         db_error=db_error,
         session=session_data,
-        repo=repo,
-        settings=settings,         # <-- NOWE
-        rfid_reader=rfid_reader,   # <-- NOWE
+        repo=repo,                       # AuthRepo
+        reports_repo=reports_repo,       # <-- przekazujemy ReportsRepo do UI
+        settings=settings,               # konfiguracja do UI
+        rfid_reader=rfid_reader,         # stub czytnika
     )
     win.request_logout.connect(win.handle_logout)
     win.show()

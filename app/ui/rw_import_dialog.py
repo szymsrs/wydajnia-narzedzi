@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from PySide6 import QtWidgets, QtCore
 from pathlib import Path
 
-from app.services.rw.parser import parse_rw_pdf    
+from app.services.rw.parser import parse_rw_pdf
 from app.dal.rw_import_repo import RWImportRepo
 
 
@@ -17,7 +17,29 @@ class RWImportDialog(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowTitle("Import RW (PDF)")
         self.resize(800, 600)
-        self.repo = RWImportRepo(engine)
+
+        # --- sesja / station z okna głównego (jeśli dostępne)
+        session = {}
+        station = None
+        try:
+            if parent and hasattr(parent, "session"):
+                session = getattr(parent, "session", {}) or {}
+            # próbujemy też wyciągnąć station, jeśli jest przechowywana w parent/settings
+            if parent and hasattr(parent, "station"):
+                station = getattr(parent, "station")
+            elif parent and hasattr(parent, "settings"):
+                st = getattr(parent, "settings", None)
+                if isinstance(st, dict):
+                    station = st.get("station")
+                else:
+                    # obiekt z atrybutem station
+                    station = getattr(st, "station", None)
+        except Exception:
+            pass
+
+        # repo ma teraz dostęp do session (user_id do audytu) i opcjonalnie station
+        self.repo = RWImportRepo(engine, session=session, station=station)
+
         self.records: List[Dict[str, Any]] = []
 
         self.file_edit = QtWidgets.QLineEdit()
@@ -38,7 +60,7 @@ class RWImportDialog(QtWidgets.QDialog):
         self.table.horizontalHeader().setSectionResizeMode(
             QtWidgets.QHeaderView.ResizeToContents
         )
-        # rozciągamy kolumnę "Pracownik"
+        # rozciągamy kolumnę "Nazwa"
         self.table.horizontalHeader().setSectionResizeMode(
             2, QtWidgets.QHeaderView.Stretch
         )
@@ -74,7 +96,7 @@ class RWImportDialog(QtWidgets.QDialog):
             self.records.append({
                 "doc_no": pr.rw_no or "",
                 "doc_date": pr.rw_date or "",
-                "item_name": p.name_src,                      
+                "item_name": p.name_src,
                 "item_sku": p.sku_src,
                 "qty": float(p.qty),
                 "unit_price": float(p.unit_price or 0.0),   # <-- potrzebne do DB i UI
@@ -96,12 +118,13 @@ class RWImportDialog(QtWidgets.QDialog):
     def _save(self):
         if not self.records:
             return
+
         headers: Dict[str, int] = {}
         for rec in self.records:
             # pozycja (utworzy jeśli trzeba)
             item_id = self.repo.upsert_item(
                 rec["item_sku"],
-                rec.get("item_name")                 
+                rec.get("item_name")
             )
             key = rec["doc_no"] or "RW/NO-NUM"
             if key not in headers:
@@ -120,7 +143,19 @@ class RWImportDialog(QtWidgets.QDialog):
                 rec.get("unit_price", 0.0),
                 rec["parse_confidence"],
             )
-        self.repo.commit_transaction(str(uuid.uuid4()))
+
+        # --- employee_id do audytu (z sesji okna głównego)
+        emp_id = None
+        try:
+            mw = self.parent()
+            if mw and hasattr(mw, "session"):
+                emp_id = mw.session.get("user_id")
+        except Exception:
+            pass
+
+        # commit z operation_uuid i operator-em
+        self.repo.commit_transaction(str(uuid.uuid4()), employee_id=emp_id)
+
         QtWidgets.QMessageBox.information(
             self, "RW", f"Zapisano {len(self.records)} linii."
         )
