@@ -124,6 +124,19 @@ class ReportsWidget(QWidget):
                 item_id=iid,
                 limit=500,
             ) or []
+            desired_cols = (
+                "operation_uuid",
+                "employee_id",
+                "item_id",
+                "quantity",
+                "created_at",
+                "movement_type",
+                "reason",
+            )
+            rows = [
+                {col: row.get(col) for col in desired_cols}
+                for row in rows
+            ]
             self.m_exc.set_rows(rows)
         except Exception as e:
             log.exception(
@@ -194,7 +207,16 @@ class ReportsWidget(QWidget):
         d_from = self.df_card.date().toPython()
         d_to = self.dt_card.date().toPython()
         try:
-            rows = self.repo.employee_card(emp_id, d_from, d_to) or []
+            rows = self.repo.employee_card(employee_id=emp_id, date_from=d_from, date_to=d_to) or []
+            rows = [
+                {
+                    'item_id': r.get('item_id'),
+                    'balance_qty': r.get('balance_qty'),
+                    'first_op': r.get('first_op'),
+                    'last_op': r.get('last_op'),
+                }
+                for r in rows
+            ]
             self.m_card.set_rows(rows)
         except Exception as e:
             log.exception("Błąd ładowania karty emp=%s df=%s dt=%s", emp_id, d_from, d_to)

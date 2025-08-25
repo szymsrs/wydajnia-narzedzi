@@ -84,10 +84,21 @@ class ReportsRepo:
         limit: int = 500,
     ) -> list[dict]:
         """
-        Zwraca listę wyjątków. Jeśli widok ma kolumnę czasu (created_at/ts/event_ts),
-        filtruje po niej; jeśli nie — działa bez filtra czasowego (ale nadal z limit).
+        Zwraca listę wyjątków w podanym przedziale czasu, opcjonalnie
+        filtrowaną po pracowniku i/lub narzędziu.
         """
-        ts = self._detect_ts_col("vw_exceptions", ("created_at", "ts", "event_ts"))
+        sql = text(
+            """
+            SELECT *
+            FROM vw_exceptions
+            WHERE created_at >= :df
+              AND created_at <  :dt
+              AND (:emp IS NULL OR employee_id = :emp)
+              AND (:itm IS NULL OR item_id = :itm)
+            ORDER BY created_at DESC
+            LIMIT :lim
+            """
+        )
         params = {
             "df": date_from,
             "dt": date_to,
@@ -95,31 +106,6 @@ class ReportsRepo:
             "itm": item_id,
             "lim": int(limit),
         }
-        if ts:
-            sql = text(
-                f"""
-                SELECT *
-                FROM vw_exceptions
-                WHERE {ts} >= :df AND {ts} < :dt
-                  AND (:emp IS NULL OR employee_id = :emp)
-                  AND (:itm IS NULL OR item_id = :itm)
-                ORDER BY {ts} DESC
-                LIMIT :lim
-                """
-            )
-        else:
-            log.warning("vw_exceptions bez kolumny czasu – zwracam bez filtra daty")
-            sql = text(
-                """
-                SELECT *
-                FROM vw_exceptions
-                WHERE (:emp IS NULL OR employee_id = :emp)
-                  AND (:itm IS NULL OR item_id = :itm)
-                ORDER BY 1 DESC
-                LIMIT :lim
-                """
-            )
-            # df/dt pozostają nieużyte — ale trzymamy sygnaturę
 
         with self.engine.connect() as conn:
             rows = conn.execute(sql, params).mappings().all()
@@ -150,41 +136,23 @@ class ReportsRepo:
             )
         return [dict(r) for r in rows]
 
-    def employee_card(
-        self,
-        employee_id: int,
-        date_from: datetime | date,
-        date_to: datetime | date,
-    ) -> list[dict]:
+    def employee_card(self, employee_id: int, date_from: datetime | date, date_to: datetime | date) -> list[dict]:
+        """Karta pracownika — filtruje po ``last_op``.
+
+        Zwraca rekordy z widoku ``vw_employee_card`` dla wskazanego pracownika,
+        których ``last_op`` mieści się w przedziale ``[date_from, date_to)``.
         """
-        Karta pracownika:
-         - jeśli widok ma kolumnę czasu (created_at/ts/event_ts), filtrujemy po niej,
-         - jeśli nie ma (u Ciebie są `first_op` / `last_op`), używamy nakładającego
-           się przedziału: last_op >= :df AND first_op < :dt.
-        """
-        ts = self._detect_ts_col("vw_employee_card", ("created_at", "ts", "event_ts"))
+        sql = text(
+            """
+            SELECT *
+            FROM vw_employee_card
+            WHERE employee_id = :emp
+              AND last_op >= :df
+              AND last_op <  :dt
+            ORDER BY last_op DESC, item_id DESC
+            """
+        )
         params = {"emp": int(employee_id), "df": date_from, "dt": date_to}
-        if ts:
-            sql = text(
-                f"""
-                SELECT *
-                FROM vw_employee_card
-                WHERE employee_id = :emp
-                  AND {ts} >= :df AND {ts} < :dt
-                ORDER BY {ts} DESC, item_id DESC
-                """
-            )
-        else:
-            # Widok bez timestampu – skorzystaj z first_op/last_op
-            sql = text(
-                """
-                SELECT *
-                FROM vw_employee_card
-                WHERE employee_id = :emp
-                  AND last_op >= :df AND first_op < :dt
-                ORDER BY last_op DESC, item_id DESC
-                """
-            )
 
         with self.engine.connect() as conn:
             rows = conn.execute(sql, params).mappings().all()

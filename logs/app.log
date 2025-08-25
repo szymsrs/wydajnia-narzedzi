@@ -3161,3 +3161,19 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown 
 2025-08-25 10:02:14|WARNING|test testowy|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
 2025-08-25 10:02:14|INFO|test testowy|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
 2025-08-25 10:02:15|INFO|test testowy|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:36:04|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 10:36:04|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 10:36:05|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 10:36:06|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 10:36:07|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 10:36:09|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 10:36:09|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 10:36:10|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 10:36:10|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:36:10|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:36:10|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 10:36:22|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 10:36:22|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item – używam pustych aliasów
+2025-08-25 10:36:22|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 10:36:22|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 10:36:23|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
