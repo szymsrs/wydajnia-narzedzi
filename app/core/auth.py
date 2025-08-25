@@ -142,11 +142,11 @@ class AuthRepo:
             password=db["password"],
             host=db["host"],
             port=int(db["port"]),
-            database=db["name"],
+            database=db["database"],
             query={"charset": "utf8mb4"},
         )
 
-        _dbg(f"[AuthRepo] init host={db['host']}:{db['port']} db={db['name']} user={db['user']}")
+        _dbg(f"[AuthRepo] init host={db['host']}:{db['port']} db={db['database']} user={db['user']}")
         try:
             self.engine = create_engine(
                 url,
@@ -603,6 +603,27 @@ class AuthRepo:
         with self.engine.begin() as c:
             c.execute(text("UPDATE employees SET rfid_uid=:uid WHERE id=:id"), dict(uid=uid, id=emp_id))
         return None
+
+    def count_active_admins(self) -> int:
+        row = self._fetchone(
+            """
+            SELECT COUNT(*) AS cnt FROM employees
+            WHERE is_admin=1 AND active=1
+            """
+        )
+        return int(row["cnt"]) if row else 0
+
+    def is_active_admin(self, emp_id: int) -> tuple[bool, bool]:
+        row = self._fetchone(
+            """
+            SELECT is_admin, active FROM employees WHERE id=:id
+            """,
+            id=emp_id,
+        )
+        if not row:
+            return False, False
+        return bool(row.get("is_admin")), bool(row.get("active"))
+
 
     # ===== API dla UI (logowania) =====
     def login_password(self, login: str, password: str, station_id: str):

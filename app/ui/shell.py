@@ -48,6 +48,7 @@ class MainWindow(QMainWindow):
         db_error: str | None = None,
         session: dict | None = None,
         repo=None,
+        reports_repo=None,
         settings=None,          # <-- NOWE
         rfid_reader=None,       # <-- NOWE
     ):
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow):
         self.db_error = db_error
         self.session = session or {}
         self.repo = repo
+        self.reports_repo = reports_repo
         self.settings = settings          # <-- NOWE
         self.rfid_reader = rfid_reader    # <-- NOWE
         self.widgets: dict[str, QWidget] = {}
@@ -289,16 +291,17 @@ class MainWindow(QMainWindow):
 
         # --- Raporty ---
         elif name == "Raporty":
-            if not self.db_ok or not self.repo:
+            if not self.db_ok or not (self.repo or self.reports_repo):
                 self._ensure_placeholder("Raporty", "Brak połączenia z DB")
                 w = self.widgets["Raporty"]
             else:
                 try:
-                    from app.dal.reports_repo import ReportsRepo
+                    from app.repo.reports_repo import ReportsRepo
                     from app.ui.reports_widget import ReportsWidget
 
-                    rep_repo = ReportsRepo(self.repo.engine)
+                    rep_repo = self.reports_repo or ReportsRepo(self.repo.engine)
                     self._replace_widget("Raporty", ReportsWidget(rep_repo, self))
+                    self.reports_repo = rep_repo
                     w = self.widgets["Raporty"]
                 except Exception as e:
                     import traceback

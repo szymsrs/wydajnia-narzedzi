@@ -2083,3 +2083,16 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't co
 2025-08-25 06:20:51|ERROR|Szymon Sierszulski|UNKNOWN|Błąd połączenia z DB – start w trybie offline
 2025-08-25 06:21:44|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
 2025-08-25 06:21:44|ERROR|Szymon Sierszulski|UNKNOWN|Błąd połączenia z DB – start w trybie offline
+2025-08-25 06:25:33|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 06:25:33|ERROR|Szymon Sierszulski|UNKNOWN|Błąd połączenia z DB – start w trybie offline
+2025-08-25 06:59:17|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 06:59:17|ERROR|Szymon Sierszulski|UNKNOWN|Błąd połączenia z DB – start w trybie offline
+2025-08-25 07:05:56|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 07:05:56|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-25 07:05:59|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 07:14:22|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 07:14:22|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-25 07:14:24|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 07:43:54|INFO|Szymon Sierszulski|UNKNOWN|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 07:43:54|INFO|Szymon Sierszulski|UNKNOWN|Połączenie z DB: OK
+2025-08-25 07:43:56|INFO|Szymon Sierszulski|UNKNOWN|Zalogowano: Szymon Sierszulski (admin) metodą pin

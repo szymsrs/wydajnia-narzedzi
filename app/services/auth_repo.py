@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Tuple
 
 from app.core.auth import AuthRepo
-from app.dal.db import create_engine_and_session, make_conn_str, ping
+from app.dal.db import create_engine_and_session, ping
 from app.infra.config import AppSettings
 
 
@@ -17,24 +17,20 @@ def init_auth_repo(settings: AppSettings) -> Tuple[AuthRepo | None, bool, Except
     """
 
     try:
-        conn_str = make_conn_str(
-            settings.db.host,
-            settings.db.port,
-            settings.db.user,
-            settings.db.password,
-            settings.db.database,
-        )
-        engine, _ = create_engine_and_session(conn_str)
-        ping(engine)
         cfg = {
             "db": {
                 "host": settings.db.host,
                 "port": settings.db.port,
                 "user": settings.db.user,
                 "password": settings.db.password,
+                # create_engine_and_session expects 'database'
+                "database": settings.db.database,
+                # AuthRepo still expects 'name'
                 "name": settings.db.database,
             }
         }
+        engine, _ = create_engine_and_session(cfg)
+        ping(engine)
         repo = AuthRepo(cfg)
         return repo, True, None
     except Exception as e:  # pragma: no cover - logged in main
