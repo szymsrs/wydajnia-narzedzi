@@ -1,0 +1,1365 @@
+{
+  "tables": {
+    "audit_logs": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "ts",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "os_user",
+          "type": "VARCHAR(100)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "workstation_id",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "action",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "result",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "details",
+          "type": "TEXT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": []
+    },
+    "document_lines": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "document_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "qty",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "unit_price_netto",
+          "type": "DECIMAL(12, 4)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "line_netto",
+          "type": "DECIMAL(12, 2)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "vat_proc",
+          "type": "DECIMAL(5, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "line_brutto",
+          "type": "DECIMAL(12, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "currency",
+          "type": "CHAR(3)",
+          "nullable": false,
+          "default": "'PLN'",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "parse_confidence",
+          "type": "DECIMAL(5, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_dl_doc",
+          "constrained_columns": [
+            "document_id"
+          ],
+          "referred_table": "documents",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {
+            "onupdate": "CASCADE",
+            "ondelete": "CASCADE"
+          }
+        },
+        {
+          "name": "fk_dl_item_ok",
+          "constrained_columns": [
+            "item_id"
+          ],
+          "referred_table": "items",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {}
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_dl_doc",
+          "column_names": [
+            "document_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "ix_dl_item",
+          "column_names": [
+            "item_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "documents": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "doc_type",
+          "type": "ENUM",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "number",
+          "type": "VARCHAR(64)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "doc_date",
+          "type": "DATE",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "currency",
+          "type": "CHAR(3)",
+          "nullable": false,
+          "default": "'PLN'",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "suma_netto",
+          "type": "DECIMAL(12, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "suma_vat",
+          "type": "DECIMAL(12, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "suma_brutto",
+          "type": "DECIMAL(12, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "parse_conf",
+          "type": "TINYINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "parse_warnings",
+          "type": "LONGTEXT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "parse_confidence",
+          "type": "DECIMAL(5, 2)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "source_file",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "idx_documents_date",
+          "column_names": [
+            "doc_date"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_documents_number",
+          "column_names": [
+            "number"
+          ],
+          "unique": false
+        },
+        {
+          "name": "uq_documents_doctype_number",
+          "column_names": [
+            "doc_type",
+            "number"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        }
+      ]
+    },
+    "employees": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "rfid_uid",
+          "type": "VARCHAR(32)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR(100)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR(100)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "is_admin",
+          "type": "TINYINT",
+          "nullable": false,
+          "default": "0",
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "password_hash",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "pin_hash",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "pin_plain",
+          "type": "VARCHAR(8)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "role",
+          "type": "ENUM",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "active",
+          "type": "TINYINT",
+          "nullable": true,
+          "default": "1",
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "rfid_uid",
+          "column_names": [
+            "rfid_uid"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        },
+        {
+          "name": "uq_employees_rfid_uid",
+          "column_names": [
+            "rfid_uid"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        },
+        {
+          "name": "username",
+          "column_names": [
+            "username"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        }
+      ]
+    },
+    "issue_session_lines": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "session_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "qty_reserved",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_issue_session_lines_session",
+          "constrained_columns": [
+            "session_id"
+          ],
+          "referred_table": "issue_sessions",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {
+            "onupdate": "CASCADE",
+            "ondelete": "CASCADE"
+          }
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_issue_lines_item",
+          "column_names": [
+            "item_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_issue_lines_session_item",
+          "column_names": [
+            "session_id",
+            "item_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "issue_sessions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "station_id",
+          "type": "VARCHAR(64)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "operator_user_id",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "employee_id",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "type": "ENUM",
+          "nullable": false,
+          "default": "'OPEN'",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "started_at",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "expires_at",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "confirmed_at",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "operation_uuid",
+          "type": "CHAR(36)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "note",
+          "type": "VARCHAR(255)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "idx_issue_sessions_expires",
+          "column_names": [
+            "expires_at"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_issue_sessions_status",
+          "column_names": [
+            "status"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "items": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "code",
+          "type": "VARCHAR(64)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "unit",
+          "type": "VARCHAR(16)",
+          "nullable": false,
+          "default": "'SZT'",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "min_stock",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": "0",
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "max_per_employee",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "active",
+          "type": "TINYINT",
+          "nullable": true,
+          "default": "1",
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "code",
+          "column_names": [
+            "code"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        }
+      ]
+    },
+    "locations": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(100)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "type",
+          "type": "ENUM",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "employee_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "uq_locations_employee",
+          "column_names": [
+            "employee_id"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        }
+      ]
+    },
+    "lots": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "document_line_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "qty_received",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "qty_available",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "unit_cost_netto",
+          "type": "DECIMAL(12, 4)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "currency",
+          "type": "CHAR(3)",
+          "nullable": false,
+          "default": "'PLN'",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "ts",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_lots_dl",
+          "constrained_columns": [
+            "document_line_id"
+          ],
+          "referred_table": "document_lines",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {
+            "onupdate": "CASCADE",
+            "ondelete": "CASCADE"
+          }
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_lots_dl",
+          "column_names": [
+            "document_line_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_lots_item",
+          "column_names": [
+            "item_id",
+            "ts",
+            "id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "movement_allocations": {
+      "columns": [
+        {
+          "name": "movement_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "lot_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "qty",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "unit_cost_netto",
+          "type": "DECIMAL(12, 4)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "movement_id",
+        "lot_id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_ma_lot",
+          "constrained_columns": [
+            "lot_id"
+          ],
+          "referred_table": "lots",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {
+            "onupdate": "CASCADE"
+          }
+        },
+        {
+          "name": "fk_ma_mv",
+          "constrained_columns": [
+            "movement_id"
+          ],
+          "referred_table": "movements",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {
+            "onupdate": "CASCADE",
+            "ondelete": "CASCADE"
+          }
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_ma_lot",
+          "column_names": [
+            "lot_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "movements": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "ts",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "qty",
+          "type": "DECIMAL(12, 3)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "from_location_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "to_location_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "movement_type",
+          "type": "ENUM",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "document_line_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "operation_uuid",
+          "type": "CHAR(36)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "idx_movements_item_ts",
+          "column_names": [
+            "item_id",
+            "ts"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "stock": {
+      "columns": [
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": "0",
+          "autoincrement": false,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "item_id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "stock_ibfk_1",
+          "constrained_columns": [
+            "item_id"
+          ],
+          "referred_table": "items",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {}
+        }
+      ],
+      "indexes": []
+    },
+    "transaction_items": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "operation_uuid",
+          "type": "CHAR(36)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "type": "DECIMAL(12, 3)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "direction",
+          "type": "ENUM",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "reason",
+          "type": "VARCHAR(64)",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_ti_item",
+          "constrained_columns": [
+            "item_id"
+          ],
+          "referred_table": "items",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {}
+        },
+        {
+          "name": "fk_ti_tx",
+          "constrained_columns": [
+            "operation_uuid"
+          ],
+          "referred_table": "transactions",
+          "referred_columns": [
+            "operation_uuid"
+          ],
+          "referred_schema": null,
+          "options": {
+            "ondelete": "CASCADE"
+          }
+        }
+      ],
+      "indexes": [
+        {
+          "name": "ix_ti_item",
+          "column_names": [
+            "item_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "ix_ti_op",
+          "column_names": [
+            "operation_uuid"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    "transactions": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": true,
+          "comment": null
+        },
+        {
+          "name": "operation_uuid",
+          "type": "CHAR(36)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "movement_type",
+          "type": "VARCHAR(20)",
+          "nullable": false,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "employee_id",
+          "type": "INTEGER",
+          "nullable": false,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "item_id",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "nullable": true,
+          "default": null,
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "type",
+          "type": "ENUM",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "issued_without_return",
+          "type": "TINYINT",
+          "nullable": true,
+          "default": "0",
+          "autoincrement": false,
+          "comment": null
+        },
+        {
+          "name": "reason",
+          "type": "TEXT",
+          "nullable": true,
+          "default": null,
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": true,
+          "default": "current_timestamp()",
+          "autoincrement": null,
+          "comment": null
+        },
+        {
+          "name": "rfid_confirmed",
+          "type": "TINYINT",
+          "nullable": true,
+          "default": "0",
+          "autoincrement": false,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "name": "fk_trx_employee",
+          "constrained_columns": [
+            "employee_id"
+          ],
+          "referred_table": "employees",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {}
+        },
+        {
+          "name": "transactions_ibfk_3",
+          "constrained_columns": [
+            "item_id"
+          ],
+          "referred_table": "items",
+          "referred_columns": [
+            "id"
+          ],
+          "referred_schema": null,
+          "options": {}
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_transactions_iwr",
+          "column_names": [
+            "issued_without_return"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_transactions_uuid_confirmed",
+          "column_names": [
+            "operation_uuid",
+            "rfid_confirmed"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_trx_employee",
+          "column_names": [
+            "employee_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tx_emp_item",
+          "column_names": [
+            "employee_id",
+            "item_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_tx_iwr",
+          "column_names": [
+            "issued_without_return"
+          ],
+          "unique": false
+        },
+        {
+          "name": "item_id",
+          "column_names": [
+            "item_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "uq_transactions_operation_uuid",
+          "column_names": [
+            "operation_uuid"
+          ],
+          "unique": true,
+          "type": "UNIQUE"
+        }
+      ]
+    }
+  },
+  "views": [
+    "v_employee_holdings",
+    "vw_employee_card",
+    "vw_exceptions",
+    "vw_rw_summary",
+    "vw_stock_available",
+    "vw_stock_on_hand"
+  ]
+}

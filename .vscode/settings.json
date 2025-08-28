@@ -16,5 +16,21 @@
     "python.linting.enabled": true,
     "python.defaultInterpreterPath": "C:\\Users\\Szymon Sierszulski\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
     "git.autofetch": true,
-    "git.enableSmartCommit": true
+    "git.enableSmartCommit": true,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "192.168.36.156",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "wydajnia",
+            "database": "wydajnia",
+            "username": "read",
+            "askForPassword": true
+        }
+    ]
 }
