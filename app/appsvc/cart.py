@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
@@ -15,8 +15,8 @@ class SessionManager:
 
     def ensure_open_session(self, employee_id: Optional[int] = None) -> Dict:
         """
-        Zapewnia istnienie aktywnej (OPEN) sesji koszyka. Jeżeli brak – tworzy nową.
-        Wykorzystuje kombinację (operator_user_id, station_id) aby utrzymać jedną aktywną sesję na stanowisku.
+        Zapewnia istnienie aktywnej (OPEN) sesji koszyka. JeĹĽeli brak â€“ tworzy nowÄ….
+        Wykorzystuje kombinacjÄ™ (operator_user_id, station_id) aby utrzymaÄ‡ jednÄ… aktywnÄ… sesjÄ™ na stanowisku.
         """
         with self.engine.begin() as conn:
             row = conn.execute(
@@ -36,7 +36,7 @@ class SessionManager:
                 {"op": self.operator_user_id, "st": self.station_id or None},
             ).mappings().first()
             if row:
-                # jeżeli mamy employee_id i w sesji jest puste – dopisz
+                # jeĹĽeli mamy employee_id i w sesji jest puste â€“ dopisz
                 if employee_id and not row.get("employee_id"):
                     conn.execute(
                         text("UPDATE issue_sessions SET employee_id=:emp WHERE id=:id"),
@@ -46,7 +46,7 @@ class SessionManager:
                     row["employee_id"] = int(employee_id)
                 return dict(row)
 
-            # brak – utwórz nową sesję OPEN
+            # brak â€“ utwĂłrz nowÄ… sesjÄ™ OPEN
             res = conn.execute(
                 text(
                     """
@@ -67,8 +67,8 @@ class SessionManager:
 
     def cancel_session(self, session_id: int) -> None:
         """
-        Oznacza sesję jako CANCELLED (ustawia też expires_at). Linia w issue_session_lines
-        pozostają do audytu, ale sesja nie może być już zatwierdzona.
+        Oznacza sesjÄ™ jako CANCELLED (ustawia teĹĽ expires_at). Linia w issue_session_lines
+        pozostajÄ… do audytu, ale sesja nie moĹĽe byÄ‡ juĹĽ zatwierdzona.
         """
         with self.engine.begin() as conn:
             conn.execute(
@@ -94,7 +94,7 @@ class CartRepository:
 
     def add(self, session_id: int, item_id: int, delta: float = 1.0) -> float:
         """
-        Zwiększa rezerwację danej pozycji o `delta`. Zwraca nową ilość. Gdy wynik <=0 – usuwa linię.
+        ZwiÄ™ksza rezerwacjÄ™ danej pozycji o `delta`. Zwraca nowÄ… iloĹ›Ä‡. Gdy wynik <=0 â€“ usuwa liniÄ™.
         """
         current = self._get_current_qty(session_id, item_id)
         new_qty = (current or 0.0) + float(delta)
@@ -123,7 +123,7 @@ class CartRepository:
 
     def set_qty(self, session_id: int, item_id: int, qty: float) -> float:
         """
-        Ustawia dokładną ilość rezerwacji. Wartość 0 usuwa linię.
+        Ustawia dokĹ‚adnÄ… iloĹ›Ä‡ rezerwacji. WartoĹ›Ä‡ 0 usuwa liniÄ™.
         """
         with self.engine.begin() as conn:
             if qty <= 0:
@@ -159,19 +159,26 @@ class CartRepository:
             conn.execute(text("DELETE FROM issue_session_lines WHERE session_id=:sid"), {"sid": int(session_id)})
 
     def list_lines(self, session_id: int) -> List[Dict]:
-        sql = text(
-            """
-            SELECT l.item_id, l.qty_reserved, i.sku, i.name, i.uom
-              FROM issue_session_lines l
-              JOIN items i ON i.id = l.item_id
-             WHERE l.session_id = :sid
-             ORDER BY i.name
-            """
-        )
         with self.engine.connect() as conn:
-            rows = conn.execute(sql, {"sid": int(session_id)}).mappings().all()
+            try:
+                sql = text("""
+                    SELECT l.item_id, l.qty_reserved, i.sku, i.name, i.uom
+                      FROM issue_session_lines l
+                      JOIN items i ON i.id = l.item_id
+                     WHERE l.session_id = :sid
+                     ORDER BY i.name
+                    """)
+                rows = conn.execute(sql, {"sid": int(session_id)}).mappings().all()
+            except Exception:
+                sql = text("""
+                    SELECT l.item_id, l.qty_reserved, i.code AS sku, i.name, i.unit AS uom
+                      FROM issue_session_lines l
+                      JOIN items i ON i.id = l.item_id
+                     WHERE l.session_id = :sid
+                     ORDER BY i.name
+                    """)
+                rows = conn.execute(sql, {"sid": int(session_id)}).mappings().all()
         return [dict(r) for r in rows]
-
     def reserved_map(self, session_id: int) -> Dict[int, float]:
         with self.engine.connect() as conn:
             rows = conn.execute(
@@ -187,23 +194,79 @@ class StockRepository:
         self.engine = engine
 
     def list_available(self, q: str = "", limit: int = 200) -> List[Dict]:
-        """Ładuje pozycje z widoku vw_stock_available połączone z items (SKU, nazwa, jm)."""
+        """
+        Ładuje listę dostępnych pozycji do wydania. Priorytetowo używa widoku
+        `vw_stock_available`. Jeśli widok nie istnieje, spada do agregacji na tabeli `stock`.
+        W obu przypadkach łączy z `items` i zwraca spójne kolumny: sku, name, uom,
+        qty_on_hand, qty_reserved_open, qty_available.
+        """
         pattern = f"%{q.strip()}%" if q else "%"
-        sql = text(
-            """
-            SELECT i.id AS item_id, i.sku, i.name, i.uom,
-                   v.qty_on_hand, v.qty_reserved_open, v.qty_available
-              FROM vw_stock_available v
-              JOIN items i ON i.id = v.item_id
-             WHERE (i.name LIKE :q OR i.sku LIKE :q)
-             ORDER BY i.name
-             LIMIT :lim
-            """
-        )
         with self.engine.connect() as conn:
+            # 1) Widok + i.sku/i.uom
+            try:
+                sql = text(
+                    """
+                    SELECT i.id AS item_id, i.sku, i.name, i.uom,
+                           v.qty_on_hand, v.qty_reserved_open, v.qty_available
+                      FROM vw_stock_available v
+                      JOIN items i ON i.id = v.item_id
+                     WHERE (i.name LIKE :q OR i.sku LIKE :q)
+                     ORDER BY i.name
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                return [dict(r) for r in rows]
+            except Exception:
+                pass
+
+            # 2) Widok + i.code/i.unit (aliasy kolumn items)
+            try:
+                sql = text(
+                    """
+                    SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
+                           v.qty_on_hand, v.qty_reserved_open, v.qty_available
+                      FROM vw_stock_available v
+                      JOIN items i ON i.id = v.item_id
+                     WHERE (i.name LIKE :q OR i.code LIKE :q)
+                     ORDER BY i.name
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                return [dict(r) for r in rows]
+            except Exception:
+                pass
+
+            # 3) Fallback do tabeli `stock` (bez widoku): agregacja + rezerwacje z issue_session_lines
+            sql = text(
+                """
+                WITH totals AS (
+                    SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
+                      FROM stock s
+                  GROUP BY s.item_id
+                ),
+                reservations AS (
+                    SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
+                      FROM issue_sessions s
+                      JOIN issue_session_lines l ON l.session_id = s.id
+                     WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
+                  GROUP BY l.item_id
+                )
+                SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
+                       t.qty_on_hand,
+                       COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
+                       t.qty_on_hand - COALESCE(r.qty_reserved_open,0) AS qty_available
+                  FROM totals t
+                  JOIN items i ON i.id = t.item_id
+                  LEFT JOIN reservations r ON r.item_id = t.item_id
+                 WHERE (i.name LIKE :q OR i.code LIKE :q)
+                 ORDER BY i.name
+                 LIMIT :lim
+                """
+            )
             rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
         return [dict(r) for r in rows]
-
 
 # Ta klasa odpowiada za finalizację wydania (zatwierdzenie koszyka)
 class CheckoutService:
@@ -213,8 +276,8 @@ class CheckoutService:
 
     def finalize_issue(self, session_id: int, employee_id: int) -> Dict:
         """
-        Przekształca linie w issue_session_lines na wywołania domenowe issue_tool.
-        Po sukcesie zamyka sesję (status=CONFIRMED). Zwraca podsumowanie.
+        PrzeksztaĹ‚ca linie w issue_session_lines na wywoĹ‚ania domenowe issue_tool.
+        Po sukcesie zamyka sesjÄ™ (status=CONFIRMED). Zwraca podsumowanie.
         """
         with self.engine.connect() as conn:
             rows = conn.execute(
@@ -246,13 +309,13 @@ class CheckoutService:
         return {"status": "success", "lines": len(lines), "flagged": flagged}
 
 
-# Ta klasa odpowiada za obsługę karty RFID / PIN (modal + mapowanie pracownika)
+# Ta klasa odpowiada za obsĹ‚ugÄ™ karty RFID / PIN (modal + mapowanie pracownika)
 class RfidService:
     def __init__(self, reader: Any | None = None) -> None:
         self.reader = reader
 
     def ask_token(self, parent: Any | None = None) -> Optional[str]:
-        """Wyświetla modal z prośbą o przyłożenie karty (lub PIN)."""
+        """WyĹ›wietla modal z proĹ›bÄ… o przyĹ‚oĹĽenie karty (lub PIN)."""
         try:
             from app.ui.rfid_modal import RFIDModal  # type: ignore
             return RFIDModal.ask(self.reader, allow_pin=True, timeout=10, parent=parent)
@@ -261,7 +324,7 @@ class RfidService:
                 # awaryjnie prosty input tekstowy
                 from PySide6 import QtWidgets
                 token, ok = QtWidgets.QInputDialog.getText(
-                    parent, "Przyłóż kartę", "UID karty lub PIN (tryb awaryjny):"
+                    parent, "PrzyĹ‚ĂłĹĽ kartÄ™", "UID karty lub PIN (tryb awaryjny):"
                 )
                 token = (token or "").strip()
                 return token if ok and token else None
@@ -269,7 +332,7 @@ class RfidService:
                 return None
 
     def resolve_employee_id(self, repo_any: Any, token: str) -> Optional[int]:
-        """Mapuje UID/PIN do employee_id korzystając z repo (różne warianty API)."""
+        """Mapuje UID/PIN do employee_id korzystajÄ…c z repo (rĂłĹĽne warianty API)."""
         for name in ("get_employee_id_by_card", "get_employee_by_card", "resolve_employee_by_uid"):
             fn = getattr(repo_any, name, None)
             if callable(fn):
@@ -286,10 +349,12 @@ class RfidService:
         return None
 
     def verify_employee(self, repo_any: Any, expected_employee_id: int, parent: Any | None = None) -> bool:
-        """Weryfikuje, że token należy do wskazanego pracownika."""
+        """Weryfikuje, ĹĽe token naleĹĽy do wskazanego pracownika."""
         token = self.ask_token(parent)
         if not token:
             return False
         mapped = self.resolve_employee_id(repo_any, token)
         return (mapped is not None) and (int(mapped) == int(expected_employee_id))
+
+
 

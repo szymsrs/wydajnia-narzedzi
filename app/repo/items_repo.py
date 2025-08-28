@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.engine import Engine
 
 
@@ -13,29 +14,50 @@ class ItemsRepo:
 
     # ---------- API ----------
     def find_items(self, q: str, limit: int = 200) -> list[dict]:
-        """Search items by SKU or name using LIKE filters."""
-        sql = text(
-            """
-            SELECT id, sku, name
-            FROM items
-            WHERE (
-                sku  LIKE CONCAT('%', :q, '%')
-                OR name LIKE CONCAT('%', :q, '%')
-            )
-            ORDER BY sku
-            LIMIT :lim
-            """
-        )
+        """Wyszukiwanie po SKU/kodzie lub nazwie, zgodnie ze schematem (sku/code, unit/uom).
+
+        Zwracamy zawsze klucze: id, sku, name (sku jest aliasem na code, jeżeli brak kolumny sku).
+        """
+        q = q or ""
+        pattern = f"%{q}%"
         with self.engine.connect() as conn:
-            rows = (
-                conn.execute(sql, {"q": q, "lim": int(limit)})
-                .mappings()
-                .all()
-            )
-        return [dict(r) for r in rows]
+            try:
+                sql = text(
+                    """
+                    SELECT id, sku, name
+                      FROM items
+                     WHERE (sku LIKE :q OR name LIKE :q)
+                     ORDER BY sku
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                return [dict(r) for r in rows]
+            except OperationalError:
+                # fallback na kolumny 'code' i alias do 'sku'
+                sql = text(
+                    """
+                    SELECT id, code AS sku, name
+                      FROM items
+                     WHERE (code LIKE :q OR name LIKE :q)
+                     ORDER BY code
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                return [dict(r) for r in rows]
 
     def get_item_id_by_sku(self, sku: str) -> int | None:
-        sql = text("SELECT id FROM items WHERE sku = :sku")
+        """Zwraca ID po SKU/kodzie. Obsługuje zarówno kolumnę 'sku', jak i 'code'."""
+        sku = (sku or "").strip()
+        if not sku:
+            return None
         with self.engine.connect() as conn:
-            row = conn.execute(sql, {"sku": sku}).scalar_one_or_none()
+            # najpierw próbuj po 'sku'
+            try:
+                row = conn.execute(text("SELECT id FROM items WHERE sku = :v LIMIT 1"), {"v": sku}).scalar_one_or_none()
+            except OperationalError:
+                row = None
+            if row is None:
+                row = conn.execute(text("SELECT id FROM items WHERE code = :v LIMIT 1"), {"v": sku}).scalar_one_or_none()
         return int(row) if row is not None else None

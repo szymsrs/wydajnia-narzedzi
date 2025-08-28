@@ -255,6 +255,7 @@ class MainWindow(QMainWindow):
                 try:
                     from PySide6 import QtWidgets
                     from app.ui.ops_issue_dialog import OpsIssueDialog
+                    from app.ui.cart_dialog import CartDialog
                     from app.ui.ops_return_dialog import OpsReturnDialog
                     from app.ui.rw_import_dialog import RWImportDialog
 
@@ -277,8 +278,17 @@ class MainWindow(QMainWindow):
                     btn_issue = QtWidgets.QPushButton("Wydanie ręczne")
                     btn_issue.setMinimumHeight(42)
                     def _open_issue():
-                        log.info("Operacje – otwarto dialog: %s", "ISSUE")
-                        OpsIssueDialog(parent=self, **params).exec()
+                        log.info("Operacje — otwarto dialog: %s", "ISSUE")
+                        # Nowa ścieżka: bezpośrednio magazyn/koszyk z wyborem pracownika
+                        CartDialog(
+                            self.repo.engine,
+                            station_id=self.session.get("station", "UNKNOWN"),
+                            operator_user_id=int(self.session.get("user_id") or self.session.get("id") or 0),
+                            employee_id=None,
+                            repo=self.repo,
+                            reports_repo=self.reports_repo,
+                            parent=self,
+                        ).exec()
 
                     btn_issue.clicked.connect(_open_issue)                    
 

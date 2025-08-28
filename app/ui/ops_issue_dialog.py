@@ -1,6 +1,8 @@
 # app/ui/ops_issue_dialog.py
 from __future__ import annotations
 from app.ui.stock_picker import StockPickerDialog
+from app.ui.cart_dialog import CartDialog
+from app.appsvc.cart import SessionManager, CartRepository, CheckoutService, RfidService
 import uuid
 import logging
 from typing import Any
@@ -72,8 +74,8 @@ class OpsIssueDialog(QtWidgets.QDialog):
         self.add_btn.clicked.connect(self._add_line)
         self.sku_edit.returnPressed.connect(self._add_line)
 
-        self.btnPick = QtWidgets.QPushButton("Dodaj ze stanu")
-        self.btnPick.clicked.connect(self.on_pick_from_stock)
+        self.btnPick = QtWidgets.QPushButton("Koszyk (magazyn)")
+        self.btnPick.clicked.connect(self.on_open_cart)
 
         sku_lay = QtWidgets.QHBoxLayout()
         sku_lay.addWidget(self.sku_edit, 1)
@@ -92,7 +94,7 @@ class OpsIssueDialog(QtWidgets.QDialog):
         )
         btn_box.button(QtWidgets.QDialogButtonBox.Ok).setText("Wydaj")
         btn_box.button(QtWidgets.QDialogButtonBox.Cancel).setText("Anuluj")
-        btn_box.accepted.connect(self._on_accept)
+        btn_box.accepted.connect(self._on_accept_cart)
         btn_box.rejected.connect(self.reject)
 
         # --- layout
@@ -181,6 +183,25 @@ class OpsIssueDialog(QtWidgets.QDialog):
 
         return True
 
+    def on_open_cart(self):
+        """Otwiera dialog koszyka z listą dostępnych pozycji i przyciskami +/-."""
+        try:
+            emp_id = self.employee_cb.currentData() or None
+            if self.repo is None or not hasattr(self.repo, "engine"):
+                QtWidgets.QMessageBox.warning(self, "Brak DB", "Repozytorium nie ma połączenia z DB.")
+                return
+            dlg = CartDialog(
+                self.repo.engine,
+                station_id=self.station_id,
+                operator_user_id=int(self.operator_user_id or 0),
+                employee_id=int(emp_id) if emp_id is not None else None,
+                parent=self,
+            )
+            dlg.exec()
+        except Exception:
+            self.log.exception("Błąd otwierania koszyka")
+            QtWidgets.QMessageBox.critical(self, "Błąd", "Nie udało się otworzyć koszyka.")
+
     # ===================== „Dodaj ze stanu” =====================
 
     def on_pick_from_stock(self):
@@ -213,6 +234,76 @@ class OpsIssueDialog(QtWidgets.QDialog):
             btn_rm = QtWidgets.QPushButton("Usuń")
             btn_rm.clicked.connect(self._remove_row)
             self.table.setCellWidget(r, 4, btn_rm)
+
+    # ===================== Finalizacja (wersja koszyk) =====================
+
+    def _on_accept_cart(self) -> None:
+        try:
+            emp_id = self.employee_cb.currentData()
+            if emp_id is None:
+                QtWidgets.QMessageBox.warning(self, "Błąd", "Wybierz pracownika")
+                return
+
+            # Zbierz linie z tabeli i dodaj do koszyka
+            lines: list[tuple[int, int]] = []
+            for r in range(self.table.rowCount()):
+                sku_item = self.table.item(r, 0)
+                item_id = sku_item.data(QtCore.Qt.UserRole) if sku_item else None
+                qty_edit = self.table.cellWidget(r, 3)
+                qty = 0
+                if isinstance(qty_edit, QtWidgets.QLineEdit):
+                    try:
+                        qty = int(qty_edit.text())
+                    except Exception:
+                        qty = 0
+                if item_id and qty > 0:
+                    lines.append((int(item_id), int(qty)))
+
+            # scal identyczne pozycje
+            merged: dict[int, int] = {}
+            for item_id, qty in lines:
+                merged[item_id] = merged.get(item_id, 0) + qty
+
+            # utwórz/uzupełnij sesję OPEN
+            sess_mgr = SessionManager(self.repo.engine, self.station_id, int(self.operator_user_id or 0))
+            session = sess_mgr.ensure_open_session(int(emp_id))
+            session_id = int(session["id"]) if session else 0
+
+            cart = CartRepository(self.repo.engine)
+            for item_id, qty in merged.items():
+                cart.add(session_id, int(item_id), int(qty))
+
+            # wymagaj karty/pinu pracownika
+            if not RfidService().verify_employee(self.repo, int(emp_id), self):
+                return
+
+            # potwierdzenie
+            num_lines = len(cart.list_lines(session_id))
+            if (
+                QtWidgets.QMessageBox.question(
+                    self,
+                    "Potwierdź",
+                    f"Czy wydać pozycje z koszyka? (wierszy: {num_lines})",
+                )
+                != QtWidgets.QMessageBox.Yes
+            ):
+                return
+
+            # finalizacja
+            res = CheckoutService(self.repo.engine, self.repo).finalize_issue(session_id, int(emp_id))
+            if res.get("status") == "success":
+                msg = f"Wydanie zapisane (wierszy: {res.get('lines')})"
+                if res.get("flagged"):
+                    msg += "\nDodano do Wyjątki"
+                QtWidgets.QMessageBox.information(self, "OK", msg)
+                self.accept()
+            elif res.get("status") == "empty":
+                QtWidgets.QMessageBox.warning(self, "Koszyk pusty", "Brak pozycji do wydania.")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Błąd", f"Nie udało się zapisać: {res}")
+        except Exception as e:  # pragma: no cover - UI error path
+            self.log.exception("Błąd operacji ISSUE (_on_accept_cart)")
+            QtWidgets.QMessageBox.critical(self, "Błąd", str(e))
 
     # ===================== Logika linii (ręczne dodawanie po SKU) =====================
 
