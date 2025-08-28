@@ -1,6 +1,7 @@
 # app/ui/ops_issue_dialog.py
 from __future__ import annotations
-
+from app.ui.stock_picker import StockPickerDialog
+import uuid
 import logging
 from typing import Any
 
@@ -64,15 +65,20 @@ class OpsIssueDialog(QtWidgets.QDialog):
             except Exception:
                 self.log.exception("Nie udało się pobrać listy pracowników")
 
-        # --- SKU entry
+        # --- SKU entry + przycisk "Dodaj ze stanu"
         self.sku_edit = QtWidgets.QLineEdit()
         self.sku_edit.setPlaceholderText("SKU")
         self.add_btn = QtWidgets.QPushButton("Dodaj")
         self.add_btn.clicked.connect(self._add_line)
         self.sku_edit.returnPressed.connect(self._add_line)
+
+        self.btnPick = QtWidgets.QPushButton("Dodaj ze stanu")
+        self.btnPick.clicked.connect(self.on_pick_from_stock)
+
         sku_lay = QtWidgets.QHBoxLayout()
         sku_lay.addWidget(self.sku_edit, 1)
         sku_lay.addWidget(self.add_btn)
+        sku_lay.addWidget(self.btnPick)
 
         # --- table of lines
         self.table = QtWidgets.QTableWidget(0, 5)
@@ -175,7 +181,40 @@ class OpsIssueDialog(QtWidgets.QDialog):
 
         return True
 
-    # ===================== Logika linii =====================
+    # ===================== „Dodaj ze stanu” =====================
+
+    def on_pick_from_stock(self):
+        dlg = StockPickerDialog(self.repo, self)
+        if dlg.exec() == QtWidgets.QDialog.Accepted:
+            sel = dlg.get_selected()
+            if not sel:
+                QtWidgets.QMessageBox.information(self, "Info", "Nie wybrano pozycji lub ilości.")
+                return
+            item_id, qty = sel
+
+            r = self.table.rowCount()
+            self.table.insertRow(r)
+
+            # Kol. 0: SKU (tu pokazujemy ID jeśli nie znamy SKU) + UserRole=item_id
+            sku_item = QtWidgets.QTableWidgetItem(str(item_id))
+            sku_item.setData(QtCore.Qt.UserRole, int(item_id))
+            self.table.setItem(r, 0, sku_item)
+
+            # Kol. 1 i 2: nazwa/JM – nie mamy ich tutaj, zostawiamy puste (opcjonalnie można dociągnąć z repo)
+            self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(""))
+            self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(""))
+
+            # Kol. 3: ilość (edytowalne pole z walidatorem) – ustaw z wyboru
+            qty_edit = QtWidgets.QLineEdit(str(int(qty)))
+            qty_edit.setValidator(QtGui.QIntValidator(1, 99999, qty_edit))
+            self.table.setCellWidget(r, 3, qty_edit)
+
+            # Kol. 4: przycisk usuń
+            btn_rm = QtWidgets.QPushButton("Usuń")
+            btn_rm.clicked.connect(self._remove_row)
+            self.table.setCellWidget(r, 4, btn_rm)
+
+    # ===================== Logika linii (ręczne dodawanie po SKU) =====================
 
     def _add_line(self) -> None:
         sku = self.sku_edit.text().strip()
@@ -296,23 +335,72 @@ class OpsIssueDialog(QtWidgets.QDialog):
                 return
 
             # === KROK 3: ZAPIS OPERACJI ===
-            # UWAGA: flaga issued_without_return=True (zgodnie z wymaganiem oznaczania takich przypadków).
-            self.repo.create_operation(
-                kind="ISSUE",
-                station=self.station_id,
-                operator_user_id=self.operator_user_id,
-                employee_user_id=int(emp_id),
-                lines=merged_lines,
-                issued_without_return=True,
-                note="",
-            )
+            # Nowa ścieżka: wywołania domenowe per-linia (AuthRepo.issue_tool),
+            # z poprawnym flagowaniem issued_without_return.
+            flagged = False
+            open_qty = 0
+            try:
+                # pomocniczo – czy pracownik ma otwarte sztuki
+                if hasattr(self.repo, "get_employee_open_qty"):
+                    open_qty = int(self.repo.get_employee_open_qty(int(emp_id)))
+            except Exception:
+                self.log.exception("Nie udało się pobrać salda pracownika")
+
+            if open_qty > 0:
+                # zapytaj o natychmiastowy zwrot -> bundle
+                if (
+                    QtWidgets.QMessageBox.question(
+                        self,
+                        "Potwierdź",
+                        "Pracownik ma otwarte sztuki. Zwrot teraz?",
+                    )
+                    == QtWidgets.QMessageBox.Yes
+                ):
+                    if hasattr(self.repo, "issue_return_bundle"):
+                        res = self.repo.issue_return_bundle(
+                            employee_id=int(emp_id),
+                            returns=merged_lines,
+                            issues=merged_lines,
+                        )
+                        flagged = flagged or bool(res.get("flagged"))
+                    else:
+                        # fallback – zwykłe ISSUE, jeśli brak bundle w repo
+                        for item_id, qty in merged_lines:
+                            res = self.repo.issue_tool(
+                                employee_id=int(emp_id),
+                                item_id=item_id,
+                                qty=qty,
+                                operation_uuid=str(uuid.uuid4()),
+                            )
+                            flagged = flagged or bool(res.get("flagged"))
+                else:
+                    for item_id, qty in merged_lines:
+                        res = self.repo.issue_tool(
+                            employee_id=int(emp_id),
+                            item_id=item_id,
+                            qty=qty,
+                            operation_uuid=str(uuid.uuid4()),
+                        )
+                        flagged = flagged or bool(res.get("flagged"))
+            else:
+                for item_id, qty in merged_lines:
+                    res = self.repo.issue_tool(
+                        employee_id=int(emp_id),
+                        item_id=item_id,
+                        qty=qty,
+                        operation_uuid=str(uuid.uuid4()),
+                    )
+                    flagged = flagged or bool(res.get("flagged"))
 
             self.log.info(
                 "Issued %d lines to employee %s (RFID verified)",
                 len(merged_lines),
                 emp_id,
             )
-            QtWidgets.QMessageBox.information(self, "OK", "Wydanie zapisane")
+            msg = "Wydanie zapisane"
+            if flagged:
+                msg += "\nDodano do Wyjątki"
+            QtWidgets.QMessageBox.information(self, "OK", msg)
             self.accept()
         except Exception as e:  # pragma: no cover - UI error path
             self.log.exception("Błąd operacji ISSUE (_on_accept)")

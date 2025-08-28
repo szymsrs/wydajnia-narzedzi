@@ -853,3 +853,20 @@ class AuthRepo:
         }
         _dbg(f"[SESS] created {sess}")
         return sess
+
+    # NEW: szybkie wyszukiwanie stanów po nazwie/SKU
+    def search_stock(self, q: str, limit: int = 200) -> list[dict]:
+        pattern = f"%{q.strip()}%" if q else "%"
+        sql = """
+            SELECT i.id AS item_id, i.sku, i.name, i.uom,
+                COALESCE(SUM(l.qty_available), 0) AS qty_available
+            FROM lots l
+            JOIN items i ON i.id = l.item_id
+            WHERE (i.name LIKE :q OR i.sku LIKE :q) AND COALESCE(l.qty_available,0) > 0
+            GROUP BY i.id, i.sku, i.name, i.uom
+            ORDER BY i.name
+            LIMIT :lim
+        """
+        with self.engine.connect() as c:
+            rows = c.execute(text(sql), {"q": pattern, "lim": int(limit)}).mappings().all()
+        return [dict(r) for r in rows]

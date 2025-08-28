@@ -3266,3 +3266,156 @@ TypeError: ReturnDialog.__init__() got an unexpected keyword argument 'reports_r
 2025-08-25 12:57:10|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
 2025-08-25 12:57:32|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
 2025-08-25 12:57:32|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 13:42:36|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 13:42:36|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 13:42:36|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 13:42:38|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 13:42:38|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 13:42:38|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 13:42:39|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: ISSUE
+2025-08-25 13:42:39|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_issue_dialog|IssueDialog init (station=STAN-01, operator=1)
+2025-08-25 13:42:41|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: RETURN
+2025-08-25 13:42:41|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_return_dialog|ReturnDialog init (station=STAN-01, operator=1)
+2025-08-25 13:42:43|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-25 13:42:43|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-25 13:42:44|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-25 13:42:44|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item, movement_type, reason – używam pustych aliasów
+2025-08-25 13:42:44|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-25 13:42:44|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-25 13:42:45|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-25 13:42:46|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 13:42:46|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 13:42:48|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: RETURN
+2025-08-25 13:42:48|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_return_dialog|ReturnDialog init (station=STAN-01, operator=1)
+2025-08-25 13:42:51|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: ISSUE
+2025-08-25 13:42:51|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_issue_dialog|IssueDialog init (station=STAN-01, operator=1)
+2025-08-25 13:43:41|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 13:43:41|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 13:43:41|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 13:43:42|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 13:43:43|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 13:43:43|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 13:43:53|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: ISSUE
+2025-08-25 13:43:53|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_issue_dialog|IssueDialog init (station=STAN-01, operator=1)
+2025-08-25 13:52:50|INFO|-|STAN-01|app|Start aplikacji
+2025-08-25 13:52:50|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-25 13:52:50|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-25 13:52:51|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-25 13:52:52|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-25 13:52:52|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-25 13:52:54|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: ISSUE
+2025-08-25 13:52:54|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_issue_dialog|IssueDialog init (station=STAN-01, operator=1)
+2025-08-25 13:53:18|ERROR|Szymon Sierszulski|STAN-01|app.ui.ops_issue_dialog|Błąd operacji ISSUE (resolve SKU)
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'sku' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\ui\ops_issue_dialog.py", line 224, in _add_line
+    item = self.items_repo.get_item_id_by_sku(sku) if self.items_repo else None
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\app\repo\items_repo.py", line 40, in get_item_id_by_sku
+    row = conn.execute(sql, {"sku": sku}).scalar_one_or_none()
+          ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Szymon Sierszulski\Documents\Python\Wydajnia narzedzi\.venv\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown column 'sku' in 'where clause'")
+[SQL: SELECT id FROM items WHERE sku = %(sku)s]
+[parameters: {'sku': '2321'}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
