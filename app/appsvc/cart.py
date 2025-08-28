@@ -195,23 +195,41 @@ class StockRepository:
 
     def list_available(self, q: str = "", limit: int = 200) -> List[Dict]:
         """
-        Ładuje listę dostępnych pozycji do wydania. Priorytetowo używa widoku
-        `vw_stock_available`. Jeśli widok nie istnieje, spada do agregacji na tabeli `stock`.
-        W obu przypadkach łączy z `items` i zwraca spójne kolumny: sku, name, uom,
+        Ładuje listę dostępnych pozycji do wydania. Najpierw próbuje policzyć stan
+        z tabeli `stock` (jeśli istnieje), a jeśli się nie uda, korzysta z widoku
+        `vw_stock_available`. Zwraca kolumny: item_id, sku, name, uom,
         qty_on_hand, qty_reserved_open, qty_available.
         """
         pattern = f"%{q.strip()}%" if q else "%"
         with self.engine.connect() as conn:
-            # 1) Widok + i.sku/i.uom
+            # 1) Preferuj tabelę stock (agregacja + rezerwacje koszyka)
             try:
                 sql = text(
                     """
-                    SELECT i.id AS item_id, i.sku, i.name, i.uom,
-                           v.qty_on_hand, v.qty_reserved_open, v.qty_available
-                      FROM vw_stock_available v
-                      JOIN items i ON i.id = v.item_id
-                     WHERE (i.name LIKE :q OR i.sku LIKE :q)
-                     ORDER BY i.name
+                    WITH totals AS (
+                        SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
+                          FROM stock s
+                      GROUP BY s.item_id
+                    ),
+                    reservations AS (
+                        SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
+                          FROM issue_sessions s
+                          JOIN issue_session_lines l ON l.session_id = s.id
+                         WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
+                      GROUP BY l.item_id
+                    )
+                    SELECT COALESCE(i.id, t.item_id) AS item_id,
+                           COALESCE(i.code, CAST(t.item_id AS CHAR)) AS sku,
+                           COALESCE(i.name, '') AS name,
+                           COALESCE(i.unit, 'SZT') AS uom,
+                           t.qty_on_hand,
+                           COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
+                           t.qty_on_hand - COALESCE(r.qty_reserved_open,0) AS qty_available
+                      FROM totals t
+                      LEFT JOIN items i ON i.id = t.item_id
+                      LEFT JOIN reservations r ON r.item_id = t.item_id
+                     WHERE ((i.name LIKE :q OR i.code LIKE :q) OR (:q = '%' AND 1=1))
+                     ORDER BY name
                      LIMIT :lim
                     """
                 )
@@ -220,7 +238,7 @@ class StockRepository:
             except Exception:
                 pass
 
-            # 2) Widok + i.code/i.unit (aliasy kolumn items)
+            # 2) Widok dostępności + i.code/i.unit
             try:
                 sql = text(
                     """
@@ -238,29 +256,14 @@ class StockRepository:
             except Exception:
                 pass
 
-            # 3) Fallback do tabeli `stock` (bez widoku): agregacja + rezerwacje z issue_session_lines
+            # 3) Widok dostępności + i.sku/i.uom
             sql = text(
                 """
-                WITH totals AS (
-                    SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
-                      FROM stock s
-                  GROUP BY s.item_id
-                ),
-                reservations AS (
-                    SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
-                      FROM issue_sessions s
-                      JOIN issue_session_lines l ON l.session_id = s.id
-                     WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
-                  GROUP BY l.item_id
-                )
-                SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
-                       t.qty_on_hand,
-                       COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
-                       t.qty_on_hand - COALESCE(r.qty_reserved_open,0) AS qty_available
-                  FROM totals t
-                  JOIN items i ON i.id = t.item_id
-                  LEFT JOIN reservations r ON r.item_id = t.item_id
-                 WHERE (i.name LIKE :q OR i.code LIKE :q)
+                SELECT i.id AS item_id, i.sku, i.name, i.uom,
+                       v.qty_on_hand, v.qty_reserved_open, v.qty_available
+                  FROM vw_stock_available v
+                  JOIN items i ON i.id = v.item_id
+                 WHERE (i.name LIKE :q OR i.sku LIKE :q)
                  ORDER BY i.name
                  LIMIT :lim
                 """

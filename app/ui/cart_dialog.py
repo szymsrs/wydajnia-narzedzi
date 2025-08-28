@@ -87,6 +87,10 @@ class CartDialog(QtWidgets.QDialog):
                 "+",
             ]
         )
+        # Nadpisz nagłówki w neutralnym ASCII (na wypadek problemów z kodowaniem)
+        self.table.setHorizontalHeaderLabels([
+            "SKU", "Nazwa", "JM", "Na stanie", "Zarezerw.", "Dostepne", "W koszyku", "-", "+"
+        ])
         self.table.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -95,6 +99,8 @@ class CartDialog(QtWidgets.QDialog):
         # --- bottom: koszyk + akcje
         self.cart_table = QtWidgets.QTableWidget(0, 4)
         self.cart_table.setHorizontalHeaderLabels(["SKU", "Nazwa", "JM", "IloĹ›Ä‡"])
+        # Nagłówki koszyka w ASCII (bez ogonków)
+        self.cart_table.setHorizontalHeaderLabels(["SKU", "Nazwa", "JM", "Ilosc"])
         self.cart_table.horizontalHeader().setStretchLastSection(True)
         self.cart_table.setSortingEnabled(True)
 
@@ -150,7 +156,7 @@ class CartDialog(QtWidgets.QDialog):
 
             # kolumny informacyjne
             sku = it.get("sku") or ""
-            name = it.get("name") or ""
+            name = it.get("name") or (it.get("sku") or "")
             uom = it.get("uom") or ""
             qty_on_hand = it.get("qty_on_hand") or 0
             qty_res = it.get("qty_reserved_open") or 0
@@ -173,7 +179,7 @@ class CartDialog(QtWidgets.QDialog):
             self.table.setCellWidget(r, 6, spin)
 
             # przyciski â€“ i +
-            btn_minus = QtWidgets.QPushButton("â€“")
+            btn_minus = QtWidgets.QPushButton("-")
             btn_plus = QtWidgets.QPushButton("+")
             btn_minus.clicked.connect(self._dec)
             btn_plus.clicked.connect(self._inc)
@@ -238,7 +244,8 @@ class CartDialog(QtWidgets.QDialog):
             r = self.cart_table.rowCount()
             self.cart_table.insertRow(r)
             self.cart_table.setItem(r, 0, QtWidgets.QTableWidgetItem(str(ln.get("sku") or "")))
-            self.cart_table.setItem(r, 1, QtWidgets.QTableWidgetItem(str(ln.get("name") or "")))
+            display_name = ln.get("name") or ln.get("sku") or ""
+            self.cart_table.setItem(r, 1, QtWidgets.QTableWidgetItem(str(display_name)))
             self.cart_table.setItem(r, 2, QtWidgets.QTableWidgetItem(str(ln.get("uom") or "")))
             self.cart_table.setItem(r, 3, QtWidgets.QTableWidgetItem(str(ln.get("qty_reserved") or 0)))
 
@@ -273,5 +280,7 @@ class CartDialog(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(self, "Koszyk pusty", "Brak pozycji do wydania.")
         else:
             QtWidgets.QMessageBox.warning(self, "BĹ‚Ä…d", f"Nie udaĹ‚o siÄ™ zapisaÄ‡: {res}")
+
+
 
 
