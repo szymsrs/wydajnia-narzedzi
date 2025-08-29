@@ -859,13 +859,14 @@ class AuthRepo:
         pattern = f"%{q.strip()}%" if q else "%"
         try:
             sql = """
-                SELECT i.id AS item_id, i.sku, NULLIF(TRIM(i.name),'') AS name, i.uom,
-                    COALESCE(SUM(l.qty_available), 0) AS qty_available
-                FROM lots l
-                JOIN items i ON i.id = l.item_id
-                WHERE (i.name LIKE :q OR i.sku LIKE :q) AND COALESCE(l.qty_available,0) > 0
-                GROUP BY i.id, i.sku, i.name, i.uom
-                ORDER BY i.name
+                SELECT i.id AS item_id, i.code AS sku,
+                       COALESCE(NULLIF(TRIM(i.name), ''), i.code) AS name,
+                       COALESCE(i.unit, 'SZT') AS uom,
+                       v.available AS qty_available
+                FROM vw_stock_available v
+                JOIN items i ON i.id = v.item_id
+                WHERE (i.name LIKE :q OR i.code LIKE :q) AND v.available > 0
+                ORDER BY name
                 LIMIT :lim
             """
             with self.engine.connect() as c:
@@ -873,13 +874,14 @@ class AuthRepo:
             return [dict(r) for r in rows]
         except Exception:
             sql = """
-                SELECT i.id AS item_id, i.code AS sku, NULLIF(TRIM(i.name),'') AS name, i.unit AS uom,
-                    COALESCE(SUM(l.qty_available), 0) AS qty_available
-                FROM lots l
-                JOIN items i ON i.id = l.item_id
-                WHERE (i.name LIKE :q OR i.code LIKE :q) AND COALESCE(l.qty_available,0) > 0
-                GROUP BY i.id, i.code, i.name, i.unit
-                ORDER BY i.name
+                SELECT i.id AS item_id, i.code AS sku,
+                       COALESCE(NULLIF(TRIM(i.name), ''), i.code) AS name,
+                       COALESCE(i.unit, 'SZT') AS uom,
+                       v.available AS qty_available
+                FROM vw_stock_available v
+                JOIN items i ON i.id = v.item_id
+                WHERE (i.name LIKE :q OR i.code LIKE :q) AND v.available > 0
+                ORDER BY name
                 LIMIT :lim
             """
             with self.engine.connect() as c:

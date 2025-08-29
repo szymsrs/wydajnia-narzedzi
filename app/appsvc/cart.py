@@ -508,3 +508,40 @@ class RfidService:
 
 
 
+
+# --- Override StockRepository.list_available to use vw_stock_available (lots-based) ---
+from typing import List, Dict
+from sqlalchemy import text as _text
+
+def _list_available_vw(self, q: str | None = None, limit: int = 100, offset: int = 0) -> List[Dict]:
+    """
+    Lista dostępnych pozycji do wydania z jednego źródła prawdy: vw_stock_available + items.
+    Zwraca: item_id, sku, name, uom, qty_available.
+    # LEGACY: stock – nieużywać
+    """
+    like = f"%{q.strip()}%" if q else None
+    with self.engine.connect() as conn:
+        sql = _text(
+            """
+            SELECT
+              i.id AS item_id,
+              i.code AS sku,
+              COALESCE(NULLIF(TRIM(i.name), ''), i.code) AS name,
+              COALESCE(i.unit, 'SZT') AS uom,
+              v.available AS qty_available
+            FROM vw_stock_available v
+            JOIN items i ON i.id = v.item_id
+            WHERE v.available > 0
+              AND (:q IS NULL OR i.code LIKE :like OR i.name LIKE :like)
+            ORDER BY name
+            LIMIT :limit OFFSET :offset
+            """
+        )
+        rows = conn.execute(
+            sql,
+            {"q": q if q else None, "like": like, "limit": int(limit), "offset": int(offset)},
+        ).mappings().all()
+        return [dict(r) for r in rows]
+
+# Monkey-patch replacement (surgical)
+StockRepository.list_available = _list_available_vw
