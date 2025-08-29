@@ -161,6 +161,13 @@ def main():
         capture_prints=False,
         console=False,
     )
+    # Globalny hook wyjątków z GUI/slotów – zapis do logów
+    def _excepthook(exctype, value, tb):
+        try:
+            log.critical("UNHANDLED EXCEPTION", exc_info=(exctype, value, tb))
+        except Exception:
+            pass
+    sys.excepthook = _excepthook
     set_station(settings.workstation_id)
     log.info(
         "Start: %s na stanowisku %s",

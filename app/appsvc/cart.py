@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
+import logging
 
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
@@ -192,6 +193,7 @@ class CartRepository:
 class StockRepository:
     def __init__(self, engine: Engine) -> None:
         self.engine = engine
+        self.log = logging.getLogger(__name__)
 
     def list_available(self, q: str = "", limit: int = 200) -> List[Dict]:
         """
@@ -202,6 +204,79 @@ class StockRepository:
         """
         pattern = f"%{q.strip()}%" if q else "%"
         with self.engine.connect() as conn:
+            # 0) Lista na podstawie items (aktywne) + stany i rezerwacje
+            try:
+                sql = text(
+                    """
+                    WITH totals AS (
+                        SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
+                          FROM stock s
+                      GROUP BY s.item_id
+                    ),
+                    reservations AS (
+                        SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
+                          FROM issue_sessions s
+                          JOIN issue_session_lines l ON l.session_id = s.id
+                         WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
+                      GROUP BY l.item_id
+                    )
+                    SELECT i.id AS item_id,
+                           COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
+                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                           COALESCE(i.unit, i.uom, 'SZT') AS uom,
+                           COALESCE(t.qty_on_hand,0) AS qty_on_hand,
+                           COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
+                           COALESCE(t.qty_on_hand,0) - COALESCE(r.qty_reserved_open,0) AS qty_available
+                      FROM items i
+                      LEFT JOIN totals t ON t.item_id = i.id
+                      LEFT JOIN reservations r ON r.item_id = i.id
+                     WHERE (i.active = 1 OR i.active IS NULL)
+                       AND ((i.name LIKE :q OR i.code LIKE :q) OR (:q = '%' AND 1=1))
+                     ORDER BY i.name
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available: path=items(code/unit) rows=%s", len(out))
+                return out
+            except Exception:
+                try:
+                    sql = text(
+                        """
+                        WITH totals AS (
+                            SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
+                              FROM stock s
+                          GROUP BY s.item_id
+                        ),
+                        reservations AS (
+                            SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
+                              FROM issue_sessions s
+                              JOIN issue_session_lines l ON l.session_id = s.id
+                             WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
+                          GROUP BY l.item_id
+                        )
+                        SELECT i.id AS item_id,
+                               COALESCE(i.sku, i.code, CAST(i.id AS CHAR)) AS sku,
+                               COALESCE(NULLIF(i.name,''), i.sku, i.code, CAST(i.id AS CHAR)) AS name,
+                               COALESCE(i.uom, i.unit, 'SZT') AS uom,
+                               COALESCE(t.qty_on_hand,0) AS qty_on_hand,
+                               COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
+                               COALESCE(t.qty_on_hand,0) - COALESCE(r.qty_reserved_open,0) AS qty_available
+                          FROM items i
+                          LEFT JOIN totals t ON t.item_id = i.id
+                          LEFT JOIN reservations r ON r.item_id = i.id
+                         WHERE ((i.name LIKE :q OR i.sku LIKE :q) OR (:q = '%' AND 1=1))
+                         ORDER BY i.name
+                         LIMIT :lim
+                        """
+                    )
+                    rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                    out = [dict(r) for r in rows]
+                    self.log.debug("stock.list_available: path=items(sku/uom) rows=%s", len(out))
+                    return out
+                except Exception:
+                    pass
             # 1) Preferuj tabelę stock (agregacja + rezerwacje koszyka)
             try:
                 sql = text(
@@ -219,9 +294,9 @@ class StockRepository:
                       GROUP BY l.item_id
                     )
                     SELECT COALESCE(i.id, t.item_id) AS item_id,
-                           COALESCE(i.code, CAST(t.item_id AS CHAR)) AS sku,
-                           COALESCE(i.name, '') AS name,
-                           COALESCE(i.unit, 'SZT') AS uom,
+                           COALESCE(i.code, i.sku, CAST(t.item_id AS CHAR)) AS sku,
+                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(t.item_id AS CHAR)) AS name,
+                           COALESCE(i.unit, i.uom, 'SZT') AS uom,
                            t.qty_on_hand,
                            COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
                            t.qty_on_hand - COALESCE(r.qty_reserved_open,0) AS qty_available
@@ -234,12 +309,99 @@ class StockRepository:
                     """
                 )
                 rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
-                return [dict(r) for r in rows]
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available: path=stock+items(code/unit) rows=%s", len(out))
+                return out
             except Exception:
                 pass
 
             # 2) Widok dostępności + i.code/i.unit
             try:
+                sql = text(
+                    """
+                    SELECT i.id AS item_id,
+                           COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
+                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                           COALESCE(i.unit, i.uom, 'SZT') AS uom,
+                           v.qty_on_hand, v.qty_reserved_open, v.qty_available
+                      FROM vw_stock_available v
+                      JOIN items i ON i.id = v.item_id
+                     WHERE (i.name LIKE :q OR i.code LIKE :q)
+                     ORDER BY i.name
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available: path=view(code/unit) rows=%s", len(out))
+                return out
+            except Exception:
+                pass
+
+            # 3) Widok dostępności + i.sku/i.uom
+            sql = text(
+                """
+                SELECT i.id AS item_id,
+                       COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
+                       COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                       COALESCE(i.unit, i.uom, 'SZT') AS uom,
+                       v.qty_on_hand, v.qty_reserved_open, v.qty_available
+                  FROM vw_stock_available v
+                  JOIN items i ON i.id = v.item_id
+                 WHERE (i.name LIKE :q OR i.code LIKE :q OR i.sku LIKE :q)
+                 ORDER BY i.name
+                 LIMIT :lim
+                """
+            )
+            try:
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available: path=view(sku/uom) rows=%s", len(out))
+                return out
+            except Exception:
+                # Fallback na bezpieczny wariant code/unit
+                self.log.debug("stock.list_available: view(sku/uom) failed -> fallback code/unit")
+                return self.list_available_code_only(q, limit)
+
+    def list_available_code_only(self, q: str = "", limit: int = 200) -> List[Dict]:
+        """Awaryjna ścieżka: używaj wyłącznie kolumn code/unit z items.
+        Nie odwołuje się do sku/uom – bezpieczna dla schematów bez tych kolumn.
+        """
+        pattern = f"%{q.strip()}%" if q else "%"
+        with self.engine.connect() as conn:
+            try:
+                sql = text(
+                    """
+                    WITH totals AS (
+                        SELECT s.item_id, COALESCE(SUM(s.quantity),0) AS qty_on_hand
+                          FROM stock s
+                      GROUP BY s.item_id
+                    ),
+                    reservations AS (
+                        SELECT l.item_id, COALESCE(SUM(l.qty_reserved),0) AS qty_reserved_open
+                          FROM issue_sessions s
+                          JOIN issue_session_lines l ON l.session_id = s.id
+                         WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
+                      GROUP BY l.item_id
+                    )
+                    SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
+                           COALESCE(t.qty_on_hand,0) AS qty_on_hand,
+                           COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
+                           COALESCE(t.qty_on_hand,0) - COALESCE(r.qty_reserved_open,0) AS qty_available
+                      FROM items i
+                      LEFT JOIN totals t ON t.item_id = i.id
+                      LEFT JOIN reservations r ON r.item_id = i.id
+                     WHERE (i.active = 1 OR i.active IS NULL)
+                       AND ((i.name LIKE :q OR i.code LIKE :q) OR (:q = '%' AND 1=1))
+                     ORDER BY i.name
+                     LIMIT :lim
+                    """
+                )
+                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available_code_only: path=items(code/unit) rows=%s", len(out))
+                return out
+            except Exception:
                 sql = text(
                     """
                     SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
@@ -252,24 +414,9 @@ class StockRepository:
                     """
                 )
                 rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
-                return [dict(r) for r in rows]
-            except Exception:
-                pass
-
-            # 3) Widok dostępności + i.sku/i.uom
-            sql = text(
-                """
-                SELECT i.id AS item_id, i.sku, i.name, i.uom,
-                       v.qty_on_hand, v.qty_reserved_open, v.qty_available
-                  FROM vw_stock_available v
-                  JOIN items i ON i.id = v.item_id
-                 WHERE (i.name LIKE :q OR i.sku LIKE :q)
-                 ORDER BY i.name
-                 LIMIT :lim
-                """
-            )
-            rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
-        return [dict(r) for r in rows]
+                out = [dict(r) for r in rows]
+                self.log.debug("stock.list_available_code_only: path=view(code/unit) rows=%s", len(out))
+                return out
 
 # Ta klasa odpowiada za finalizację wydania (zatwierdzenie koszyka)
 class CheckoutService:

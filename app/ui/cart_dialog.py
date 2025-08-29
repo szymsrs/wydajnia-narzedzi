@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from typing import Any, List, Dict
+import logging
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
@@ -35,6 +36,7 @@ class CartDialog(QtWidgets.QDialog):
         self.resize(900, 560)
 
         self.engine = engine
+        self.log = logging.getLogger(__name__)
         self.session_mgr = SessionManager(engine, station_id, int(operator_user_id))
         self.repo = repo
         self.reports_repo = reports_repo
@@ -95,6 +97,17 @@ class CartDialog(QtWidgets.QDialog):
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.setSortingEnabled(True)
+        # Ukryj kolumny z przyciskami +/- (zastąpione globalnymi przyciskami)
+        try:
+            self.table.setColumnHidden(7, True)
+            self.table.setColumnHidden(8, True)
+        except Exception:
+            pass
+        # Ukryj nagłówki wierszy (ikonka '+') dla czytelności
+        try:
+            self.table.verticalHeader().setVisible(False)
+        except Exception:
+            pass
 
         # --- bottom: koszyk + akcje
         self.cart_table = QtWidgets.QTableWidget(0, 4)
@@ -102,18 +115,32 @@ class CartDialog(QtWidgets.QDialog):
         # Nagłówki koszyka w ASCII (bez ogonków)
         self.cart_table.setHorizontalHeaderLabels(["SKU", "Nazwa", "JM", "Ilosc"])
         self.cart_table.horizontalHeader().setStretchLastSection(True)
+        try:
+            self.cart_table.verticalHeader().setVisible(False)
+        except Exception:
+            pass
         self.cart_table.setSortingEnabled(True)
 
         btnRefreshCart = QtWidgets.QPushButton("OdĹ›wieĹĽ koszyk")
         btnCheckout = QtWidgets.QPushButton("Wydaj (RFID/PIN)")
         btnClose = QtWidgets.QPushButton("Zamknij")
         btnRefreshCart.clicked.connect(self._refresh_cart)
-        btnCheckout.clicked.connect(self._checkout)
+        btnCheckout.clicked.connect(self._checkout_safe)
         btnClose.clicked.connect(self.accept)
 
         lay = QtWidgets.QVBoxLayout(self)
         lay.addLayout(top)
         lay.addWidget(self.table, 1)
+        # Przyciski działające na zaznaczonych wierszach w górnej tabeli
+        mid_actions = QtWidgets.QHBoxLayout()
+        self.btnAddSel = QtWidgets.QPushButton("Dodaj do koszyka")
+        self.btnRemoveSel = QtWidgets.QPushButton("Usun z koszyka")
+        self.btnAddSel.clicked.connect(self._add_selected)
+        self.btnRemoveSel.clicked.connect(self._remove_selected)
+        mid_actions.addWidget(self.btnAddSel)
+        mid_actions.addWidget(self.btnRemoveSel)
+        mid_actions.addStretch(1)
+        lay.addLayout(mid_actions)
         lay.addWidget(QtWidgets.QLabel("Koszyk:"))
         lay.addWidget(self.cart_table, 1)
         actions = QtWidgets.QHBoxLayout()
@@ -131,6 +158,14 @@ class CartDialog(QtWidgets.QDialog):
         self._reload()
         self._refresh_cart()
 
+    # ---------- Pomocnicze (zaznaczenie) ----------
+    def _selected_rows(self) -> List[int]:
+        try:
+            sel = self.table.selectionModel().selectedRows()
+            return [i.row() for i in sel] if sel else []
+        except Exception:
+            return []
+
     def _on_employee_changed(self) -> None:
         try:
             emp_id = self.employee_cb.currentData()
@@ -146,6 +181,10 @@ class CartDialog(QtWidgets.QDialog):
             self._items = self.stock.list_available(self.q.text().strip(), limit=300)
             reserved = self.cart.reserved_map(self.session_id)
         except Exception as e:
+            try:
+                self.log.exception("CartDialog._reload: blad pobierania listy")
+            except Exception:
+                pass
             QtWidgets.QMessageBox.critical(self, "BĹ‚Ä…d", f"Nie udaĹ‚o siÄ™ pobraÄ‡ danych: {e}")
             return
 
@@ -211,6 +250,49 @@ class CartDialog(QtWidgets.QDialog):
         self.cart.set_qty(self.session_id, int(item_id), int(val))
         self._refresh_cart()
 
+    def _add_selected(self) -> None:
+        rows = self._selected_rows()
+        if not rows:
+            return
+        for row in rows:
+            it = self.table.item(row, 0)
+            item_id = it.data(Qt.UserRole) if it else None
+            if item_id is None:
+                continue
+            new_qty = self.cart.add(self.session_id, int(item_id), +1)
+            w = self.table.cellWidget(row, 6)
+            if isinstance(w, QtWidgets.QSpinBox):
+                w.setValue(int(new_qty))
+        self._refresh_cart()
+
+    def _remove_selected(self) -> None:
+        rows = self._selected_rows()
+        if rows:
+            for row in rows:
+                it = self.table.item(row, 0)
+                item_id = it.data(Qt.UserRole) if it else None
+                if item_id is None:
+                    continue
+                self.cart.set_qty(self.session_id, int(item_id), 0)
+                w = self.table.cellWidget(row, 6)
+                if isinstance(w, QtWidgets.QSpinBox):
+                    w.setValue(0)
+            self._refresh_cart()
+            return
+        # jeśli nic nie zaznaczono w górnej tabeli, usuń z dolnej (koszyka)
+        try:
+            sel = self.cart_table.selectionModel().selectedRows()
+        except Exception:
+            sel = []
+        for idx in (sel or []):
+            r = idx.row()
+            itm = self.cart_table.item(r, 0)
+            item_id = itm.data(Qt.UserRole) if itm else None
+            if item_id is None:
+                continue
+            self.cart.set_qty(self.session_id, int(item_id), 0)
+        self._refresh_cart()
+
     def _inc(self) -> None:
         btn = self.sender()
         item_id, row = self._row_item(btn)
@@ -238,18 +320,41 @@ class CartDialog(QtWidgets.QDialog):
         try:
             lines = self.cart.list_lines(self.session_id)
         except Exception:
+            try:
+                self.log.exception("CartDialog._refresh_cart: blad listowania linii")
+            except Exception:
+                pass
             lines = []
         self.cart_table.setRowCount(0)
         for ln in lines:
             r = self.cart_table.rowCount()
             self.cart_table.insertRow(r)
-            self.cart_table.setItem(r, 0, QtWidgets.QTableWidgetItem(str(ln.get("sku") or "")))
+            sku_item = QtWidgets.QTableWidgetItem(str(ln.get("sku") or ""))
+            try:
+                sku_item.setData(Qt.UserRole, int(ln.get("item_id")))
+            except Exception:
+                pass
+            self.cart_table.setItem(r, 0, sku_item)
             display_name = ln.get("name") or ln.get("sku") or ""
             self.cart_table.setItem(r, 1, QtWidgets.QTableWidgetItem(str(display_name)))
             self.cart_table.setItem(r, 2, QtWidgets.QTableWidgetItem(str(ln.get("uom") or "")))
             self.cart_table.setItem(r, 3, QtWidgets.QTableWidgetItem(str(ln.get("qty_reserved") or 0)))
 
     # ---------- Finalizacja ----------
+    def _checkout_safe(self) -> None:
+        try:
+            self._checkout()
+        except Exception as e:
+            try:
+                self.log.exception("CartDialog._checkout_safe: nieobsluzony blad")
+            except Exception:
+                pass
+            QtWidgets.QMessageBox.critical(self, "B�'�\u0007d", str(e))
+            try:
+                self._reload()
+                self._refresh_cart()
+            except Exception:
+                pass
     def _checkout(self) -> None:
         emp_id = self.employee_cb.currentData()
         if emp_id is None:
