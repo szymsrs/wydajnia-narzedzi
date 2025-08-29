@@ -79,12 +79,3 @@ class ItemsRepo:
                 row = rows[0] if rows else None
 
         return dict(row) if row else None
-    # TODO: legacy wrapper; remove once callers switch to ``get_item_by_sku``
-    def get_item_id_by_sku(self, sku: str) -> int | None:  # pragma: no cover - compat
-        item = self.get_item_by_sku(sku)
-        if not item:
-            return None
-        try:
-            return int(item.get("id"))
-        except Exception:
-            return None

@@ -69,6 +69,8 @@ class OpsIssueDialog(QtWidgets.QDialog):
         self.q = QtWidgets.QLineEdit()
         self.q.setPlaceholderText("Szukaj po nazwie lub SKU…")
         self.btnFind = QtWidgets.QPushButton("Szukaj")
+        self.btnAdd = QtWidgets.QPushButton("Dodaj")
+        self.btnAdd.clicked.connect(self._add_line)      
         self.btnPickStock = QtWidgets.QPushButton("Dodaj ze stanu")
         self.btnPickStock.clicked.connect(self.on_pick_from_stock)
 
@@ -78,7 +80,8 @@ class OpsIssueDialog(QtWidgets.QDialog):
         top.addSpacing(12)
         top.addWidget(self.q, 1)
         top.addWidget(self.btnFind)
-        top.addWidget(self.btnPick)
+        top.addWidget(self.btnAdd)
+        top.addWidget(self.btnPickStock)
 
         # --- stock table ---
         self.table = QtWidgets.QTableWidget(0, 7)
@@ -252,6 +255,28 @@ class OpsIssueDialog(QtWidgets.QDialog):
         if item_id is None:
             return
         self.cart.set_qty(self.session_id, int(item_id), int(val))
+        self._refresh_cart()
+        
+    def _add_line(self) -> None:
+        sku = self.q.text().strip()
+        if not sku:
+            return
+        try:
+            item = self.repo.get_item_by_sku(sku)
+        except Exception:
+            self.log.exception("Błąd get_item_by_sku(%s)", sku)
+            item = None
+        if not item or item.get("id") is None:
+            QtWidgets.QMessageBox.warning(self, "Błąd", "Nie znaleziono pozycji")
+            return
+        try:
+            self.cart.add(self.session_id, int(item["id"]), +1)
+        except Exception:
+            self.log.exception("Błąd dodawania do koszyka")
+            QtWidgets.QMessageBox.critical(self, "Błąd", "Nie udało się dodać pozycji")
+            return
+        self.q.clear()
+        self._reload()
         self._refresh_cart()
 
     def _add_selected(self) -> None:
