@@ -63,7 +63,8 @@ class ItemsRepo:
                      LIMIT 1
                     """
                 )
-                row = conn.execute(sql, params).mappings().one_or_none()
+                rows = conn.execute(sql, params).mappings().all()
+                row = rows[0] if rows else None
             except OperationalError:
 
                 sql = text(
@@ -74,7 +75,8 @@ class ItemsRepo:
                      LIMIT 1
                     """
                 )
-                row = conn.execute(sql, params).mappings().one_or_none()
+                rows = conn.execute(sql, params).mappings().all()
+                row = rows[0] if rows else None
 
         return dict(row) if row else None
     # TODO: legacy wrapper; remove once callers switch to ``get_item_by_sku``

@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
                     btn_issue = QtWidgets.QPushButton("Wydanie ręczne")
                     btn_issue.setMinimumHeight(42)
                     def _open_issue():
-                        log.info("Operacje — otwarto dialog: %s", "ISSUE")
+                        log.info("SHELL: opening OpsIssueDialog")
                         OpsIssueDialog(parent=self, **params).exec()
 
                     btn_issue.clicked.connect(_open_issue)                    
