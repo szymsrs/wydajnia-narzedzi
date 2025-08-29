@@ -19,19 +19,18 @@ class ItemsRepo:
         Zwracamy zawsze klucze: id, sku, name (sku jest aliasem na code, jeżeli brak kolumny sku).
         """
         q = q or ""
-        pattern = f"%{q}%"
         with self.engine.connect() as conn:
             try:
                 sql = text(
                     """
                     SELECT id, sku, name
                       FROM items
-                     WHERE (sku LIKE :q OR name LIKE :q)
+                     WHERE (sku LIKE CONCAT('%', :q, '%') OR name LIKE CONCAT('%', :q, '%'))
                      ORDER BY sku
                      LIMIT :lim
                     """
                 )
-                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                rows = conn.execute(sql, {"q": q, "lim": int(limit)}).mappings().all()
                 return [dict(r) for r in rows]
             except OperationalError:
                 # fallback na kolumny 'code' i alias do 'sku'
@@ -39,12 +38,12 @@ class ItemsRepo:
                     """
                     SELECT id, code AS sku, name
                       FROM items
-                     WHERE (code LIKE :q OR name LIKE :q)
+                     WHERE (code LIKE CONCAT('%', :q, '%') OR name LIKE CONCAT('%', :q, '%'))
                      ORDER BY code
                      LIMIT :lim
                     """
                 )
-                rows = conn.execute(sql, {"q": pattern, "lim": int(limit)}).mappings().all()
+                rows = conn.execute(sql, {"q": q, "lim": int(limit)}).mappings().all()
                 return [dict(r) for r in rows]
 
     def get_item_id_by_sku(self, sku: str) -> int | None:
@@ -53,11 +52,11 @@ class ItemsRepo:
         if not sku:
             return None
         with self.engine.connect() as conn:
-            # najpierw próbuj po 'sku'
             try:
-                row = conn.execute(text("SELECT id FROM items WHERE sku = :v LIMIT 1"), {"v": sku}).scalar_one_or_none()
+                row = conn.execute(text("SELECT id FROM items WHERE sku = :sku LIMIT 1"), {"sku": sku}).scalar_one_or_none()
+                return int(row) if row is not None else None
             except OperationalError:
-                row = None
-            if row is None:
-                row = conn.execute(text("SELECT id FROM items WHERE code = :v LIMIT 1"), {"v": sku}).scalar_one_or_none()
-        return int(row) if row is not None else None
+                row = conn.execute(
+                    text("SELECT id FROM items WHERE code = :sku LIMIT 1"), {"sku": sku}
+                ).scalar_one_or_none()
+                return int(row) if row is not None else None

@@ -1,0 +1,42 @@
+- id: T1
+  file: app/scripts/import_rw_gui.py
+  desc: Refactor chained statements to comply with PEP 8 and ruff E701/E702
+  risk: L
+  effort: M
+  fix: Split statements onto separate lines and add missing control flow blocks
+  tests: lint check via `ruff`
+- id: T2
+  file: app/repo/reports_repo.py
+  desc: Add type parameters to returned dictionaries and annotate functions to satisfy mypy strict mode
+  risk: M
+  effort: M
+  fix: Introduce explicit `dict[str, Any]` types and function annotations
+  tests: `mypy --strict`
+- id: T3
+  file: app/infra/healthcheck.py
+  desc: Remove unused module or integrate into startup health checks
+  risk: L
+  effort: S
+  fix: Delete file or wire into `main.py`
+  tests: manual DB ping during startup
+- id: T4
+  file: app/core/auth.py
+  desc: Replace `_dbg` print debugging with structured logging to avoid leaking secrets
+  risk: M
+  effort: S
+  fix: Remove `print` and use `log.debug` conditionally
+  tests: run authentication flows and verify no stdout output
+- id: T5
+  file: app/domain/services/issue.py
+  desc: Ensure open quantity calculation works with real DB cursors and add dedicated tests
+  risk: M
+  effort: M
+  fix: Write unit tests with cursors supporting `fetchone` and verify flag logic
+  tests: new tests covering non-zero open quantity
+- id: T6
+  file: pyproject.toml
+  desc: Update outdated dependencies (ruff, platformdirs, pydantic_core, pyright, typing_extensions)
+  risk: L
+  effort: S
+  fix: Bump versions and run full test suite
+  tests: `pip list --outdated`, `pytest`
