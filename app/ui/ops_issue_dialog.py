@@ -33,11 +33,12 @@ class OpsIssueDialog(QtWidgets.QDialog):
         operator_user_id: int = 0,
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
-        super().__init__(parent)
 
         # lokalny logger dla dialogu
         self.log = logging.getLogger(__name__)
+        self.log.warning("OPS_ISSUE_DIALOG LOADED %s", __file__)
 
+        super().__init__(parent)
         self.repo = repo or auth_repo
         self.reports_repo = reports_repo
         self.station_id = station_id
