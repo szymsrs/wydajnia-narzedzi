@@ -211,19 +211,27 @@ class OpsIssueDialog(QtWidgets.QDialog):
             if not sel:
                 QtWidgets.QMessageBox.information(self, "Info", "Nie wybrano pozycji lub ilości.")
                 return
-            item_id, qty = sel
+            item_id = sel.get("item_id")
+            qty = int(sel.get("qty") or 0)
+            if not item_id or qty <= 0:
+                QtWidgets.QMessageBox.information(self, "Info", "Nie wybrano pozycji lub ilości.")
+                return
+
+            sku = sel.get("sku") or str(item_id)
+            name = sel.get("name") or ""
+            uom = sel.get("uom") or ""           
 
             r = self.table.rowCount()
             self.table.insertRow(r)
 
-            # Kol. 0: SKU (tu pokazujemy ID jeśli nie znamy SKU) + UserRole=item_id
-            sku_item = QtWidgets.QTableWidgetItem(str(item_id))
+            # Kol. 0: SKU + UserRole=item_id
+            sku_item = QtWidgets.QTableWidgetItem(sku)
             sku_item.setData(QtCore.Qt.UserRole, int(item_id))
             self.table.setItem(r, 0, sku_item)
 
-            # Kol. 1 i 2: nazwa/JM – nie mamy ich tutaj, zostawiamy puste (opcjonalnie można dociągnąć z repo)
-            self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(""))
-            self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(""))
+            # Kol. 1 i 2: nazwa/JM
+            self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(name))
+            self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(uom))
 
             # Kol. 3: ilość (edytowalne pole z walidatorem) – ustaw z wyboru
             qty_edit = QtWidgets.QLineEdit(str(int(qty)))

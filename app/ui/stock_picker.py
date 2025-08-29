@@ -67,16 +67,17 @@ class StockPickerDialog(QtWidgets.QDialog):
         # wstaw identyfikatory do pola ilości (ułatwienie double-click)
         self.qty.setFocus()
 
-    def get_selected(self) -> tuple[int, int] | None:
+    def get_selected(self) -> dict[str, Any] | None:
         rows = self.table.selectionModel().selectedRows()
         if not rows:
             return None
         r = rows[0].row()
         try:
-            item_id = int(self.table.item(r, 0).text())
+            item = dict(self._items[r])
             qty = int(self.qty.text().strip() or "0")
             if qty <= 0:
                 return None
-            return item_id, qty
+            item["qty"] = qty
+            return item
         except Exception:
             return None
