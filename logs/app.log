@@ -3701,3 +3701,13 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown 
 2025-08-29 08:52:42|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: RETURN
 2025-08-29 08:52:42|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_return_dialog|ReturnDialog init (station=STAN-01, operator=1)
 2025-08-29 08:52:44|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje — otwarto dialog: ISSUE
+2025-08-29 09:07:15|INFO|-|STAN-01|app|Start aplikacji
+2025-08-29 09:07:15|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-29 09:07:15|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-29 09:07:19|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-29 09:07:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-29 09:07:20|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-29 09:07:27|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-29 09:07:28|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-29 09:07:28|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-29 09:07:29|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje — otwarto dialog: ISSUE
