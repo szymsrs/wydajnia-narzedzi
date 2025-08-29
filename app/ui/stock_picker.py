@@ -45,10 +45,11 @@ class StockPickerDialog(QtWidgets.QDialog):
         self.btnCancel.clicked.connect(self.reject)
 
         self._items: list[dict] = []
-
-    def _search(self):
+        self._search()
+        
+    def _search(self, limit: int = 1000):
         try:
-            self._items = self.repo.search_stock(self.q.text().strip(), limit=200)  # AuthRepo.search_stock
+            self._items = self.repo.search_stock(self.q.text().strip(), limit=limit)  # AuthRepo.search_stock
         except Exception:
             QtWidgets.QMessageBox.critical(self, "Błąd", "Nie udało się pobrać stanów.")
             return

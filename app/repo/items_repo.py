@@ -46,17 +46,43 @@ class ItemsRepo:
                 rows = conn.execute(sql, {"q": q, "lim": int(limit)}).mappings().all()
                 return [dict(r) for r in rows]
 
-    def get_item_id_by_sku(self, sku: str) -> int | None:
-        """Zwraca ID po SKU/kodzie. Obsługuje zarówno kolumnę 'sku', jak i 'code'."""
+    def get_item_by_sku(self, sku: str) -> dict | None:
+        """Zwraca dict z ``id``, ``name``, ``uom`` i ``sku``."""
         sku = (sku or "").strip()
         if not sku:
             return None
+        
+        params = {"sku": sku}
         with self.engine.connect() as conn:
             try:
-                row = conn.execute(text("SELECT id FROM items WHERE sku = :sku LIMIT 1"), {"sku": sku}).scalar_one_or_none()
-                return int(row) if row is not None else None
+                sql = text(
+                    """
+                    SELECT id, name, uom, sku
+                      FROM items
+                     WHERE sku = :sku
+                     LIMIT 1
+                    """
+                )
+                row = conn.execute(sql, params).mappings().one_or_none()
             except OperationalError:
-                row = conn.execute(
-                    text("SELECT id FROM items WHERE code = :sku LIMIT 1"), {"sku": sku}
-                ).scalar_one_or_none()
-                return int(row) if row is not None else None
+
+                sql = text(
+                    """
+                    SELECT id, name, unit AS uom, code AS sku
+                      FROM items
+                     WHERE code = :sku
+                     LIMIT 1
+                    """
+                )
+                row = conn.execute(sql, params).mappings().one_or_none()
+
+        return dict(row) if row else None
+    # TODO: legacy wrapper; remove once callers switch to ``get_item_by_sku``
+    def get_item_id_by_sku(self, sku: str) -> int | None:  # pragma: no cover - compat
+        item = self.get_item_by_sku(sku)
+        if not item:
+            return None
+        try:
+            return int(item.get("id"))
+        except Exception:
+            return None

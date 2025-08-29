@@ -8,6 +8,8 @@ import logging
 from typing import Any
 
 from PySide6 import QtWidgets, QtCore, QtGui
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 
 try:  # pragma: no cover - fallback if repo module is missing
     from app.repo.items_repo import ItemsRepo
@@ -16,7 +18,7 @@ except Exception:  # pragma: no cover - simple stub for tests
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             pass
 
-        def get_item_id_by_sku(self, sku: str):  # type: ignore
+        def get_item_by_sku(self, sku: str):  # type: ignore
             raise NotImplementedError
 
 
@@ -302,8 +304,13 @@ class OpsIssueDialog(QtWidgets.QDialog):
         sku = self.sku_edit.text().strip()
         if not sku:
             return
+
+        # --- resolve item from repo ---
         try:
-            item = self.items_repo.get_item_id_by_sku(sku) if self.items_repo else None
+            getter = getattr(self.items_repo, "get_item_by_sku", None) if self.items_repo else None
+            item: Any = getter(sku) if callable(getter) else None
+            if item is None and self.items_repo and hasattr(self.items_repo, "get_item_id_by_sku"):
+                item = self.items_repo.get_item_id_by_sku(sku)  # legacy int return
             if not item:
                 raise ValueError("not found")
         except Exception:
@@ -311,12 +318,50 @@ class OpsIssueDialog(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(self, "Błąd", f"Nie znaleziono SKU: {sku}")
             return
 
-        # item może być intem, krotką/listą lub dict-em
+
+        # --- legacy compatibility: repo zwróciło samo ID
+        if isinstance(item, int):
+            item_id = int(item)
+            item = {"id": item_id, "sku": sku, "name": "", "uom": ""}
+            try:
+                if self.items_repo and hasattr(self.items_repo, "engine"):
+                    with self.items_repo.engine.connect() as conn:  # type: ignore[attr-defined]
+                        try:
+                            row = conn.execute(
+                                text(
+                                    """
+                                    SELECT id, name, uom, sku
+                                      FROM items
+                                     WHERE id = :id
+                                     LIMIT 1
+                                    """
+                                ),
+                                {"id": item_id},
+                            ).mappings().one_or_none()
+                        except OperationalError:
+                            row = conn.execute(
+                                text(
+                                    """
+                                    SELECT id, name, unit AS uom, code AS sku
+                                      FROM items
+                                     WHERE id = :id
+                                     LIMIT 1
+                                    """
+                                ),
+                                {"id": item_id},
+                            ).mappings().one_or_none()
+                        if row:
+                            item.update(dict(row))
+            except Exception:
+                self.log.exception("Błąd dodatkowego pobrania SKU %s", sku)
+
+        # --- normalize output to dict ---
         item_id = None
         name = ""
         uom = ""
         if isinstance(item, dict):
             item_id = item.get("id") or item.get("item_id")
+            sku = item.get("sku") or sku
             name = item.get("name") or item.get("item_name") or ""
             uom = item.get("uom") or item.get("unit") or ""
         elif isinstance(item, (list, tuple)):
@@ -328,6 +373,7 @@ class OpsIssueDialog(QtWidgets.QDialog):
                 uom = item[2]
         else:
             item_id = int(item)
+            
         if item_id is None:
             self.log.error("Brak item_id dla SKU %s", sku)
             QtWidgets.QMessageBox.warning(self, "Błąd", f"Nie znaleziono SKU: {sku}")

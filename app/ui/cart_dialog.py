@@ -1,24 +1,23 @@
 ﻿from __future__ import annotations
 
-from typing import Any, List, Dict
-import logging
 
+import logging
+from typing import Any, Dict, List
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
-
 from sqlalchemy.engine import Engine
 
-from app.appsvc.cart import SessionManager, CartRepository, StockRepository, CheckoutService, RfidService
+from app.appsvc.cart import (
+    CartRepository,
+    CheckoutService,
+    RfidService,
+    SessionManager,
+    StockRepository,
+)
 
 
 class CartDialog(QtWidgets.QDialog):
-    """
-    PrzeglÄ…danie stanu magazynu z widoku `vw_stock_available` i modyfikacja koszyka (+/-).
-
-    - Ĺaduje pozycje z widoku (JOIN z items dla nazwy/SKU/JM)
-    - Dla kaĹĽdej pozycji wyĹ›wietla dostÄ™pnoĹ›Ä‡ oraz bieĹĽÄ…cÄ… iloĹ›Ä‡ w koszyku
-    - Przyciski [+] i [â€“] aktualizujÄ… iloĹ›Ä‡ w `issue_session_lines`
-    """
+    """Przegladanie dostepnych pozycji magazynowych i modyfikacja koszyka."""
 
     def __init__(
         self,
@@ -37,7 +36,11 @@ class CartDialog(QtWidgets.QDialog):
 
         self.engine = engine
         self.log = logging.getLogger(__name__)
-        self.session_mgr = SessionManager(engine, station_id, int(operator_user_id))
+        self.session_mgr = SessionManager(
+            engine,
+            station_id,
+            int(operator_user_id),
+        )
         self.repo = repo
         self.reports_repo = reports_repo
         self.cart = CartRepository(engine)
@@ -52,7 +55,9 @@ class CartDialog(QtWidgets.QDialog):
         if self.reports_repo:
             try:
                 for emp in self.reports_repo.employees(q="", limit=200):
-                    label = f"{emp.get('first_name','')} {emp.get('last_name','')}".strip()
+                    first = emp.get("first_name", "")
+                    last = emp.get("last_name", "")
+                    label = f"{first} {last}".strip()
                     login = emp.get("login")
                     if login:
                         label = f"{label} ({login})"
@@ -89,11 +94,23 @@ class CartDialog(QtWidgets.QDialog):
                 "+",
             ]
         )
-        # Nadpisz nagłówki w neutralnym ASCII (na wypadek problemów z kodowaniem)
-        self.table.setHorizontalHeaderLabels([
-            "SKU", "Nazwa", "JM", "Na stanie", "Zarezerw.", "Dostepne", "W koszyku", "-", "+"
-        ])
-        self.table.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        # Nadpisz nagłówki w neutralnym ASCII
+        self.table.setHorizontalHeaderLabels(
+            [
+                "SKU",
+                "Nazwa",
+                "JM",
+                "Na stanie",
+                "Zarezerw.",
+                "Dostepne",
+                "W koszyku",
+                "-",
+                "+",
+            ]
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.Stretch
+        )
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.setSortingEnabled(True)
@@ -111,9 +128,23 @@ class CartDialog(QtWidgets.QDialog):
 
         # --- bottom: koszyk + akcje
         self.cart_table = QtWidgets.QTableWidget(0, 4)
-        self.cart_table.setHorizontalHeaderLabels(["SKU", "Nazwa", "JM", "IloĹ›Ä‡"])
+        self.cart_table.setHorizontalHeaderLabels(
+            [
+                "SKU",
+                "Nazwa",
+                "JM",
+                "Ilość",
+            ]
+        )
         # Nagłówki koszyka w ASCII (bez ogonków)
-        self.cart_table.setHorizontalHeaderLabels(["SKU", "Nazwa", "JM", "Ilosc"])
+        self.cart_table.setHorizontalHeaderLabels(
+            [
+                "SKU",
+                "Nazwa",
+                "JM",
+                "Ilosc",
+            ]
+        )
         self.cart_table.horizontalHeader().setStretchLastSection(True)
         try:
             self.cart_table.verticalHeader().setVisible(False)
@@ -131,6 +162,12 @@ class CartDialog(QtWidgets.QDialog):
         lay = QtWidgets.QVBoxLayout(self)
         lay.addLayout(top)
         lay.addWidget(self.table, 1)
+        # Kontrola rozmiaru wyników i ładowanie kolejnych
+        self.page_size = 500
+        self.limit = self.page_size
+        self.btnLoadMore = QtWidgets.QPushButton("Załaduj więcej")
+        self.btnLoadMore.clicked.connect(self._load_more)
+        lay.addWidget(self.btnLoadMore)
         # Przyciski działające na zaznaczonych wierszach w górnej tabeli
         mid_actions = QtWidgets.QHBoxLayout()
         self.btnAddSel = QtWidgets.QPushButton("Dodaj do koszyka")
@@ -149,13 +186,13 @@ class CartDialog(QtWidgets.QDialog):
         actions.addWidget(btnCheckout)
         actions.addWidget(btnClose)
         lay.addLayout(actions)
-
-        self.btnFind.clicked.connect(self._reload)
-        self.q.returnPressed.connect(self._reload)
+        
+        self.btnFind.clicked.connect(self._reload_search)
+        self.q.returnPressed.connect(self._reload_search)
         self.employee_cb.currentIndexChanged.connect(self._on_employee_changed)
 
         self._items: List[Dict] = []
-        self._reload()
+        self._reload_search()
         self._refresh_cart()
 
     # ---------- Pomocnicze (zaznaczenie) ----------
@@ -169,23 +206,39 @@ class CartDialog(QtWidgets.QDialog):
     def _on_employee_changed(self) -> None:
         try:
             emp_id = self.employee_cb.currentData()
-            self.session = self.session_mgr.ensure_open_session(int(emp_id) if emp_id is not None else None)
-            self.session_id = int(self.session['id']) if self.session else self.session_id
+            self.session = self.session_mgr.ensure_open_session(
+                int(emp_id) if emp_id is not None else None
+            )
+            self.session_id = (
+                int(self.session["id"]) if self.session else self.session_id
+            )
         except Exception:
             pass
 
-
     # ---------- Dane ----------
+    def _reload_search(self) -> None:
+        self.limit = self.page_size
+        self._reload()
+
+    def _load_more(self) -> None:
+        self.limit += self.page_size
+        self._reload()
+
+    
     def _reload(self) -> None:
         try:
-            self._items = self.stock.list_available(self.q.text().strip(), limit=300)
+            self._items = self.stock.list_available(
+                self.q.text().strip(), limit=self.limit
+            )
             reserved = self.cart.reserved_map(self.session_id)
         except Exception as e:
             try:
                 self.log.exception("CartDialog._reload: blad pobierania listy")
             except Exception:
                 pass
-            QtWidgets.QMessageBox.critical(self, "BĹ‚Ä…d", f"Nie udaĹ‚o siÄ™ pobraÄ‡ danych: {e}")
+            QtWidgets.QMessageBox.critical(
+                self, "Błąd", f"Nie udało się pobrać danych: {e}"
+            )
             return
 
         self.table.setRowCount(0)
@@ -207,11 +260,17 @@ class CartDialog(QtWidgets.QDialog):
             self.table.setItem(r, 0, c0)
             self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(str(name)))
             self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(str(uom)))
-            self.table.setItem(r, 3, QtWidgets.QTableWidgetItem(str(qty_on_hand)))
+            self.table.setItem(
+                r,
+                3,
+                QtWidgets.QTableWidgetItem(str(qty_on_hand)),
+            )
             self.table.setItem(r, 4, QtWidgets.QTableWidgetItem(str(qty_res)))
             self.table.setItem(r, 5, QtWidgets.QTableWidgetItem(str(qty_av)))
             spin = QtWidgets.QSpinBox()
-            spin.setRange(0, int(qty_av) if isinstance(qty_av, (int, float)) else 999999)
+            spin.setRange(
+                0, int(qty_av) if isinstance(qty_av, (int, float)) else 999999
+            )
             spin.setValue(int(in_cart))
             spin.setProperty("item_id", int(it["item_id"]))
             spin.valueChanged.connect(self._spin_changed)
@@ -226,12 +285,16 @@ class CartDialog(QtWidgets.QDialog):
             self.table.setCellWidget(r, 8, btn_plus)
 
         self.table.resizeColumnsToContents()
-
+        try:
+            self.btnLoadMore.setEnabled(len(self._items) >= self.limit)
+        except Exception:
+            pass
+        
     # ---------- Akcje koszyka ----------
     def _row_item(self, sender: Any) -> tuple[int | None, int | None]:
         if not isinstance(sender, QtWidgets.QPushButton):
             return None, None
-        # znajdĹş wiersz z tym przyciskiem
+        # znajdź wiersz z tym przyciskiem
         for r in range(self.table.rowCount()):
             for c in (7, 8):
                 if self.table.cellWidget(r, c) is sender:
@@ -321,7 +384,9 @@ class CartDialog(QtWidgets.QDialog):
             lines = self.cart.list_lines(self.session_id)
         except Exception:
             try:
-                self.log.exception("CartDialog._refresh_cart: blad listowania linii")
+                self.log.exception(
+                    "CartDialog._refresh_cart: blad listowania linii",
+                )
             except Exception:
                 pass
             lines = []
@@ -329,32 +394,51 @@ class CartDialog(QtWidgets.QDialog):
         for ln in lines:
             r = self.cart_table.rowCount()
             self.cart_table.insertRow(r)
-            sku_item = QtWidgets.QTableWidgetItem(str(ln.get("sku") or ""))
+            sku_item = QtWidgets.QTableWidgetItem(
+                str(ln.get("sku") or ""),
+            )
             try:
                 sku_item.setData(Qt.UserRole, int(ln.get("item_id")))
             except Exception:
                 pass
             self.cart_table.setItem(r, 0, sku_item)
             display_name = ln.get("name") or ln.get("sku") or ""
-            self.cart_table.setItem(r, 1, QtWidgets.QTableWidgetItem(str(display_name)))
-            self.cart_table.setItem(r, 2, QtWidgets.QTableWidgetItem(str(ln.get("uom") or "")))
-            self.cart_table.setItem(r, 3, QtWidgets.QTableWidgetItem(str(ln.get("qty_reserved") or 0)))
-
+            self.cart_table.setItem(
+                r,
+                1,
+                QtWidgets.QTableWidgetItem(str(display_name)),
+            )
+            self.cart_table.setItem(
+                r,
+                2,
+                QtWidgets.QTableWidgetItem(str(ln.get("uom") or "")),
+            )
+            self.cart_table.setItem(
+                r,
+                3,
+                QtWidgets.QTableWidgetItem(
+                    str(ln.get("qty_reserved") or 0),
+                ),
+            )
+            
     # ---------- Finalizacja ----------
     def _checkout_safe(self) -> None:
         try:
             self._checkout()
         except Exception as e:
             try:
-                self.log.exception("CartDialog._checkout_safe: nieobsluzony blad")
+                self.log.exception(
+                    "CartDialog._checkout_safe: nieobsluzony blad",
+                )
             except Exception:
                 pass
-            QtWidgets.QMessageBox.critical(self, "B�'�\u0007d", str(e))
+            QtWidgets.QMessageBox.critical(self, "Błąd", str(e))
             try:
                 self._reload()
                 self._refresh_cart()
             except Exception:
                 pass
+            
     def _checkout(self) -> None:
         emp_id = self.employee_cb.currentData()
         if emp_id is None:
@@ -365,27 +449,36 @@ class CartDialog(QtWidgets.QDialog):
         self.session_id = int(self.session["id"])  # refresh id
         # RFID/PIN
         if not self.repo:
-            QtWidgets.QMessageBox.warning(self, "Repozytorium", "Brak repo dla weryfikacji RFID/PIN.")
+            QtWidgets.QMessageBox.warning(
+                self, "Repozytorium", "Brak repo dla weryfikacji RFID/PIN."
+            )
             return
         if not RfidService().verify_employee(self.repo, int(emp_id), self):
             return
         # Finalizuj
-        res = CheckoutService(self.engine, self.repo).finalize_issue(self.session_id, int(emp_id))
+        res = CheckoutService(self.engine, self.repo).finalize_issue(
+            self.session_id, int(emp_id)
+        )
         if res.get("status") == "success":
             msg = f"Wydanie zapisane (wierszy: {res.get('lines')})"
             if res.get("flagged"):
-                msg += "\nDodano do WyjÄ…tki"
+                msg += "\nDodano do Wyjątki"
             QtWidgets.QMessageBox.information(self, "OK", msg)
-            # rozpocznij nowÄ… pustÄ… sesjÄ™ dla dalszej pracy
+            # rozpocznij nową pustą sesję dla dalszej pracy
             self.session = self.session_mgr.ensure_open_session(int(emp_id))
-            self.session_id = int(self.session["id"]) if self.session else self.session_id
+            self.session_id = (
+                int(self.session["id"]) if self.session else self.session_id
+            )
             self._reload()
             self._refresh_cart()
         elif res.get("status") == "empty":
-            QtWidgets.QMessageBox.warning(self, "Koszyk pusty", "Brak pozycji do wydania.")
+            QtWidgets.QMessageBox.warning(
+                self, "Koszyk pusty", "Brak pozycji do wydania."
+            )
         else:
-            QtWidgets.QMessageBox.warning(self, "BĹ‚Ä…d", f"Nie udaĹ‚o siÄ™ zapisaÄ‡: {res}")
-
+            QtWidgets.QMessageBox.warning(
+                self, "Błąd", f"Nie udało się zapisać: {res}"
+            )
 
 
 
