@@ -3682,3 +3682,22 @@ sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1054, "Unknown 
 2025-08-29 08:46:13|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
 2025-08-29 08:46:13|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
 2025-08-29 08:46:14|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje — otwarto dialog: ISSUE
+2025-08-29 08:52:22|INFO|-|STAN-01|app|Start aplikacji
+2025-08-29 08:52:22|INFO|-|STAN-01|__main__|Start: Wydajnia Narzędzi na stanowisku STAN-01
+2025-08-29 08:52:22|INFO|-|STAN-01|__main__|Połączenie z DB: OK
+2025-08-29 08:52:24|INFO|Szymon Sierszulski|STAN-01|__main__|Zalogowano: Szymon Sierszulski (admin) metodą pin
+2025-08-29 08:52:25|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-29 08:52:25|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-29 08:52:27|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje — otwarto dialog: ISSUE
+2025-08-29 08:52:35|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Inwentaryzacja
+2025-08-29 08:52:36|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Raporty
+2025-08-29 08:52:37|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Wyjątki
+2025-08-29 08:52:37|WARNING|Szymon Sierszulski|STAN-01|app.dal.exceptions_repo|vw_exceptions: brak kolumn employee, login, item, movement_type, reason – używam pustych aliasów
+2025-08-29 08:52:37|INFO|Szymon Sierszulski|STAN-01|app.ui.exceptions_widget|Załadowano wyjątki: 0 wierszy
+2025-08-29 08:52:37|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Ustawienia
+2025-08-29 08:52:38|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Użytkownicy
+2025-08-29 08:52:40|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Otwieram moduł: Operacje
+2025-08-29 08:52:40|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto panel
+2025-08-29 08:52:42|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje – otwarto dialog: RETURN
+2025-08-29 08:52:42|INFO|Szymon Sierszulski|STAN-01|app.ui.ops_return_dialog|ReturnDialog init (station=STAN-01, operator=1)
+2025-08-29 08:52:44|INFO|Szymon Sierszulski|STAN-01|app.ui.shell|Operacje — otwarto dialog: ISSUE

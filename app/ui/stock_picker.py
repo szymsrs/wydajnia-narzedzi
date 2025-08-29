@@ -4,9 +4,10 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
 
 class StockPickerDialog(QtWidgets.QDialog):
-    def __init__(self, repo: Any, parent: QtWidgets.QWidget | None = None):
+    def __init__(self, repo: Any, parent: QtWidgets.QWidget | None = None, search_limit: int = 1000):
         super().__init__(parent)
         self.repo = repo
+        self._search_limit = search_limit
         self.setWindowTitle("Wybierz ze stanu")
         self.resize(700, 500)
 
@@ -47,7 +48,8 @@ class StockPickerDialog(QtWidgets.QDialog):
         self._items: list[dict] = []
         self._search()
         
-    def _search(self, limit: int = 1000):
+    def _search(self, limit: int | None = None):
+        limit = limit or self._search_limit
         try:
             self._items = self.repo.search_stock(self.q.text().strip(), limit=limit)  # AuthRepo.search_stock
         except Exception:

@@ -1,6 +1,5 @@
 ﻿from __future__ import annotations
 
-
 import logging
 from typing import Any, Dict, List
 from PySide6 import QtWidgets
@@ -17,7 +16,7 @@ from app.appsvc.cart import (
 
 
 class CartDialog(QtWidgets.QDialog):
-    """Przegladanie dostepnych pozycji magazynowych i modyfikacja koszyka."""
+    """Przeglądanie dostępnych pozycji magazynowych i modyfikacja koszyka."""
 
     def __init__(
         self,
@@ -28,6 +27,7 @@ class CartDialog(QtWidgets.QDialog):
         employee_id: int | None = None,
         repo: Any | None = None,
         reports_repo: Any | None = None,
+        page_size: int | None = None,
         parent: QtWidgets.QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -46,7 +46,7 @@ class CartDialog(QtWidgets.QDialog):
         self.cart = CartRepository(engine)
         self.stock = StockRepository(engine)
 
-        # zapewnij sesjÄ™ OPEN (zapisz employee_id jeĹ›li podano)
+        # zapewnij sesję OPEN (zapisz employee_id jeśli podano)
         self.session = self.session_mgr.ensure_open_session(employee_id)
         self.session_id = int(self.session["id"])
 
@@ -70,7 +70,7 @@ class CartDialog(QtWidgets.QDialog):
                 self.employee_cb.setCurrentIndex(idx)
 
         self.q = QtWidgets.QLineEdit()
-        self.q.setPlaceholderText("Szukaj po nazwie lub SKUâ€¦")
+        self.q.setPlaceholderText("Szukaj po nazwie lub SKU…")
         self.btnFind = QtWidgets.QPushButton("Szukaj")
 
         top = QtWidgets.QHBoxLayout()
@@ -88,23 +88,9 @@ class CartDialog(QtWidgets.QDialog):
                 "JM",
                 "Na stanie",
                 "Zarezerw.",
-                "DostÄ™pne",
+                "Dostępne",
                 "W koszyku",
-                "â€“",
-                "+",
-            ]
-        )
-        # Nadpisz nagłówki w neutralnym ASCII
-        self.table.setHorizontalHeaderLabels(
-            [
-                "SKU",
-                "Nazwa",
-                "JM",
-                "Na stanie",
-                "Zarezerw.",
-                "Dostepne",
-                "W koszyku",
-                "-",
+                "–",
                 "+",
             ]
         )
@@ -136,15 +122,6 @@ class CartDialog(QtWidgets.QDialog):
                 "Ilość",
             ]
         )
-        # Nagłówki koszyka w ASCII (bez ogonków)
-        self.cart_table.setHorizontalHeaderLabels(
-            [
-                "SKU",
-                "Nazwa",
-                "JM",
-                "Ilosc",
-            ]
-        )
         self.cart_table.horizontalHeader().setStretchLastSection(True)
         try:
             self.cart_table.verticalHeader().setVisible(False)
@@ -152,7 +129,7 @@ class CartDialog(QtWidgets.QDialog):
             pass
         self.cart_table.setSortingEnabled(True)
 
-        btnRefreshCart = QtWidgets.QPushButton("OdĹ›wieĹĽ koszyk")
+        btnRefreshCart = QtWidgets.QPushButton("Odśwież koszyk")
         btnCheckout = QtWidgets.QPushButton("Wydaj (RFID/PIN)")
         btnClose = QtWidgets.QPushButton("Zamknij")
         btnRefreshCart.clicked.connect(self._refresh_cart)
@@ -163,15 +140,17 @@ class CartDialog(QtWidgets.QDialog):
         lay.addLayout(top)
         lay.addWidget(self.table, 1)
         # Kontrola rozmiaru wyników i ładowanie kolejnych
-        self.page_size = 500
-        self.limit = self.page_size
+        self.page_size = page_size
+        self.limit = page_size
         self.btnLoadMore = QtWidgets.QPushButton("Załaduj więcej")
         self.btnLoadMore.clicked.connect(self._load_more)
+        if self.page_size is None:
+            self.btnLoadMore.hide()
         lay.addWidget(self.btnLoadMore)
         # Przyciski działające na zaznaczonych wierszach w górnej tabeli
         mid_actions = QtWidgets.QHBoxLayout()
         self.btnAddSel = QtWidgets.QPushButton("Dodaj do koszyka")
-        self.btnRemoveSel = QtWidgets.QPushButton("Usun z koszyka")
+        self.btnRemoveSel = QtWidgets.QPushButton("Usuń z koszyka")
         self.btnAddSel.clicked.connect(self._add_selected)
         self.btnRemoveSel.clicked.connect(self._remove_selected)
         mid_actions.addWidget(self.btnAddSel)
@@ -186,7 +165,7 @@ class CartDialog(QtWidgets.QDialog):
         actions.addWidget(btnCheckout)
         actions.addWidget(btnClose)
         lay.addLayout(actions)
-        
+
         self.btnFind.clicked.connect(self._reload_search)
         self.q.returnPressed.connect(self._reload_search)
         self.employee_cb.currentIndexChanged.connect(self._on_employee_changed)
@@ -221,19 +200,21 @@ class CartDialog(QtWidgets.QDialog):
         self._reload()
 
     def _load_more(self) -> None:
-        self.limit += self.page_size
+        if self.page_size is None:
+            return
+        self.limit = (self.limit or 0) + self.page_size
         self._reload()
 
-    
     def _reload(self) -> None:
         try:
+            lim = self.limit if self.limit is not None else 1_000_000
             self._items = self.stock.list_available(
-                self.q.text().strip(), limit=self.limit
+                self.q.text().strip(), limit=lim
             )
             reserved = self.cart.reserved_map(self.session_id)
         except Exception as e:
             try:
-                self.log.exception("CartDialog._reload: blad pobierania listy")
+                self.log.exception("CartDialog._reload: błąd pobierania listy")
             except Exception:
                 pass
             QtWidgets.QMessageBox.critical(
@@ -276,7 +257,7 @@ class CartDialog(QtWidgets.QDialog):
             spin.valueChanged.connect(self._spin_changed)
             self.table.setCellWidget(r, 6, spin)
 
-            # przyciski â€“ i +
+            # przyciski – i +
             btn_minus = QtWidgets.QPushButton("-")
             btn_plus = QtWidgets.QPushButton("+")
             btn_minus.clicked.connect(self._dec)
@@ -286,10 +267,13 @@ class CartDialog(QtWidgets.QDialog):
 
         self.table.resizeColumnsToContents()
         try:
-            self.btnLoadMore.setEnabled(len(self._items) >= self.limit)
+            if self.limit is not None:
+                self.btnLoadMore.setEnabled(len(self._items) >= self.limit)
+            else:
+                self.btnLoadMore.setEnabled(False)
         except Exception:
             pass
-        
+
     # ---------- Akcje koszyka ----------
     def _row_item(self, sender: Any) -> tuple[int | None, int | None]:
         if not isinstance(sender, QtWidgets.QPushButton):
@@ -385,7 +369,7 @@ class CartDialog(QtWidgets.QDialog):
         except Exception:
             try:
                 self.log.exception(
-                    "CartDialog._refresh_cart: blad listowania linii",
+                    "CartDialog._refresh_cart: błąd listowania linii",
                 )
             except Exception:
                 pass
@@ -420,7 +404,7 @@ class CartDialog(QtWidgets.QDialog):
                     str(ln.get("qty_reserved") or 0),
                 ),
             )
-            
+
     # ---------- Finalizacja ----------
     def _checkout_safe(self) -> None:
         try:
@@ -428,7 +412,7 @@ class CartDialog(QtWidgets.QDialog):
         except Exception as e:
             try:
                 self.log.exception(
-                    "CartDialog._checkout_safe: nieobsluzony blad",
+                    "CartDialog._checkout_safe: nieobsłużony błąd",
                 )
             except Exception:
                 pass
@@ -438,13 +422,13 @@ class CartDialog(QtWidgets.QDialog):
                 self._refresh_cart()
             except Exception:
                 pass
-            
+
     def _checkout(self) -> None:
         emp_id = self.employee_cb.currentData()
         if emp_id is None:
-            QtWidgets.QMessageBox.warning(self, "BĹ‚Ä…d", "Wybierz pracownika")
+            QtWidgets.QMessageBox.warning(self, "Błąd", "Wybierz pracownika")
             return
-        # zapisz employee_id do sesji jeĹ›li brak
+        # zapisz employee_id do sesji jeśli brak
         self.session = self.session_mgr.ensure_open_session(int(emp_id))
         self.session_id = int(self.session["id"])  # refresh id
         # RFID/PIN
@@ -479,6 +463,3 @@ class CartDialog(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(
                 self, "Błąd", f"Nie udało się zapisać: {res}"
             )
-
-
-
