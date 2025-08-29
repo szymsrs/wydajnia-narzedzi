@@ -1,7 +1,7 @@
 # app/ui/ops_issue_dialog.py
 from __future__ import annotations
 from app.ui.stock_picker import StockPickerDialog
-from app.ui.cart_dialog import CartDialog
+
 from app.appsvc.cart import SessionManager, CartRepository, CheckoutService, RfidService
 import uuid
 import logging
@@ -74,8 +74,8 @@ class OpsIssueDialog(QtWidgets.QDialog):
         self.add_btn.clicked.connect(self._add_line)
         self.sku_edit.returnPressed.connect(self._add_line)
 
-        self.btnPick = QtWidgets.QPushButton("Koszyk (magazyn)")
-        self.btnPick.clicked.connect(self.on_open_cart)
+        self.btnPick = QtWidgets.QPushButton("Dodaj ze stanu")
+        self.btnPick.clicked.connect(self.on_pick_from_stock)
 
         sku_lay = QtWidgets.QHBoxLayout()
         sku_lay.addWidget(self.sku_edit, 1)
@@ -183,24 +183,7 @@ class OpsIssueDialog(QtWidgets.QDialog):
 
         return True
 
-    def on_open_cart(self):
-        """Otwiera dialog koszyka z listą dostępnych pozycji i przyciskami +/-."""
-        try:
-            emp_id = self.employee_cb.currentData() or None
-            if self.repo is None or not hasattr(self.repo, "engine"):
-                QtWidgets.QMessageBox.warning(self, "Brak DB", "Repozytorium nie ma połączenia z DB.")
-                return
-            dlg = CartDialog(
-                self.repo.engine,
-                station_id=self.station_id,
-                operator_user_id=int(self.operator_user_id or 0),
-                employee_id=int(emp_id) if emp_id is not None else None,
-                parent=self,
-            )
-            dlg.exec()
-        except Exception:
-            self.log.exception("Błąd otwierania koszyka")
-            QtWidgets.QMessageBox.critical(self, "Błąd", "Nie udało się otworzyć koszyka.")
+
 
     # ===================== „Dodaj ze stanu” =====================
 
