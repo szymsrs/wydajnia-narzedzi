@@ -291,7 +291,11 @@ class OpsIssueDialog(QtWidgets.QDialog):
             new_qty = self.cart.add(self.session_id, int(item_id), +1)
             w = self.table.cellWidget(row, 6)
             if isinstance(w, QtWidgets.QSpinBox):
-                w.setValue(int(new_qty))
+                try:
+                    w.blockSignals(True)
+                    w.setValue(int(new_qty))
+                finally:
+                    w.blockSignals(False)
         self._refresh_cart()
 
     def _remove_selected(self) -> None:
@@ -305,7 +309,11 @@ class OpsIssueDialog(QtWidgets.QDialog):
                 self.cart.set_qty(self.session_id, int(item_id), 0)
                 w = self.table.cellWidget(row, 6)
                 if isinstance(w, QtWidgets.QSpinBox):
-                    w.setValue(0)
+                    try:
+                        w.blockSignals(True)
+                        w.setValue(0)
+                    finally:
+                        w.blockSignals(False)
             self._refresh_cart()
             return
         try:

@@ -36,7 +36,7 @@ class ItemsRepo:
                 # fallback na kolumny 'code' i alias do 'sku'
                 sql = text(
                     """
-                    SELECT id, code AS sku, name
+                    SELECT id, code AS sku, NULLIF(TRIM(name),'') AS name
                       FROM items
                      WHERE (code LIKE CONCAT('%', :q, '%') OR name LIKE CONCAT('%', :q, '%'))
                      ORDER BY code
@@ -69,7 +69,7 @@ class ItemsRepo:
 
                 sql = text(
                     """
-                    SELECT id, name, unit AS uom, code AS sku
+                    SELECT id, NULLIF(TRIM(name),'') AS name, unit AS uom, code AS sku
                       FROM items
                      WHERE code = :sku
                      LIMIT 1

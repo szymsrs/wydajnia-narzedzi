@@ -1,0 +1,35 @@
+module,function,file:line,sql_op,table_or_view,where_or_keys,notes
+ui.rw_import_dialog,_save,app/ui/rw_import_dialog.py:125,CALL/SELECT/INSERT/UPDATE,items,sku/code,upsert_item via RWImportRepo
+dal.rw_import_repo,upsert_item,app/dal/rw_import_repo.py:37,SELECT,items,"<code_col>=:s",detect + fetch
+dal.rw_import_repo,upsert_item,app/dal/rw_import_repo.py:86,UPDATE,items,"id=:id",update name when changed
+dal.rw_import_repo,upsert_item,app/dal/rw_import_repo.py:94,INSERT,items,"(<code_col>,<name_col>[,<unit>])",create missing item
+dal.rw_import_repo,insert_rw_header,app/dal/rw_import_repo.py:141,INSERT,documents,"(doc_type,number,doc_date,...)",doc_type='RW'
+dal.rw_import_repo,insert_rw_line,app/dal/rw_import_repo.py:155,SELECT FOR UPDATE,stock,"item_id=:i",guard concurrent updates
+dal.rw_import_repo,insert_rw_line,app/dal/rw_import_repo.py:160,INSERT,stock,"(item_id,quantity)",when stock row missing
+dal.rw_import_repo,insert_rw_line,app/dal/rw_import_repo.py:166,UPDATE,stock,"item_id=:i",increment quantity
+dal.rw_import_repo,insert_rw_line,app/dal/rw_import_repo.py:204,INSERT,document_lines,"(document_id,item_id,qty,...)",record RW line
+dal.rw_import_repo,insert_rw_line,app/dal/rw_import_repo.py:216,INSERT,movements,"(...,'RECEIPT',document_line_id)",goods receipt movement
+dal.rw_import_repo,commit_transaction,app/dal/rw_import_repo.py:270,INSERT,transactions,"(operation_uuid, movement_type, ...)",header log
+dal.rw_repo_mysql,receipt_from_line,app/dal/rw_repo_mysql.py:113,CALL,sp_receipt_from_line,,SP creates lots/moves
+domain.issue,issue_tool,app/domain/services/issue.py:89,CALL,sp_issue_tool,,DB business logic
+domain.issue,issue_tool,app/domain/services/issue.py:93,SELECT,transactions,"employee_id,item_id",compute open balance
+domain.issue,issue_tool,app/domain/services/issue.py:101,UPDATE,transactions,"operation_uuid",set issued_without_return
+domain.return,return_tool,app/domain/services/return.py:59,CALL,sp_return_tool,,DB business logic
+domain.rw,record_rw_receipt,app/domain/services/rw.py:59,CALL,sp_rw_receipt,,DB business logic
+appsvc.cart,ensure_open_session,app/appsvc/cart.py:54,INSERT,issue_sessions,,open session
+appsvc.cart,ensure_open_session,app/appsvc/cart.py:43,UPDATE,issue_sessions,"id=:id",attach employee_id
+appsvc.cart,add,app/appsvc/cart.py:145,INSERT,issue_session_lines,"(session_id,item_id,qty_reserved)",add reservation
+appsvc.cart,add,app/appsvc/cart.py:152,UPDATE,issue_session_lines,"session_id,item_id",change qty
+appsvc.cart,add,app/appsvc/cart.py:160,DELETE,issue_session_lines,"session_id,item_id",remove when <=0
+appsvc.cart,set_qty,app/appsvc/cart.py:132,DELETE,issue_session_lines,"session_id,item_id",set 0→delete
+appsvc.cart,set_qty,app/appsvc/cart.py:145,INSERT,issue_session_lines,"(session_id,item_id,qty_reserved)",create
+appsvc.cart,set_qty,app/appsvc/cart.py:152,UPDATE,issue_session_lines,"session_id,item_id",set qty
+appsvc.cart,list_lines,app/appsvc/cart.py:166,SELECT,issue_session_lines JOIN items,"session_id",cart view
+appsvc.cart,reserved_map,app/appsvc/cart.py:186,SELECT,issue_session_lines,"session_id",map reserved
+appsvc.cart,finalize_issue,app/appsvc/cart.py:434,SELECT,issue_session_lines,"session_id",lines to issue
+appsvc.cart,finalize_issue,app/appsvc/cart.py:455,UPDATE,issue_sessions,"id=:id",mark CONFIRMED
+core.auth,search_stock,app/core/auth.py:862,SELECT,lots JOIN items,"name/code like",qty_available by lots
+core.auth,search_stock,app/core/auth.py:876,SELECT,lots JOIN items,"name/code like",fallback code/unit
+dal.repo_movements,receipt_from_document_line,app/dal/repo_movements.py:25,INSERT,document_lines/lots/movements/movement_allocations,,ORM path
+dal.repo_movements,issue_to_employee,app/dal/repo_movements.py:53,SELECT FOR UPDATE,lots,"item_id,qty_available>0",FIFO lock
+dal.repo_movements,return_to_warehouse,app/dal/repo_movements.py:139,INSERT,documents/document_lines/lots/movement_allocations,,ORM path

@@ -32,7 +32,7 @@ class ItemsRepo:
             except OperationalError:
                 sql = text(
                     """
-                    SELECT id, code AS sku, name
+                    SELECT id, code AS sku, NULLIF(TRIM(name),'') AS name
                       FROM items
                      WHERE (:q = '' OR code LIKE :q OR name LIKE :q)
                      ORDER BY name, code

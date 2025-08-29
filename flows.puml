@@ -1,0 +1,78 @@
+@startuml
+title Import RW (parser → repo → SQL)
+
+actor Operator
+participant RWImportDialog as UI
+participant RWImportRepo as Repo
+database DB
+
+Operator -> UI : Wybierz RW.pdf
+UI -> UI : parse_rw_pdf()
+UI -> Repo : upsert_item(sku,name)
+Repo -> DB : SELECT items WHERE code/sku
+Repo -> DB : UPDATE items.name (opcjonalnie)
+Repo -> DB : INSERT items (gdy brak)
+UI -> Repo : insert_rw_header(no,date,flags)
+Repo -> DB : INSERT documents(doc_type='RW',...)
+loop dla każdej linii RW
+  UI -> Repo : insert_rw_line(doc_id,item_id,qty,unit_price)
+  alt stock istnieje
+    Repo -> DB : SELECT stock.quantity FOR UPDATE
+    Repo -> DB : INSERT/UPDATE stock
+  end
+  Repo -> DB : INSERT document_lines(...)
+  Repo -> DB : INSERT movements(...,'RECEIPT',document_line_id)
+end
+UI -> Repo : commit_transaction(operation_uuid, employee_id)
+Repo -> DB : INSERT transactions(operation_uuid,'RECEIPT',...)
+Repo -> DB : COMMIT
+
+@enduml
+
+@startuml
+title Wydanie (GUI → koszyk → SQL)
+
+actor Operator
+participant OpsIssueDialog as IssueUI
+participant SessionManager as Sess
+participant CartRepository as Cart
+participant StockRepository as Stock
+participant CheckoutService as Checkout
+participant AuthRepo as Repo
+database DB
+
+Operator -> IssueUI : Otwórz wydanie
+IssueUI -> Sess : ensure_open_session()
+IssueUI -> Stock : list_available(q)
+Stock -> DB : SELECT (stock/lots + rezerwacje)
+Operator -> IssueUI : Dodaj ilość (QSpinBox)
+IssueUI -> Cart : set_qty/add(item_id, qty)
+Cart -> DB : INSERT/UPDATE/DELETE issue_session_lines
+Operator -> IssueUI : Zatwierdź
+IssueUI -> Checkout : finalize_issue(session_id, employee_id)
+Checkout -> DB : SELECT issue_session_lines
+loop po pozycjach
+  Checkout -> Repo : issue_tool(emp,item,qty,uuid)
+  Repo -> DB : CALL sp_issue_tool(...)
+  Repo -> DB : UPDATE transactions.issued_without_return
+end
+Checkout -> DB : UPDATE issue_sessions SET status='CONFIRMED'
+
+@enduml
+
+@startuml
+title Zwrot (GUI → SQL)
+
+actor Operator
+participant OpsReturnDialog as ReturnUI
+participant AuthRepo as Repo
+database DB
+
+Operator -> ReturnUI : Wybierz pracownika i pozycje
+Operator -> ReturnUI : Potwierdź RFID/PIN
+ReturnUI -> Repo : return_tool(emp,item,qty,uuid)
+Repo -> DB : CALL sp_return_tool(...)
+note right: SP aktualizuje alokacje/partie
+
+@enduml
+

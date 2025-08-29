@@ -172,7 +172,7 @@ class CartRepository:
                 rows = conn.execute(sql, {"sid": int(session_id)}).mappings().all()
             except Exception:
                 sql = text("""
-                    SELECT l.item_id, l.qty_reserved, i.code AS sku, i.name, i.unit AS uom
+                    SELECT l.item_id, l.qty_reserved, i.code AS sku, NULLIF(TRIM(i.name),'') AS name, i.unit AS uom
                       FROM issue_session_lines l
                       JOIN items i ON i.id = l.item_id
                      WHERE l.session_id = :sid
@@ -222,7 +222,7 @@ class StockRepository:
                     )
                     SELECT i.id AS item_id,
                            COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
-                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                           COALESCE(NULLIF(TRIM(i.name),''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
                            COALESCE(i.unit, i.uom, 'SZT') AS uom,
                            COALESCE(t.qty_on_hand,0) AS qty_on_hand,
                            COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
@@ -258,7 +258,7 @@ class StockRepository:
                         )
                         SELECT i.id AS item_id,
                                COALESCE(i.sku, i.code, CAST(i.id AS CHAR)) AS sku,
-                               COALESCE(NULLIF(i.name,''), i.sku, i.code, CAST(i.id AS CHAR)) AS name,
+                               COALESCE(NULLIF(TRIM(i.name),''), i.sku, i.code, CAST(i.id AS CHAR)) AS name,
                                COALESCE(i.uom, i.unit, 'SZT') AS uom,
                                COALESCE(t.qty_on_hand,0) AS qty_on_hand,
                                COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
@@ -295,7 +295,7 @@ class StockRepository:
                     )
                     SELECT COALESCE(i.id, t.item_id) AS item_id,
                            COALESCE(i.code, i.sku, CAST(t.item_id AS CHAR)) AS sku,
-                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(t.item_id AS CHAR)) AS name,
+                           COALESCE(NULLIF(TRIM(i.name),''), i.code, i.sku, CAST(t.item_id AS CHAR)) AS name,
                            COALESCE(i.unit, i.uom, 'SZT') AS uom,
                            t.qty_on_hand,
                            COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
@@ -321,7 +321,7 @@ class StockRepository:
                     """
                     SELECT i.id AS item_id,
                            COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
-                           COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                           COALESCE(NULLIF(TRIM(i.name),''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
                            COALESCE(i.unit, i.uom, 'SZT') AS uom,
                            v.qty_on_hand, v.qty_reserved_open, v.qty_available
                       FROM vw_stock_available v
@@ -343,7 +343,7 @@ class StockRepository:
                 """
                 SELECT i.id AS item_id,
                        COALESCE(i.code, i.sku, CAST(i.id AS CHAR)) AS sku,
-                       COALESCE(NULLIF(i.name,''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
+                       COALESCE(NULLIF(TRIM(i.name),''), i.code, i.sku, CAST(i.id AS CHAR)) AS name,
                        COALESCE(i.unit, i.uom, 'SZT') AS uom,
                        v.qty_on_hand, v.qty_reserved_open, v.qty_available
                   FROM vw_stock_available v
@@ -384,7 +384,7 @@ class StockRepository:
                          WHERE s.status='OPEN' AND (s.expires_at IS NULL OR s.expires_at > CURRENT_TIMESTAMP())
                       GROUP BY l.item_id
                     )
-                    SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
+                    SELECT i.id AS item_id, i.code AS sku, NULLIF(TRIM(i.name),'') AS name, i.unit AS uom,
                            COALESCE(t.qty_on_hand,0) AS qty_on_hand,
                            COALESCE(r.qty_reserved_open,0) AS qty_reserved_open,
                            COALESCE(t.qty_on_hand,0) - COALESCE(r.qty_reserved_open,0) AS qty_available
@@ -404,7 +404,7 @@ class StockRepository:
             except Exception:
                 sql = text(
                     """
-                    SELECT i.id AS item_id, i.code AS sku, i.name, i.unit AS uom,
+                    SELECT i.id AS item_id, i.code AS sku, NULLIF(TRIM(i.name),'') AS name, i.unit AS uom,
                            v.qty_on_hand, v.qty_reserved_open, v.qty_available
                       FROM vw_stock_available v
                       JOIN items i ON i.id = v.item_id
